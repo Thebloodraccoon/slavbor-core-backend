@@ -7,13 +7,13 @@ from sqlalchemy.orm import sessionmaker
 from app.settings.base import *
 
 # Main PG DB
-DATABASE_USER = os.getenv("DATABASE_USER", "postgres")
-DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD", "postgres")
-DATABASE_HOST = os.getenv("DATABASE_HOST", "localhost")
-DATABASE_PORT = int(os.getenv("DATABASE_PORT", 5432))
-DATABASE_NAME = os.getenv("DATABASE_NAME", "my_database")
+POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "postgres")
+POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
+POSTGRES_PORT = int(os.getenv("POSTGRES_PORT", 5432))
+POSTGRES_DB = os.getenv("POSTGRES_DB", "slavbor_db")
 
-DATABASE_URL = f"postgresql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}"
+DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -27,7 +27,7 @@ def get_db():
         db.close()
 
 
-# Redis settings
+# Redis
 REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
 REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
 REDIS_DB = int(os.getenv("REDIS_DB", 0))
@@ -37,7 +37,7 @@ REDIS_DB = int(os.getenv("REDIS_DB", 0))
 async def get_redis():
     redis_client = Redis(
         host=REDIS_HOST,
-        port=int(REDIS_PORT),
+        port=REDIS_PORT,
         db=REDIS_DB,
         decode_responses=True,
     )

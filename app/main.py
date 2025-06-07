@@ -1,3 +1,4 @@
+import time
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -15,6 +16,8 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     lifespan=lifespan,
+    version=settings.APP_VERSION,
+    description=settings.APP_NAME,
 )
 
 app.add_middleware(
@@ -25,3 +28,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/ping")
+async def ping():
+    """Простой ping эндпоинт для проверки работоспособности"""
+    return {
+        "ping": "pong",
+        "timestamp": time.time(),
+        "status": "healthy"
+    }
