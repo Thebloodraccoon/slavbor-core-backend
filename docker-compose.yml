@@ -60,8 +60,9 @@ services:
       - app_network
 
   app:
-    build: .
-    dockerfile: Dockerfile
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: fastapi_app
     ports:
       - "8000:8000"
