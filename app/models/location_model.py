@@ -1,10 +1,11 @@
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, CheckConstraint, String, DateTime, ForeignKey, ARRAY, Text, Index, Boolean
+from sqlalchemy import Column, Integer, CheckConstraint, String, DateTime, ForeignKey, ARRAY, Text, Index
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 
 from app.settings.base import Base
+
 
 class Location(Base):
     __tablename__ = 'locations'
@@ -17,6 +18,7 @@ class Location(Base):
     type = Column(String(30), nullable=False, index=True)
     created_at = Column(DateTime, default=datetime.now, nullable=False)
     updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now, nullable=False)
+    created_by_user_id = Column(Integer, ForeignKey('users.id'), index=True)
 
     # Optional descriptive information
     description = Column(Text)
@@ -37,8 +39,8 @@ class Location(Base):
 
     # Political and administrative
     government_type = Column(String(50), index=True)
-    current_ruler_id = Column(Integer, ForeignKey('characters.id'), index=True)
-    controlling_faction_id = Column(Integer, ForeignKey('factions.id'), index=True)
+    current_ruler_name = Column(String(200), index=True)
+    controlling_faction_name = Column(String(100), index=True)
     political_status = Column(String(30), default='независимая')
 
     # Economic information
@@ -158,11 +160,8 @@ class Location(Base):
 
     # SQLAlchemy relationships
     parent_location = relationship("Location", remote_side=[id])
-    child_locations = relationship("Location")
-    current_ruler = relationship("Character", foreign_keys=[current_ruler_id])
-    controlling_faction = relationship("Faction", foreign_keys=[controlling_faction_id])
-    current_residents = relationship("Character", foreign_keys="Character.current_location_id", back_populates="current_location")
-    born_here = relationship("Character", foreign_keys="Character.birth_location_id", back_populates="birth_location")
+    child_locations = relationship("Location", remote_side=[parent_location_id])
+    created_by_user = relationship("User", foreign_keys=[created_by_user_id], back_populates="created_locations")\
 
     def __repr__(self):
         return f"<Location(id={self.id}, name='{self.name}', type='{self.type}')>"

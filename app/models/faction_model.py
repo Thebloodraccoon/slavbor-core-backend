@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime, ForeignKey, ARRAY, CheckConstraint, Index
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, ARRAY, CheckConstraint, Index
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import JSONB
 
@@ -38,7 +38,7 @@ class Faction(Base):
     # Political and administrative
     government_structure = Column(String(50))
     leadership_type = Column(String(30), index=True)
-    current_leader_id = Column(Integer, ForeignKey('characters.id'), index=True)
+    current_leader_name = Column(String(200), index=True)
     succession_rules = Column(Text)
 
     # Status and timeline
@@ -48,7 +48,7 @@ class Faction(Base):
     decline_started_year = Column(Integer)
     fallen_year = Column(Integer)
 
-    # Allies and allies
+    # Allies and enemies
     traditional_allies = Column(ARRAY(String))
     traditional_enemies = Column(ARRAY(String))
     current_allies = Column(ARRAY(Integer))
@@ -78,11 +78,6 @@ class Faction(Base):
     cultural_practices = Column(Text)
     symbols_and_heraldry = Column(Text)
 
-    # Relationships and diplomacy
-    traditional_allies = Column(ARRAY(String))
-    traditional_enemies = Column(ARRAY(String))
-    current_diplomatic_status = Column(JSONB)
-
     # Historical significance
     historical_importance = Column(String(20), index=True)
     major_achievements = Column(ARRAY(String))
@@ -108,7 +103,7 @@ class Faction(Base):
     # Metadata
     created_at = Column(DateTime, default=datetime.now, nullable=False)
     updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now, nullable=False)
-    created_by = Column(String(100))
+    created_by_user_id = Column(Integer, ForeignKey('users.id'), index=True)
     source_material = Column(String(100))
 
     __table_args__ = (
@@ -220,13 +215,10 @@ class Faction(Base):
         Index('idx_faction_description_fts', 'description', postgresql_using='gin'),
     )
 
-    # SQLAlchemy relationships
+    # Relationships
     parent_faction = relationship("Faction", remote_side=[id])
-    child_factions = relationship("Faction")
-    current_leader = relationship("Character", foreign_keys=[current_leader_id])
-    members = relationship("Character", foreign_keys="Character.primary_faction_id", back_populates="primary_faction")
-    controlled_locations = relationship("Location", foreign_keys="Location.controlling_faction_id")
-    articles = relationship("Article", back_populates="primary_faction")
+    child_factions = relationship("Faction", remote_side=[parent_faction_id])
+    created_by_user = relationship("User", foreign_keys=[created_by_user_id], back_populates="created_factions")
 
     def __repr__(self):
         return f"<Faction(id={self.id}, name='{self.name}', type='{self.type}')>"

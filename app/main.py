@@ -1,9 +1,10 @@
-import time
 from contextlib import asynccontextmanager
 
+import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.endpoints.ping import router as ping_router
 from app.settings import settings
 
 
@@ -28,11 +29,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/ping")
-async def ping():
-    """Простой ping эндпоинт для проверки работоспособности"""
-    return {
-        "ping": "pong",
-        "timestamp": time.time(),
-        "status": "healthy"
-    }
+app.include_router(ping_router, prefix="/ping", tags=["Health Check"])
+
+
+if __name__ == "__main__":
+    if settings.STAGE == "prod":
+        uvicorn.run(
+            "app.main:app",
+            host=settings.HOST,
+            port=8000,
+            reload=True,
+        )
+    else:
+        uvicorn.run("app.main:app", host=settings.HOST, port=8000, reload=True)
