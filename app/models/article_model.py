@@ -19,6 +19,8 @@ class Article(Base):
     status = Column(String(20), nullable=False, default='draft', index=True)
     created_at = Column(DateTime, default=datetime.now, nullable=False)
     updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now, nullable=False)
+    last_modified_by_user_id = Column(Integer, ForeignKey('users.id'), index=True)
+    created_by_user_id = Column(Integer, ForeignKey('users.id'), nullable=False, index=True)
 
     # Content structure and metadata
     subtitle = Column(String(500))
@@ -151,6 +153,8 @@ class Article(Base):
         Index('idx_article_publication', 'is_published', 'publication_date'),
         Index('idx_article_visibility', 'visibility_level', 'is_public'),
         Index('idx_article_period', 'historical_period', 'time_period_start', 'time_period_end'),
+        Index('idx_article_created_by', 'created_by_user_id', 'created_at'),
+        Index('idx_article_last_modified_by', 'last_modified_by_user_id', 'updated_at'),
 
         # Array indexes for complex searches
         Index('idx_article_tags', 'tags', postgresql_using='gin'),
@@ -170,6 +174,8 @@ class Article(Base):
     )
 
     # SQLAlchemy relationships
+    created_by_user = relationship("User", foreign_keys=[created_by_user_id], back_populates="created_articles")
+    last_modified_by_user = relationship("User", foreign_keys=[last_modified_by_user_id], back_populates="last_modified_articles")
     primary_character = relationship("Character", foreign_keys=[primary_character_id])
     primary_location = relationship("Location", foreign_keys=[primary_location_id])
     primary_faction = relationship("Faction", foreign_keys=[primary_faction_id], back_populates="articles")
