@@ -18,6 +18,9 @@ class Character(Base):
     created_at = Column(DateTime, default=datetime.now, nullable=False)
     updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now, nullable=False)
 
+    player_user_id = Column(Integer, ForeignKey('users.id'), index=True)
+    created_by_user_id = Column(Integer, ForeignKey('users.id'), nullable=False, index=True)
+
     # Optional name information
     full_name = Column(String(400), index=True)
     titles = Column(ARRAY(String))
@@ -25,8 +28,11 @@ class Character(Base):
 
     # Foreign key relationships
     race_id = Column(Integer, ForeignKey('races.id'), index=True)
-    current_location_id = Column(Integer, ForeignKey('locations.id'), index=True)
-    birth_location_id = Column(Integer, ForeignKey('locations.id'), index=True)
+
+    # Locations и factions
+    current_location_name = Column(String(100), index=True)
+    birth_location_name = Column(String(100), index=True)
+    primary_faction_name = Column(String(100), index=True)
 
     # Biography information
     biography = Column(Text)
@@ -34,7 +40,7 @@ class Character(Base):
     birth_year = Column(Integer, index=True)
     death_year = Column(Integer, index=True)
 
-    # D&D game statistics (optional - only for game characters)
+    # D&D game statistics
     level = Column(Integer)
     strength = Column(Integer)
     dexterity = Column(Integer)
@@ -48,11 +54,10 @@ class Character(Base):
     wealth_level = Column(String(30), index=True)
 
     # Family relationships
-    father_id = Column(Integer, ForeignKey('characters.id'), index=True)
-    mother_id = Column(Integer, ForeignKey('characters.id'), index=True)
+    father_name = Column(String(200), index=True)
+    mother_name = Column(String(200), index=True)
 
     # Faction
-    primary_faction_id = Column(Integer, ForeignKey('factions.id'), index=True)
     secondary_factions = Column(ARRAY(Integer))
     faction_roles = Column(JSONB)
     faction_status = Column(String(20), default='member')
@@ -91,13 +96,6 @@ class Character(Base):
             name="check_wealth_level"
         ),
 
-        CheckConstraint(
-            """template_category IS NULL OR template_category IN (
-                'воин', 'торговец', 'дворянин', 'ремесленник', 'маг', 'священник'
-            )""",
-            name="check_template_category"
-        ),
-
         CheckConstraint("strength IS NULL OR (strength >= 1 AND strength <= 30)", name="check_strength_range"),
         CheckConstraint("dexterity IS NULL OR (dexterity >= 1 AND dexterity <= 30)", name="check_dexterity_range"),
         CheckConstraint("constitution IS NULL OR (constitution >= 1 AND constitution <= 30)", name="check_constitution_range"),
@@ -115,6 +113,8 @@ class Character(Base):
 
         # Complex indexes only
         Index('idx_character_type_status', 'type', 'status'),
+        Index('idx_character_player_user', 'player_user_id', 'type'),  # ДОБАВЛЕНО обратно
+        Index('idx_character_created_by', 'created_by_user_id', 'created_at'),  # ДОБАВЛЕНО обратно
         Index('idx_character_name_trgm', 'name', postgresql_using='gin', postgresql_ops={'name': 'gin_trgm_ops'}),
         Index('idx_character_secondary_factions', 'secondary_factions', postgresql_using='gin'),
         Index('idx_character_faction_roles', 'faction_roles', postgresql_using='gin'),
@@ -122,11 +122,8 @@ class Character(Base):
 
     # SQLAlchemy relationships
     race = relationship("Race", back_populates="characters")
-    current_location = relationship("Location", foreign_keys=[current_location_id])
-    birth_location = relationship("Location", foreign_keys=[birth_location_id])
-    father = relationship("Character", remote_side=[id], foreign_keys=[father_id])
-    mother = relationship("Character", remote_side=[id], foreign_keys=[mother_id])
-    primary_faction = relationship("Faction", foreign_keys=[primary_faction_id], back_populates="members")
+    player_user = relationship("User", foreign_keys=[player_user_id], back_populates="player_characters")
+    created_by_user = relationship("User", foreign_keys=[created_by_user_id], back_populates="created_characters")
 
     def __repr__(self):
         return f"<Character(id={self.id}, name='{self.name}', type='{self.type}')>"

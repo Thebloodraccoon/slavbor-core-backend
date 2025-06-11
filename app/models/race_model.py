@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, CheckConstraint, String, DateTime, ForeignKey, ARRAY, Text, Index, Boolean
+from sqlalchemy import Column, Integer, CheckConstraint, String, DateTime, ARRAY, Text, Index, Boolean
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 
@@ -53,8 +53,6 @@ class Race(Base):
             )""",
             name="check_race_rarity"
         ),
-
-        CheckConstraint("population_estimate IS NULL OR population_estimate > 0", name="check_population_positive"),
 
         # Complex indexes only
         Index('idx_race_playable_size', 'is_playable', 'size'),
