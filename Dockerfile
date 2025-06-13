@@ -19,4 +19,4 @@ RUN useradd --create-home --shell /bin/bash app \
     && chown -R app:app /app
 USER app
 
-CMD ["/wait-for-db.sh", "db", "5432", "sh", "-c", "alembic upgrade head && python -m app.main"]
+CMD ["sh", "-c", "sleep 15 && alembic upgrade head && python -m app.main"]
