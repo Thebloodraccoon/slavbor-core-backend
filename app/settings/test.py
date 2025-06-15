@@ -1,9 +1,10 @@
 from contextlib import asynccontextmanager, contextmanager
 
+from redis.asyncio import Redis
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
 from app.settings.base import *  # noqa: F403
-from redis.asyncio import Redis  
-from sqlalchemy import create_engine  
-from sqlalchemy.orm import sessionmaker  
 
 # Test Database settings
 TEST_DATABASE_USER = "slavbor_user"
@@ -19,6 +20,7 @@ DATABASE_URL = (
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+
 @contextmanager
 def get_db():
     db = SessionLocal()
@@ -29,7 +31,7 @@ def get_db():
 
 
 # Test Redis settings
-TEST_REDIS_HOST = os.getenv("TEST_HOST_REDIS", "localhost")
+TEST_REDIS_HOST = os.getenv("TEST_REDIS_HOST", "localhost")
 TEST_REDIS_PORT = 6379
 TEST_REDIS_DB = 0
 

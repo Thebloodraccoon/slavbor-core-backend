@@ -16,7 +16,7 @@ STAGE = os.getenv("STAGE", "local").lower()
 if STAGE not in VALID_STAGES:
     valid_stages = ", ".join(VALID_STAGES.keys())
     raise ValueError(
-        f"Invalid STAGE environment: {STAGE}. " f"Supported stages are: {valid_stages}"
+        f"Invalid STAGE environment: {STAGE}. Supported stages are: {valid_stages}"
     )
 
 
