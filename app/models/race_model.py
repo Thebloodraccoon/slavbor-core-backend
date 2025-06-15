@@ -1,14 +1,16 @@
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, CheckConstraint, String, DateTime, ARRAY, Text, Index, Boolean
+from sqlalchemy import (ARRAY, Boolean, CheckConstraint, Column, DateTime,
+                        ForeignKey, Index, Integer, String, Text)
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 
+from app.constants import RACE_RARITIES, RACE_SIZES, create_enum_constraint
 from app.settings.base import Base
 
 
 class Race(Base):
-    __tablename__ = 'races'
+    __tablename__ = "races"
 
     id = Column(Integer, primary_key=True)
 
@@ -17,7 +19,7 @@ class Race(Base):
 
     # Optional descriptive information
     description = Column(Text)
-    size = Column(String(20), default='Средний', index=True)
+    size = Column(String(20), default="Средний", index=True)
 
     # Racial abilities and traits
     racial_abilities = Column(ARRAY(Text))
@@ -32,35 +34,38 @@ class Race(Base):
 
     # Gameplay mechanics
     is_playable = Column(Boolean, default=True, index=True)
-    rarity = Column(String(20), default='обычная', index=True)
+    rarity = Column(String(20), default="обычная", index=True)
 
     # World integration
     homeland_regions = Column(ARRAY(String))
 
     # Metadata and versioning
     created_at = Column(DateTime, default=datetime.now, nullable=False)
-    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now, nullable=False)
+    updated_at = Column(
+        DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
+    )
 
     __table_args__ = (
         CheckConstraint(
-            "size IN ('Крошечный', 'Маленький', 'Средний', 'Большой', 'Огромный', 'Гигантский')",
-            name="check_race_size"
+            create_enum_constraint("size", RACE_SIZES, nullable=False),
+            name="check_race_size",
         ),
-
         CheckConstraint(
-            """rarity IS NULL OR rarity IN (
-                'очень_редкая', 'редкая', 'необычная', 'обычная', 'распространенная'
-            )""",
-            name="check_race_rarity"
+            create_enum_constraint("rarity", RACE_RARITIES),
+            name="check_race_rarity",
         ),
-
         # Complex indexes only
-        Index('idx_race_playable_size', 'is_playable', 'size'),
-        Index('idx_race_stat_bonuses', 'stat_bonuses', postgresql_using='gin'),
-        Index('idx_race_abilities', 'racial_abilities', postgresql_using='gin'),
-        Index('idx_race_languages', 'languages', postgresql_using='gin'),
-        Index('idx_race_regions', 'homeland_regions', postgresql_using='gin'),
-        Index('idx_race_name_trgm', 'name', postgresql_using='gin', postgresql_ops={'name': 'gin_trgm_ops'}),
+        Index("idx_race_playable_size", "is_playable", "size"),
+        Index("idx_race_stat_bonuses", "stat_bonuses", postgresql_using="gin"),
+        Index("idx_race_abilities", "racial_abilities", postgresql_using="gin"),
+        Index("idx_race_languages", "languages", postgresql_using="gin"),
+        Index("idx_race_regions", "homeland_regions", postgresql_using="gin"),
+        Index(
+            "idx_race_name_trgm",
+            "name",
+            postgresql_using="gin",
+            postgresql_ops={"name": "gin_trgm_ops"},
+        ),
     )
 
     # Relationships

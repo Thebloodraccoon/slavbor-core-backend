@@ -241,3 +241,6 @@ yarn-error.log*
 # uploads/
 # media/
 # static/media/
+
+# Covarage
+.coverage
