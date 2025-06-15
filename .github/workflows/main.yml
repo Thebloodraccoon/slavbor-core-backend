@@ -1,0 +1,112 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ main, development ]
+
+env:
+  STAGE: test
+  POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+  POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+  POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+  POSTGRES_HOST: localhost
+  POSTGRES_PORT: 5432
+  TEST_DATABASE_HOST: localhost
+  TEST_REDIS_HOST: localhost
+  REDIS_HOST: localhost
+  REDIS_PORT: 6379
+  REDIS_DB: 0
+  SECRET_KEY: ${{ secrets.SECRET_KEY }}
+  ALGORITHM: ${{ secrets.ALGORITHM }}
+
+jobs:
+  test:
+    if: github.event_name == 'pull_request' || contains(fromJson('["refs/heads/main", "refs/heads/development"]'), github.ref)
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:alpine
+        ports:
+          - 6379:6379
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install tox
+
+    - name: Wait for services
+      run: |
+        sleep 15
+
+    - name: Run tests
+      run: tox -e testing
+
+  lint-and-format:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install tox
+
+    - name: Run linting
+      run: tox -e lint
+
+    - name: Run formatting check
+      run: tox -e format
+
+    - name: Run security check
+      run: tox -e security
+
+    - name: Run type checking
+      run: tox -e typecheck
+
+  development-check:
+    if: github.ref == 'refs/heads/development'
+    needs: [test, lint-and-format]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Development branch checks passed
+      run: echo "All checks passed for development branch"
+
+  deployment:
+    if: github.ref == 'refs/heads/main'
+    needs: [test, lint-and-format]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Deployment placeholder
+      run: echo "Deployment placeholder - configure your deployment here"
