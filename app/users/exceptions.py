@@ -13,3 +13,7 @@ class UserNotFoundException(HTTPException):
             detail = f"404 User with email {email} is not found."
 
         super().init(status_code=status.HTTP_404_NOT_FOUND, detail=detail)
+
+class InvalidEmailException(Exception):
+    def __init__(self, message="Invalid email address"):
+        super().__init__(message)

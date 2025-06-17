@@ -1,8 +1,9 @@
-from contextlib import asynccontextmanager, contextmanager
+import os
+from contextlib import asynccontextmanager
 
 from redis.asyncio import Redis
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 
 from app.settings.base import *
 
@@ -19,8 +20,8 @@ engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-@contextmanager
-def get_db():
+# ✅ Для FastAPI Dependency Injection
+def get_db() -> Session:
     db = SessionLocal()
     try:
         yield db

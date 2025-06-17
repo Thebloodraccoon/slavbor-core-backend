@@ -43,3 +43,5 @@ USER app
 
 ENTRYPOINT ["sh", "-c"]
 CMD ["sleep 15 && alembic upgrade head && python -m app.main"]
+
+RUN pip install -r requirements.txt

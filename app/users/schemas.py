@@ -1,28 +1,42 @@
-from pydantic import BaseModel, EmailStr, constr
-from typing import Literal, Optional
+import re
+from datetime import datetime
+from typing import Optional, Literal
+
+from pydantic import BaseModel, EmailStr, constr, field_validator
+
 from app.constants import USER_ROLES
+from app.exceptions import InvalidEmailException
 
+UserRole = Literal["found_father", "keeper", "player"]
 
-# ── Базовая часть, которую наследуем ─────────────────────────────────────────
-class _UserBase(BaseModel):
-    username: Username
+class UserBase(BaseModel):
+    username: constr(min_length=3, max_length=32, pattern=r"^[a-zA-Z0-9_]+$")
     email: EmailStr
 
+    @field_validator("email")
+    def validate_email(cls, email):
+        if not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
+            raise InvalidEmailException()
+        return email
 
-# ── Схемы I/O ────────────────────────────────────────────────────────────────
-class UserCreate(_UserBase):
+
+class UserCreate(UserBase):
     password: str
-    role: Optional[Literal[USER_ROLES]] = None
+    role: Optional[UserRole] = None
 
 
 class UserUpdate(BaseModel):
-    username: Username | None = None
+    username: constr(min_length=3, max_length=32, pattern=r"^[a-zA-Z0-9_]+$")
     email: EmailStr | None = None
 
 
-class UserResponse(_UserBase):
+class UserResponse(UserBase):
     id: int
-    model_config = ConfigDict(from_attributes=True)
+    #model_config = ConfigDict(from_attributes=True)
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+    last_login: Optional[datetime] = None
 
     class Config:
         orm_mode = True  # ← позволяет возвращать SQLAlchemy‑объекты
+        from_attributes = True

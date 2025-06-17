@@ -7,6 +7,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.ping.endpoints import router as ping_router
 from app.settings import settings
 
+from app.users import endpoints
+
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -30,7 +33,7 @@ app.add_middleware(
 )
 
 app.include_router(ping_router, prefix="/ping", tags=["Health Check"])
-
+app.include_router(endpoints.router)
 
 if __name__ == "__main__":
     if settings.STAGE == "prod":

@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from app.models.user_model import User
 from app.users.schemas import UserCreate, UserUpdate
 from app.utils.auth import get_password_hash
+from fastapi import HTTPException
 
 
 class UserService:
@@ -12,7 +13,6 @@ class UserService:
     def __init__(self, db: Session):
         self.db = db
 
-    # ─────────── helpers ──────────────────────────────────────────────────────
     def _unique_or_raise(
         self, *, username: str | None, email: str | None, skip_id: int | None = None
     ):
@@ -22,10 +22,12 @@ class UserService:
         )
         if skip_id:
             stmt = stmt.where(User.id != skip_id)
-        if self.db.scalar(stmt):
-            raise HTTPExeption("username or email already taken")
+        if self.db.execute(stmt).scalar():
 
-    # ─────────── CRUD ────────────────────────────────────────────────────────
+            raise HTTPException(status_code=400, detail="username or email already taken")
+    # =========
+    #   CRUD
+    # =========
     def create_user(self, data: UserCreate) -> User:
         self._unique_or_raise(username=data.username, email=data.email)
 
@@ -33,6 +35,7 @@ class UserService:
             username=data.username,
             email=data.email,
             hashed_password=get_password_hash(data.password),
+            role="found_father",
         )
         self.db.add(db_user)
         self.db.commit()
