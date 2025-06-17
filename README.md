@@ -56,7 +56,8 @@ docker-compose up --build
 ```
 
 The FastAPI backend will be accessible at: http://localhost:8000
-pgAdmin (if configured) will be available at: http://localhost:5050
+
+PgAdmin (if configured) will be available at: http://localhost:5050
 
 ### Run database migrations
 

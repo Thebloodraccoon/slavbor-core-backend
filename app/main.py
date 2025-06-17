@@ -4,7 +4,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.endpoints.ping import router as ping_router
+from app.ping.endpoints import router as ping_router
 from app.settings import settings
 
 
