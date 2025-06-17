@@ -193,9 +193,6 @@ Desktop.ini
 # Linux
 *~
 
-# Docker
-.dockerignore
-
 # Database
 *.db
 *.sqlite
