@@ -4,6 +4,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.users import endpoints
 from app.endpoints.ping import router as ping_router
 from app.settings import settings
 
@@ -30,6 +31,7 @@ app.add_middleware(
 )
 
 app.include_router(ping_router, prefix="/ping", tags=["Health Check"])
+app.include_router(user_endpoints.router)
 
 
 if __name__ == "__main__":
