@@ -1,23 +1,17 @@
-import re
+#import re
 from datetime import datetime
 from typing import Optional, Literal
 
 from pydantic import BaseModel, EmailStr, constr, field_validator
 
-from app.constants import USER_ROLES
-from app.exceptions import InvalidEmailException
+#from app.constants import USER_ROLES
+#from app.exceptions import InvalidEmailException
 
 UserRole = Literal["found_father", "keeper", "player"]
 
 class UserBase(BaseModel):
     username: constr(min_length=3, max_length=32, pattern=r"^[a-zA-Z0-9_]+$")
     email: EmailStr
-
-    @field_validator("email")
-    def validate_email(cls, email):
-        if not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
-            raise InvalidEmailException()
-        return email
 
 
 class UserCreate(UserBase):
@@ -28,6 +22,7 @@ class UserCreate(UserBase):
 class UserUpdate(BaseModel):
     username: constr(min_length=3, max_length=32, pattern=r"^[a-zA-Z0-9_]+$")
     email: EmailStr | None = None
+    password: str
 
 
 class UserResponse(UserBase):
