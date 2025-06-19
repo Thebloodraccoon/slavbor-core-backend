@@ -21,11 +21,13 @@ def create_token(data: dict):
 
     return encoded_jwt
 
+
 # 15 minutes lifetime
 def create_access_token(sub: str, user_email: str):
     expire = datetime.now(tz=timezone.utc) + timedelta(minutes=15)
     access_token = {'exp': expire, 'sub': sub, 'user_email': user_email}
     return create_token(access_token)
+
 
 # 30 days lifetime
 def create_refresh_token(sub: str, user_email: str):
@@ -33,12 +35,14 @@ def create_refresh_token(sub: str, user_email: str):
     refresh_token = {'exp': expire, 'sub': sub, 'user_email': user_email}
     return create_token(refresh_token)
 
+
 # validate token
 def verify_token(token):
     try:
         decode_token(token)
     except JWTError:
         raise InvalidJWTException
+
 
 # get payload
 def decode_token(token):
