@@ -20,9 +20,9 @@ class UserCreate(UserBase):
 
 
 class UserUpdate(BaseModel):
-    username: constr(min_length=3, max_length=32, pattern=r"^[a-zA-Z0-9_]+$")
-    email: EmailStr | None = None
-    password: str
+    username: Optional[constr(min_length=3, max_length=32, pattern=r"^[a-zA-Z0-9_]+$")] = None
+    email: Optional[EmailStr] = None
+    password: Optional[str] = None
 
 
 class UserResponse(UserBase):
