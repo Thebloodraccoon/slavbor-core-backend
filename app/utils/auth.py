@@ -3,6 +3,7 @@ from app.settings.base import JWT_SECRET_KEY, JWT_ALGORITHM
 from fastapi import status, HTTPException
 from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
+from app.exceptions.custom_exceptions import Error401
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -21,24 +22,21 @@ def create_token(data: dict):
 
     return encoded_jwt
 
-def create_access_token(sub: str, roles: str): # 15 minutes lifetime
+def create_access_token(sub: str, user_email: str): # 15 minutes lifetime
     expire = datetime.now(tz=timezone.utc) + timedelta(minutes=15)
-    access_token = {'exp': expire, 'sub': sub, 'roles': roles}
+    access_token = {'exp': expire, 'sub': sub, 'user_email': user_email}
     return create_token(access_token)
 
-def create_refresh_token(sub: str, roles: str): # 30 days lifetime
+def create_refresh_token(sub: str, user_email: str): # 30 days lifetime
     expire = datetime.now(tz=timezone.utc) + timedelta(days=30)
-    refresh_token = {'exp': expire, 'sub': sub, 'roles': roles}
+    refresh_token = {'exp': expire, 'sub': sub, 'user_email': user_email}
     return create_token(refresh_token)
 
 def verify_token(token): # validate token
     try:
         decode_token(token)
     except JWTError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
-        )
+        raise Error401
 
 def decode_token(token): # get payload
     payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
