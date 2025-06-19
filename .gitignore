@@ -193,9 +193,6 @@ Desktop.ini
 # Linux
 *~
 
-# Docker
-.dockerignore
-
 # Database
 *.db
 *.sqlite
@@ -241,3 +238,6 @@ yarn-error.log*
 # uploads/
 # media/
 # static/media/
+
+# Covarage
+.coverage

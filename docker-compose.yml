@@ -1,11 +1,11 @@
-version: '3.8'
-
 services:
   db:
-    image: postgres:15-alpine
+    image: postgres:15.4-alpine
     container_name: slavbor_db
-    env_file:
-      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -14,10 +14,12 @@ services:
       - app_network
 
   test_db:
-    image: postgres:15-alpine
-    container_name: test_db
-    env_file:
-      - .env
+    image: postgres:15.4-alpine
+    container_name: slavbor_test_db
+    environment:
+      POSTGRES_USER: slavbor_user
+      POSTGRES_PASSWORD: test_secret
+      POSTGRES_DB: slavbor_test_db
     volumes:
       - test_postgres_data:/var/lib/postgresql/data
     ports:
@@ -26,7 +28,7 @@ services:
       - app_network
 
   pgadmin:
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4:7.6
     container_name: slavbor_pgadmin
     ports:
       - "5050:80"
@@ -40,7 +42,7 @@ services:
       - app_network
 
   redis:
-    image: redis:alpine
+    image: redis:7.2.3-alpine
     container_name: slavbor_redis
     ports:
       - "6380:6379"
@@ -50,7 +52,7 @@ services:
       - app_network
 
   test_redis:
-    image: redis:alpine
+    image: redis:7.2.3-alpine
     container_name: slavbor_test_redis
     ports:
       - "6381:6379"
