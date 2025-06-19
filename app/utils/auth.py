@@ -1,9 +1,8 @@
 from passlib.context import CryptContext
 from app.settings.base import JWT_SECRET_KEY, JWT_ALGORITHM
-from fastapi import status, HTTPException
 from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
-from app.exceptions.custom_exceptions import Error401
+from app.exceptions.custom_exceptions import InvalidJWTException
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -36,7 +35,7 @@ def verify_token(token): # validate token
     try:
         decode_token(token)
     except JWTError:
-        raise Error401
+        raise InvalidJWTException
 
 def decode_token(token): # get payload
     payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
