@@ -1,6 +1,7 @@
 from fastapi import HTTPException
 from starlette import status
 
+
 class InvalidJWTException(HTTPException):
     def __init__(self, message="Could not validate credentials"):
         self.message = message
