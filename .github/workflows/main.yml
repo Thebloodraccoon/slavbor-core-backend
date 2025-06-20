@@ -3,6 +3,8 @@ name: CI/CD Pipeline
 on:
   push:
     branches: [ "**" ]
+  pull_request:
+    branches: [ "**" ]
 
 env:
   STAGE: test
