@@ -34,7 +34,7 @@ class Article(Base):
 
     # Content structure
     summary = Column(Text)
-    tags = Column(ARRAY(String))
+    tags = Column(ARRAY(String))  # type: ignore
 
     # Categorization
     category = Column(String(50), index=True)
@@ -47,10 +47,10 @@ class Article(Base):
     primary_race_id = Column(Integer, ForeignKey("races.id"), index=True)
 
     # Related entities (multiple relationships)
-    related_characters = Column(ARRAY(Integer))
-    related_locations = Column(ARRAY(Integer))
-    related_factions = Column(ARRAY(Integer))
-    related_races = Column(ARRAY(Integer))
+    related_characters = Column(ARRAY(Integer))  # type: ignore
+    related_locations = Column(ARRAY(Integer))  # type: ignore
+    related_factions = Column(ARRAY(Integer))  # type: ignore
+    related_races = Column(ARRAY(Integer))  # type: ignore
 
     # Source and authenticity
     source_type = Column(String(30), default="original", index=True)

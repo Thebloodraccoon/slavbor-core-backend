@@ -22,9 +22,9 @@ class Race(Base):
     size = Column(String(20), default="Средний", index=True)
 
     # Racial abilities and traits
-    racial_abilities = Column(ARRAY(Text))
+    racial_abilities = Column(ARRAY(Text))  # type: ignore
     stat_bonuses = Column(JSONB, default={})
-    languages = Column(ARRAY(String))
+    languages = Column(ARRAY(String))  # type: ignore
     special_traits = Column(Text)
 
     # Physical characteristics
@@ -37,7 +37,7 @@ class Race(Base):
     rarity = Column(String(20), default="обычная", index=True)
 
     # World integration
-    homeland_regions = Column(ARRAY(String))
+    homeland_regions = Column(ARRAY(String))  # type: ignore
 
     # Metadata and versioning
     created_at = Column(DateTime, default=datetime.now, nullable=False)

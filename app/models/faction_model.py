@@ -23,7 +23,7 @@ class Faction(Base):
 
     # Extended naming
     full_name = Column(String(200), index=True)
-    alternative_names = Column(ARRAY(String))
+    alternative_names = Column(ARRAY(String))  # type: ignore
 
     # Basic description
     description = Column(Text)

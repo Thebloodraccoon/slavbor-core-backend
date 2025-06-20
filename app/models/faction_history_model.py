@@ -26,14 +26,14 @@ class FactionCulture(Base):
 
     # Organizational culture
     internal_structure = Column(JSONB)
-    key_positions = Column(ARRAY(String))
+    key_positions = Column(ARRAY(String))  # type: ignore
     membership_requirements = Column(Text)
     internal_politics = Column(Text)
 
     # Current activities
     current_goals = Column(Text)
     current_conflicts = Column(Text)
-    current_projects = Column(ARRAY(String))
+    current_projects = Column(ARRAY(String))  # type: ignore
 
     # Timestamps
     created_at = Column(DateTime, default=datetime.now, nullable=False)

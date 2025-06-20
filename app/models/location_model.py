@@ -25,7 +25,7 @@ class Location(Base):
 
     # Basic description
     description = Column(Text)
-    alternative_names = Column(ARRAY(String))
+    alternative_names = Column(ARRAY(String))  # type: ignore
 
     # Geographic hierarchy
     parent_location_id = Column(Integer, ForeignKey("locations.id"), index=True)

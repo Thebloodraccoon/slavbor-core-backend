@@ -40,8 +40,8 @@ class CharacterGameStats(Base):
 
     # Proficiency and Skills
     proficiency_bonus = Column(Integer)
-    proficient_skills = Column(ARRAY(String))  # ['Athletics', 'Stealth', etc.]
-    proficient_saves = Column(ARRAY(String))  # ['Strength', 'Dexterity', etc.]
+    proficient_skills = Column(ARRAY(String))  # type: ignore
+    proficient_saves = Column(ARRAY(String))  # type: ignore
 
     # Character Build
     character_class = Column(String(50))  # 'Fighter', 'Wizard', etc.
@@ -50,17 +50,17 @@ class CharacterGameStats(Base):
     alignment = Column(String(20))  # 'Lawful Good', etc.
 
     # Additional D&D specific info
-    languages = Column(ARRAY(String))
-    tool_proficiencies = Column(ARRAY(String))
-    weapon_proficiencies = Column(ARRAY(String))
-    armor_proficiencies = Column(ARRAY(String))
+    languages = Column(ARRAY(String))  # type: ignore
+    tool_proficiencies = Column(ARRAY(String))  # type: ignore
+    weapon_proficiencies = Column(ARRAY(String))  # type: ignore
+    armor_proficiencies = Column(ARRAY(String))  # type: ignore
 
     # Spellcasting (if applicable)
     spellcasting_ability = Column(String(20))  # 'Intelligence', 'Wisdom', etc.
     spell_save_dc = Column(Integer)
     spell_attack_bonus = Column(Integer)
     spell_slots = Column(JSONB)  # {"1": 4, "2": 3, "3": 2} etc.
-    spells_known = Column(ARRAY(String))
+    spells_known = Column(ARRAY(String))  # type: ignore
 
     # Timestamps
     created_at = Column(DateTime, default=datetime.now, nullable=False)

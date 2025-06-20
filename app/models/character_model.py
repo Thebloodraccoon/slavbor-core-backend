@@ -29,8 +29,8 @@ class Character(Base):
 
     # Optional name information
     full_name = Column(String(400), index=True)
-    titles = Column(ARRAY(String))
-    epithets = Column(ARRAY(String))
+    titles = Column(ARRAY(String))  # type: ignore
+    epithets = Column(ARRAY(String))  # type: ignore
 
     # Foreign key relationships
     race_id = Column(Integer, ForeignKey("races.id"), index=True)
