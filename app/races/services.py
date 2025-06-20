@@ -11,24 +11,26 @@ from app.races.schemas import (RaceCreate, RaceListResponse, RaceResponse,
 
 
 def convert_to_response(race: Race) -> RaceResponse:
-    """Converting the Race model in Raceresponse."""
+    """Converting the Race model instance to RaceResponse."""
     return RaceResponse(
-        id=race.id,
-        name=race.name,
-        description=race.description,
-        size=race.size,
-        racial_abilities=race.racial_abilities,
-        stat_bonuses=race.stat_bonuses,
-        languages=race.languages,
-        special_traits=race.special_traits,
-        average_height=race.average_height,
-        average_weight=race.average_weight,
-        physical_features=race.physical_features,
-        is_playable=race.is_playable,
-        rarity=race.rarity,
-        homeland_regions=race.homeland_regions,
-        created_at=race.created_at,
-        updated_at=race.updated_at,
+        id=int(race.id) if race.id else 0,
+        name=str(race.name) if race.name else "",
+        description=str(race.description) if race.description else None,
+        size=str(race.size) if race.size else "",
+        racial_abilities=race.racial_abilities if race.racial_abilities else None,  # type: ignore
+        stat_bonuses=race.stat_bonuses if race.stat_bonuses else None,  # type: ignore
+        languages=race.languages if race.languages else None,  # type: ignore
+        special_traits=str(race.special_traits) if race.special_traits else None,
+        average_height=str(race.average_height) if race.average_height else None,
+        average_weight=str(race.average_weight) if race.average_weight else None,
+        physical_features=(
+            str(race.physical_features) if race.physical_features else None
+        ),
+        is_playable=bool(race.is_playable) if race.is_playable else False,
+        rarity=str(race.rarity) if race.rarity else None,
+        homeland_regions=race.homeland_regions if race.homeland_regions else None,  # type: ignore
+        created_at=race.created_at,  # type: ignore
+        updated_at=race.updated_at,  # type: ignore
     )
 
 
@@ -50,7 +52,7 @@ class RaceService:
         """Obtaining a race by name."""
         race = self.repository.get_by_name(name)
         if race is None:
-            raise RaceNotFoundException(f"Race with name '{name}' not found")
+            raise RaceNotFoundException(f"Race with name '{name}' not found")  # type: ignore
 
         return convert_to_response(race)
 

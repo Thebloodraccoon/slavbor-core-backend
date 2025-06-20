@@ -1,8 +1,7 @@
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field, field_validator, model_validator
-from pydantic.types import constr
+from pydantic import BaseModel, Field, constr, field_validator, model_validator
 
 from app.races.utils import (validate_race_rarity, validate_race_size,
                              validate_racial_abilities, validate_stat_bonuses,
@@ -10,7 +9,7 @@ from app.races.utils import (validate_race_rarity, validate_race_size,
 
 
 class RaceBase(BaseModel):
-    name: constr(min_length=2, max_length=100, strip_whitespace=True) = Field(
+    name: constr(min_length=2, max_length=100, strip_whitespace=True) = Field(  # type: ignore
         ..., description="Название расы", examples=["Люди", "Гориусы", "Кобы"]
     )
     description: Optional[str] = Field(
@@ -20,7 +19,7 @@ class RaceBase(BaseModel):
 
     @field_validator("size")
     def validate_size_field(cls, v: str) -> str:
-        return validate_race_size(v)
+        return validate_race_size(v)  # type: ignore
 
     @field_validator("description")
     def validate_description_field(cls, v: Optional[str]) -> Optional[str]:
@@ -46,10 +45,10 @@ class RaceCreate(RaceBase):
     special_traits: Optional[str] = Field(
         None, max_length=1000, description="Особые черты расы"
     )
-    average_height: Optional[constr(max_length=50)] = Field(
+    average_height: Optional[constr(max_length=50)] = Field(  # type: ignore
         None, description="Средний рост", examples=["170-180 см"]
     )
-    average_weight: Optional[constr(max_length=50)] = Field(
+    average_weight: Optional[constr(max_length=50)] = Field(  # type: ignore
         None, description="Средний вес", examples=["60-80 кг"]
     )
     physical_features: Optional[str] = Field(
@@ -65,7 +64,7 @@ class RaceCreate(RaceBase):
 
     @field_validator("rarity")
     def validate_rarity_field(cls, v: str) -> str:
-        return validate_race_rarity(v)
+        return validate_race_rarity(v)  # type: ignore
 
     @field_validator("stat_bonuses")
     def validate_stat_bonuses_field(
@@ -89,15 +88,15 @@ class RaceCreate(RaceBase):
 
 
 class RaceUpdate(BaseModel):
-    name: Optional[constr(min_length=2, max_length=100, strip_whitespace=True)] = None
+    name: Optional[constr(min_length=2, max_length=100, strip_whitespace=True)] = None  # type: ignore
     description: Optional[str] = Field(None, max_length=2000)
     size: Optional[str] = None
     racial_abilities: Optional[List[str]] = None
     stat_bonuses: Optional[Dict[str, int]] = None
     languages: Optional[List[str]] = None
     special_traits: Optional[str] = Field(None, max_length=1000)
-    average_height: Optional[constr(max_length=50)] = None
-    average_weight: Optional[constr(max_length=50)] = None
+    average_height: Optional[constr(max_length=50)] = None  # type: ignore
+    average_weight: Optional[constr(max_length=50)] = None  # type: ignore
     physical_features: Optional[str] = Field(None, max_length=1000)
     is_playable: Optional[bool] = None
     rarity: Optional[str] = None
@@ -105,11 +104,11 @@ class RaceUpdate(BaseModel):
 
     @field_validator("size")
     def validate_size_field(cls, v: Optional[str]) -> Optional[str]:
-        return validate_race_size(v)
+        return validate_race_size(v) if v is not None else None
 
     @field_validator("rarity")
     def validate_rarity_field(cls, v: Optional[str]) -> Optional[str]:
-        return validate_race_rarity(v)
+        return validate_race_rarity(v) if v is not None else None
 
     @field_validator("stat_bonuses")
     def validate_stat_bonuses_field(

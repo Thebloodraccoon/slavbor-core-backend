@@ -19,7 +19,7 @@ class RaceRepository:
         """Obtaining a race by name."""
         return self.db.query(Race).filter(Race.name == name).first()
 
-    def get_all(self, skip: int = 0, limit: int = 100) -> list[type[Race]]:
+    def get_all(self, skip: int = 0, limit: int = 100) -> list[Race]:
         """Obtaining all races with pagination."""
         return self.db.query(Race).offset(skip).limit(limit).all()
 
@@ -57,10 +57,10 @@ class RaceRepository:
             query = query.filter(Race.id != exclude_id)
         return query.first() is not None
 
-    def get_by_rarity(self, rarity: str) -> list[type[Race]]:
+    def get_by_rarity(self, rarity: str) -> list[Race]:
         """Obtaining races by rarity."""
         return self.db.query(Race).filter(Race.rarity == rarity).all()
 
-    def get_playable_races(self) -> list[type[Race]]:
+    def get_playable_races(self) -> list[Race]:
         """Obtaining only playable races."""
-        return self.db.query(Race).filter(Race.is_playable == True).all()
+        return self.db.query(Race).filter(Race.is_playable).all()
