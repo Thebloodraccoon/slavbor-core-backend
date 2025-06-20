@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
-from app.exceptions.custom_exceptions import InvalidJWTException
+from app.exceptions.token_exceptions import InvalidJWTException
 from app.settings.base import JWT_ALGORITHM, JWT_SECRET_KEY
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
