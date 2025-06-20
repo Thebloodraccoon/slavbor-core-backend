@@ -21,7 +21,7 @@ env:
 
 jobs:
   test:
-    if: contains(fromJson('["refs/heads/main", "refs/heads/development"]'), github.ref)
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
 
     services:
