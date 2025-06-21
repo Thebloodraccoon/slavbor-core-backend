@@ -105,10 +105,10 @@ def validate_at_least_one_field(data: dict, field_names: List[str]) -> dict:
 
 def normalize_rarity(rarity: str) -> str:
     """
-        Normalizes the Rarity parameter:
-        - leads to the lower register
-        - replaces gaps for emphasis
-        - Checks validity
+    Normalizes the Rarity parameter:
+    - leads to the lower register
+    - replaces gaps for emphasis
+    - Checks validity
     """
     normalized = rarity.lower().replace(" ", "_").replace("-", "_")
 

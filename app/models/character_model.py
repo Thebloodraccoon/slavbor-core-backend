@@ -32,11 +32,7 @@ class Character(Base):
     titles = Column(ARRAY(String))  # type: ignore
     epithets = Column(ARRAY(String))  # type: ignore
 
-    race_id = Column(
-        Integer,
-        ForeignKey("races.id", ondelete="SET NULL"),
-        index=True
-    )
+    race_id = Column(Integer, ForeignKey("races.id", ondelete="SET NULL"), index=True)
 
     # Biography information
     biography = Column(Text)

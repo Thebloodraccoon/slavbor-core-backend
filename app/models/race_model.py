@@ -69,15 +69,9 @@ class Race(Base):
     )
 
     # Relationships
-    characters = relationship(
-        "Character",
-        back_populates="race",
-        passive_deletes=True
-    )
+    characters = relationship("Character", back_populates="race", passive_deletes=True)
     articles = relationship(
-        "Article",
-        back_populates="primary_race",
-        passive_deletes=True
+        "Article", back_populates="primary_race", passive_deletes=True
     )
 
     def __repr__(self):

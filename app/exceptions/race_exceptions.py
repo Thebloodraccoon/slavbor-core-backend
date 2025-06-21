@@ -20,6 +20,7 @@ class RaceAlreadyExistsException(HTTPException):
             detail=f"Race with name {name} already exists",
         )
 
+
 class RaceRarityException(HTTPException):
     """Exception raised when rarity non readble"""
 
@@ -30,6 +31,6 @@ class RaceRarityException(HTTPException):
                 "error": "Недопустимое значение редкости",
                 "received": rarity,
                 "allowed_values": readable_rarities,
-                "examples": ["очень редкая", "редкая", "обычная", "очень_редкая"]
-            }
+                "examples": ["очень редкая", "редкая", "обычная", "очень_редкая"],
+            },
         )
