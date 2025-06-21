@@ -40,11 +40,27 @@ class Article(Base):
     category = Column(String(50), index=True)
     historical_period = Column(String(100), index=True)
 
-    # Primary entity relationships (only one main subject)
-    primary_character_id = Column(Integer, ForeignKey("characters.id"), index=True)
-    primary_location_id = Column(Integer, ForeignKey("locations.id"), index=True)
-    primary_faction_id = Column(Integer, ForeignKey("factions.id"), index=True)
-    primary_race_id = Column(Integer, ForeignKey("races.id"), index=True)
+    # Primary entity relationships
+    primary_character_id = Column(
+        Integer,
+        ForeignKey("characters.id", ondelete="SET NULL"),
+        index=True
+    )
+    primary_location_id = Column(
+        Integer,
+        ForeignKey("locations.id", ondelete="SET NULL"),
+        index=True
+    )
+    primary_faction_id = Column(
+        Integer,
+        ForeignKey("factions.id", ondelete="SET NULL"),
+        index=True
+    )
+    primary_race_id = Column(
+        Integer,
+        ForeignKey("races.id", ondelete="SET NULL"),
+        index=True
+    )
 
     # Related entities (multiple relationships)
     related_characters = Column(ARRAY(Integer))  # type: ignore

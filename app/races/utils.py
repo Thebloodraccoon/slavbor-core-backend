@@ -1,6 +1,7 @@
 from typing import Dict, List, Optional
 
 from app.constants import RACE_RARITIES, RACE_SIZES
+from app.exceptions.race_exceptions import RaceRarityException
 
 
 def validate_race_size(v: Optional[str]) -> Optional[str]:
@@ -100,3 +101,19 @@ def validate_at_least_one_field(data: dict, field_names: List[str]) -> dict:
     if not any(data.get(field) is not None for field in field_names):
         raise ValueError("Для обновления должно быть передано хотя бы одно поле")
     return data
+
+
+def normalize_rarity(rarity: str) -> str:
+    """
+        Normalizes the Rarity parameter:
+        - leads to the lower register
+        - replaces gaps for emphasis
+        - Checks validity
+    """
+    normalized = rarity.lower().replace(" ", "_").replace("-", "_")
+
+    if normalized not in RACE_RARITIES:
+        readable_rarities = [r.replace("_", " ") for r in RACE_RARITIES]
+        raise RaceRarityException(rarity, readable_rarities)
+
+    return normalized

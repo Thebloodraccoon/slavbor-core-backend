@@ -7,6 +7,7 @@ from starlette import status
 from app.races.schemas import (RaceCreate, RaceListResponse, RaceResponse,
                                RaceUpdate)
 from app.races.services import RaceService
+from app.races.utils import normalize_rarity
 from app.settings import settings
 
 router = APIRouter()
@@ -44,7 +45,8 @@ def get_races_by_rarity(
     db: Session = Depends(settings.get_db),
 ):
     """Get races by rarity level."""
-    return RaceService(db).get_races_by_rarity(rarity)
+    normalized_rarity = normalize_rarity(rarity)
+    return RaceService(db).get_races_by_rarity(normalized_rarity)
 
 
 @router.get("/{race_id}", response_model=RaceResponse)
@@ -65,13 +67,13 @@ def create_race(
     return RaceService(db).create_race(race)
 
 
-@router.put("/{race_id}", response_model=RaceResponse)
-def update_race_put(
+@router.post("/{race_id}", response_model=RaceResponse)
+def update_race(
     race_id: int,
     race: RaceUpdate,
     db: Session = Depends(settings.get_db),
 ):
-    """Full update of a race (PUT)."""
+    """Full update of a race."""
     return RaceService(db).update_race(race_id, race)
 
 
@@ -81,7 +83,7 @@ def update_race_patch(
     race: RaceUpdate,
     db: Session = Depends(settings.get_db),
 ):
-    """Partial update of a race (PATCH)."""
+    """Partial update of a race."""
     return RaceService(db).update_race(race_id, race)
 
 
