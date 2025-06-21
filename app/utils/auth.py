@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 
+import redis
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
@@ -24,21 +25,18 @@ def create_token(data: dict):
     return encoded_jwt
 
 
-# 15 minutes lifetime
 def create_access_token(sub: str, user_email: str):
     expire = datetime.now(tz=timezone.utc) + timedelta(minutes=15)
     access_token = {"exp": expire, "sub": sub, "user_email": user_email}
     return create_token(access_token)
 
 
-# 30 days lifetime
 def create_refresh_token(sub: str, user_email: str):
     expire = datetime.now(tz=timezone.utc) + timedelta(days=30)
     refresh_token = {"exp": expire, "sub": sub, "user_email": user_email}
     return create_token(refresh_token)
 
 
-# validate token
 def verify_token(token):
     try:
         decode_token(token)
@@ -46,7 +44,22 @@ def verify_token(token):
         raise InvalidJWTException
 
 
-# get payload
 def decode_token(token):
     payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
     return payload
+
+
+
+redis_client = redis.Redis(host='localhost', port=6379, decode_responses=True)
+
+
+def add_token_to_blacklist(token, expiry):
+    current_time = datetime.now(tz=timezone.utc)
+    token_ttl = (expiry - current_time).total_seconds()
+
+    if token_ttl > 0:
+        redis_client.set(token, 'blacklist_token', ex=int(token_ttl))
+
+
+def is_token_blacklisted(token):
+    return redis_client.exists(token)
