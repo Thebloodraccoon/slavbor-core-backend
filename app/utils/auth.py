@@ -4,7 +4,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 
 from app.exceptions.token_exceptions import InvalidJWTException
-from app.settings.base import JWT_ALGORITHM, JWT_SECRET_KEY
+from app.settings import settings
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -19,26 +19,25 @@ def get_password_hash(password):
 
 def create_token(data: dict):
     to_encode = data.copy()
-    encoded_jwt = jwt.encode(to_encode, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
+    encoded_jwt = jwt.encode(
+        to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM
+    )
 
     return encoded_jwt
 
 
-# 15 minutes lifetime
 def create_access_token(sub: str, user_email: str):
     expire = datetime.now(tz=timezone.utc) + timedelta(minutes=15)
     access_token = {"exp": expire, "sub": sub, "user_email": user_email}
     return create_token(access_token)
 
 
-# 30 days lifetime
 def create_refresh_token(sub: str, user_email: str):
     expire = datetime.now(tz=timezone.utc) + timedelta(days=30)
     refresh_token = {"exp": expire, "sub": sub, "user_email": user_email}
     return create_token(refresh_token)
 
 
-# validate token
 def verify_token(token):
     try:
         decode_token(token)
@@ -46,7 +45,22 @@ def verify_token(token):
         raise InvalidJWTException
 
 
-# get payload
 def decode_token(token):
-    payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
+    payload = jwt.decode(
+        token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
+    )
     return payload
+
+
+async def add_token_to_blacklist(token, expiry):
+    async with settings.get_redis() as redis:
+        current_time = datetime.now(tz=timezone.utc)
+        token_ttl = (expiry - current_time).total_seconds()
+
+        if token_ttl > 0:
+            redis.setex(token, int(token_ttl), "blacklist_token")
+
+
+async def is_token_blacklisted(token):
+    async with settings.get_redis() as redis:
+        return await redis.exists(token)
