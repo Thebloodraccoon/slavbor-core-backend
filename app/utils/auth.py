@@ -58,9 +58,12 @@ async def add_token_to_blacklist(token, expiry):
         token_ttl = (expiry - current_time).total_seconds()
 
         if token_ttl > 0:
-            redis.setex(token, int(token_ttl), "blacklist_token")
+            await redis.setex(f"blacklist: {token}", token_ttl, "blacklist_token")
+            return True
+        else:
+            return False
 
 
 async def is_token_blacklisted(token):
     async with settings.get_redis() as redis:
-        return await redis.exists(token)
+        return await redis.exists(f"blacklist: {token}")
