@@ -6,10 +6,10 @@ from sqlalchemy.orm import relationship
 
 from app.constants import (CHARACTER_STATUSES, CHARACTER_TYPES, SOCIAL_RANKS,
                            create_enum_constraint, create_range_constraint)
-from app.settings.base import Base
+from app.settings import settings
 
 
-class Character(Base):
+class Character(settings.Base):  # type: ignore
     __tablename__ = "characters"
     id = Column(Integer, primary_key=True)
 

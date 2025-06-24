@@ -5,10 +5,10 @@ from sqlalchemy import (ARRAY, Column, DateTime, ForeignKey, Index, Integer,
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 
-from app.settings.base import Base
+from app.settings import settings
 
 
-class FactionCulture(Base):
+class FactionCulture(settings.Base):  # type: ignore
     """Cultural and religious information about the faction"""
 
     __tablename__ = "faction_culture"

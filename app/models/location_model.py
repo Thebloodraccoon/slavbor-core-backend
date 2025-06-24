@@ -1,17 +1,15 @@
 from datetime import datetime
 
-from sqlalchemy import (ARRAY, Boolean, CheckConstraint, Column, DateTime,
-                        Float, ForeignKey, Index, Integer, String, Text)
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import (ARRAY, CheckConstraint, Column, DateTime, ForeignKey,
+                        Index, Integer, String, Text)
 from sqlalchemy.orm import relationship
 
-from app.constants import (DANGER_LEVELS, ENTITY_WEALTH_LEVELS,
-                           LOCATION_STATUSES, LOCATION_TYPES,
+from app.constants import (DANGER_LEVELS, LOCATION_STATUSES, LOCATION_TYPES,
                            create_enum_constraint)
-from app.settings.base import Base
+from app.settings import settings
 
 
-class Location(Base):
+class Location(settings.Base):  # type: ignore
     """Основная модель локации - содержит базовую информацию"""
 
     __tablename__ = "locations"

@@ -6,10 +6,10 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 
 from app.constants import create_range_constraint
-from app.settings.base import Base
+from app.settings import settings
 
 
-class CharacterGameStats(Base):
+class CharacterGameStats(settings.Base):  # type: ignore
     """D&d game statistics"""
 
     __tablename__ = "character_game_stats"

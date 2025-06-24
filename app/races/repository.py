@@ -2,7 +2,7 @@ from typing import Optional
 
 from sqlalchemy.orm import Session
 
-from app.models.race_model import Race
+from app.models import Race
 
 
 class RaceRepository:
