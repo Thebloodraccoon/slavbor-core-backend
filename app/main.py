@@ -5,10 +5,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.ping.endpoints import router as ping_router
+from app.races.endpoints import router as race_router
 from app.settings import settings
-
-from app.users import endpoints
-
 
 
 @asynccontextmanager
@@ -33,7 +31,7 @@ app.add_middleware(
 )
 
 app.include_router(ping_router, prefix="/ping", tags=["Health Check"])
-app.include_router(endpoints.router)
+app.include_router(race_router, prefix="/race", tags=["Race"])
 
 if __name__ == "__main__":
     if settings.STAGE == "prod":

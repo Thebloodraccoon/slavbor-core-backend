@@ -1,3 +1,7 @@
-class InvalidEmailException(Exception):
-    def __init__(self, message="Invalid email address"):
-        super().__init__(message)
+from app.models.article_model import Article  # noqa: F401
+from app.models.character_model import Character  # noqa: F401
+from app.models.faction_model import Faction  # noqa: F401
+from app.models.location_model import Location  # noqa: F401
+from app.models.race_model import Race  # noqa: F401
+from app.models.user_model import User  # noqa: F401
+from app.settings import settings  # noqa: F401

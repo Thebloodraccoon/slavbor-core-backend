@@ -1,13 +1,6 @@
-"""
-Константы для моделей базы данных.
-Содержит все возможные значения для enum-полей и constraints.
-"""
-
 # Character model constants
 CHARACTER_TYPES = ["npc", "player", "historical", "deity", "legendary", "template"]
-
 CHARACTER_STATUSES = ["alive", "dead", "missing", "legendary", "unknown"]
-
 SOCIAL_RANKS = [
     "император",
     "король",
@@ -75,9 +68,6 @@ ARTICLE_CATEGORIES = [
 ]
 
 ARTICLE_STATUSES = ["draft", "review", "published", "archived", "deleted"]
-
-DIFFICULTY_LEVELS = ["beginner", "easy", "medium", "hard", "expert"]
-
 SOURCE_TYPES = [
     "original",
     "translated",
@@ -86,18 +76,7 @@ SOURCE_TYPES = [
     "referenced",
     "player_created",
 ]
-
 CANONICAL_STATUSES = ["canon", "semi_canon", "non_canon", "alternative", "disputed"]
-
-RELIABILITY_LEVELS = [
-    "verified",
-    "reliable",
-    "mostly_reliable",
-    "questionable",
-    "unreliable",
-    "fictional",
-]
-
 VISIBILITY_LEVELS = ["public", "players_only", "gm_only", "private"]
 
 # Faction model constants
@@ -150,25 +129,6 @@ LEADERSHIP_TYPES = [
     "коллективная",
 ]
 
-POWER_LEVELS = [
-    "отсутствует",
-    "минимальная",
-    "слабая",
-    "средняя",
-    "сильная",
-    "очень_сильная",
-    "доминирующая",
-]
-
-HISTORICAL_IMPORTANCE_LEVELS = [
-    "незначительная",
-    "местная",
-    "региональная",
-    "национальная",
-    "международная",
-    "легендарная",
-]
-
 # Location model constants
 LOCATION_TYPES = [
     "континент",
@@ -218,22 +178,6 @@ LOCATION_STATUSES = [
     "разрушенная",
 ]
 
-FORTIFICATION_LEVELS = [
-    "открытая",
-    "частично_укрепленная",
-    "укрепленная",
-    "крепость",
-    "неприступная_крепость",
-]
-
-STRATEGIC_IMPORTANCE_LEVELS = [
-    "незначительная",
-    "низкая",
-    "средняя",
-    "высокая",
-    "критическая",
-]
-
 DANGER_LEVELS = [
     "очень_безопасная",
     "безопасная",
@@ -245,15 +189,12 @@ DANGER_LEVELS = [
 
 # Race model constants
 RACE_SIZES = ["Крошечный", "Маленький", "Средний", "Большой", "Огромный", "Гигантский"]
-
 RACE_RARITIES = ["очень_редкая", "редкая", "необычная", "обычная", "распространенная"]
 
 # User model constants
 USER_ROLES = ["found_father", "keeper", "player"]
 
-# Shared wealth levels (used by multiple models)
-WEALTH_LEVELS = ["нищий", "бедный", "средний", "богатый", "очень_богатый"]
-
+# Shared wealth levels
 ENTITY_WEALTH_LEVELS = [
     "нищая",
     "бедная",

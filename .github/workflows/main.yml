@@ -1,10 +1,8 @@
 name: CI/CD Pipeline
 
 on:
-  push:
-    branches: [ "**" ]
   pull_request:
-    branches: [ main, development ]
+    branches: [ "main", "development" ]
 
 env:
   STAGE: test
@@ -23,7 +21,6 @@ env:
 
 jobs:
   test:
-    if: github.event_name == 'pull_request' || contains(fromJson('["refs/heads/main", "refs/heads/development"]'), github.ref)
     runs-on: ubuntu-latest
 
     services:
