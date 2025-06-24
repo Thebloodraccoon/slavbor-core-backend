@@ -1,15 +1,15 @@
 from datetime import datetime
 
 from sqlalchemy import (ARRAY, Boolean, CheckConstraint, Column, DateTime,
-                        ForeignKey, Index, Integer, String, Text)
+                        Index, Integer, String, Text)
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 
 from app.constants import RACE_RARITIES, RACE_SIZES, create_enum_constraint
-from app.settings.base import Base
+from app.settings import settings
 
 
-class Race(Base):
+class Race(settings.Base):  # type: ignore
     __tablename__ = "races"
 
     id = Column(Integer, primary_key=True)

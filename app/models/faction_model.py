@@ -6,10 +6,10 @@ from sqlalchemy.orm import relationship
 
 from app.constants import (FACTION_STATUSES, FACTION_TYPES, LEADERSHIP_TYPES,
                            create_enum_constraint)
-from app.settings.base import Base
+from app.settings import settings
 
 
-class Faction(Base):
+class Faction(settings.Base):  # type: ignore
     """The main model of the fraction - contains basic information"""
 
     __tablename__ = "factions"

@@ -7,10 +7,10 @@ from sqlalchemy.orm import relationship
 from app.constants import (ARTICLE_CATEGORIES, ARTICLE_STATUSES, ARTICLE_TYPES,
                            CANONICAL_STATUSES, SOURCE_TYPES, VISIBILITY_LEVELS,
                            create_enum_constraint)
-from app.settings.base import Base
+from app.settings import settings
 
 
-class Article(Base):
+class Article(settings.Base):  # type: ignore
     __tablename__ = "articles"
 
     # Primary key
