@@ -1,15 +1,15 @@
 from datetime import datetime
 
 from sqlalchemy import (ARRAY, Boolean, CheckConstraint, Column, DateTime,
-                        ForeignKey, Index, Integer, String, Text)
+                        Index, Integer, String, Text)
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 
 from app.constants import RACE_RARITIES, RACE_SIZES, create_enum_constraint
-from app.settings.base import Base
+from app.settings import settings
 
 
-class Race(Base):
+class Race(settings.Base):  # type: ignore
     __tablename__ = "races"
 
     id = Column(Integer, primary_key=True)
@@ -20,24 +20,11 @@ class Race(Base):
     # Optional descriptive information
     description = Column(Text)
     size = Column(String(20), default="Средний", index=True)
-
-    # Racial abilities and traits
-    racial_abilities = Column(ARRAY(Text))
-    stat_bonuses = Column(JSONB, default={})
-    languages = Column(ARRAY(String))
     special_traits = Column(Text)
-
-    # Physical characteristics
-    average_height = Column(String(50))
-    average_weight = Column(String(50))
-    physical_features = Column(Text)
 
     # Gameplay mechanics
     is_playable = Column(Boolean, default=True, index=True)
     rarity = Column(String(20), default="обычная", index=True)
-
-    # World integration
-    homeland_regions = Column(ARRAY(String))
 
     # Metadata and versioning
     created_at = Column(DateTime, default=datetime.now, nullable=False)
@@ -54,12 +41,6 @@ class Race(Base):
             create_enum_constraint("rarity", RACE_RARITIES),
             name="check_race_rarity",
         ),
-        # Complex indexes only
-        Index("idx_race_playable_size", "is_playable", "size"),
-        Index("idx_race_stat_bonuses", "stat_bonuses", postgresql_using="gin"),
-        Index("idx_race_abilities", "racial_abilities", postgresql_using="gin"),
-        Index("idx_race_languages", "languages", postgresql_using="gin"),
-        Index("idx_race_regions", "homeland_regions", postgresql_using="gin"),
         Index(
             "idx_race_name_trgm",
             "name",
@@ -69,8 +50,10 @@ class Race(Base):
     )
 
     # Relationships
-    characters = relationship("Character", back_populates="race")
-    articles = relationship("Article", back_populates="primary_race")
+    characters = relationship("Character", back_populates="race", passive_deletes=True)
+    articles = relationship(
+        "Article", back_populates="primary_race", passive_deletes=True
+    )
 
     def __repr__(self):
         return f"<Race(id={self.id}, name='{self.name}', size='{self.size}')>"

@@ -4,10 +4,10 @@ from sqlalchemy import CheckConstraint, Column, DateTime, Integer, String
 from sqlalchemy.orm import relationship
 
 from app.constants import USER_ROLES, create_enum_constraint
-from app.settings.base import Base
+from app.settings import settings
 
 
-class User(Base):  # type: ignore
+class User(settings.Base):  # type: ignore
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)

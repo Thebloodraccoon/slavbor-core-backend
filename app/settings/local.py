@@ -1,4 +1,4 @@
-from contextlib import asynccontextmanager, contextmanager
+from contextlib import asynccontextmanager
 
 from redis.asyncio import Redis
 from sqlalchemy import create_engine
@@ -19,7 +19,6 @@ engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-@contextmanager
 def get_db():
     db = SessionLocal()
     try:

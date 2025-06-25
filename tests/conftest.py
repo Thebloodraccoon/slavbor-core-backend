@@ -6,6 +6,7 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
 from app.main import app
+from app.models import Race
 from app.settings import settings
 
 test_engine = create_engine(settings.DATABASE_URL)
@@ -42,7 +43,6 @@ def db_session():
         session.commit()
         yield session
     finally:
-        session.rollback()
         session.close()
 
 
@@ -64,3 +64,43 @@ async def redis_test():
     yield redis_client
     await redis_client.flushdb()
     await redis_client.aclose()
+
+
+@pytest.fixture
+def create_race(db_session):
+    """Factory fixture for creating races in database"""
+
+    def _create_race(
+        name="Test name",
+        description="Test description",
+        size="Средний",
+        special_traits="Test special traits",
+        is_playable=True,
+        rarity="обычная",
+    ):
+        existing_race = db_session.query(Race).filter_by(name=name).first()
+        if existing_race:
+            return existing_race
+
+        race = Race(
+            name=name,
+            description=description,
+            size=size,
+            special_traits=special_traits,
+            is_playable=is_playable,
+            rarity=rarity,
+        )
+
+        db_session.add(race)
+        db_session.commit()
+        db_session.refresh(race)
+
+        return race
+
+    return _create_race
+
+
+@pytest.fixture
+def test_race(create_race):
+    """Default test race"""
+    return create_race()
