@@ -78,18 +78,5 @@ class Faction(settings.Base):  # type: ignore
         Index("idx_faction_culture_religion", "dominant_culture", "primary_religion"),
     )
 
-    # Relationships
-    parent_faction = relationship("Faction", remote_side=[id])
-    child_factions = relationship("Faction", overlaps="parent_faction")
-    created_by_user = relationship(
-        "User", foreign_keys=[created_by_user_id], back_populates="created_factions"
-    )
-
-    articles = relationship(
-        "Article",
-        foreign_keys="Article.primary_faction_id",
-        back_populates="primary_faction",
-    )
-
     def __repr__(self):
         return f"<Faction(id={self.id}, name='{self.name}', type='{self.type}')>"

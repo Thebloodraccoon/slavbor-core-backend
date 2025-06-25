@@ -26,36 +26,5 @@ class User(settings.Base):  # type: ignore
         ),
     )
 
-    created_articles = relationship(
-        "Article",
-        foreign_keys="Article.created_by_user_id",
-        back_populates="created_by_user",
-    )
-    last_modified_articles = relationship(
-        "Article",
-        foreign_keys="Article.last_modified_by_user_id",
-        back_populates="last_modified_by_user",
-    )
-    player_characters = relationship(
-        "Character",
-        foreign_keys="Character.player_user_id",
-        back_populates="player_user",
-    )
-    created_characters = relationship(
-        "Character",
-        foreign_keys="Character.created_by_user_id",
-        back_populates="created_by_user",
-    )
-    created_locations = relationship(
-        "Location",
-        foreign_keys="Location.created_by_user_id",
-        back_populates="created_by_user",
-    )
-    created_factions = relationship(
-        "Faction",
-        foreign_keys="Faction.created_by_user_id",
-        back_populates="created_by_user",
-    )
-
     def __repr__(self):
         return f"<User(id={self.id}, username='{self.username}', role='{self.role}')>"

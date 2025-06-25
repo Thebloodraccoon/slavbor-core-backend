@@ -111,8 +111,5 @@ class CharacterGameStats(settings.Base):  # type: ignore
         Index("idx_game_stats_level_class", "level", "character_class"),
     )
 
-    # Relationships
-    character = relationship("Character", back_populates="game_stats")
-
     def __repr__(self):
         return f"<CharacterGameStats(character_id={self.character_id}, level={self.level}, class='{self.character_class}')>"

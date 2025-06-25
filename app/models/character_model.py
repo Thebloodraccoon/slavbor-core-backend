@@ -79,17 +79,5 @@ class Character(settings.Base):  # type: ignore
         ),
     )
 
-    # SQLAlchemy relationships
-    race = relationship("Race", back_populates="characters")
-    player_user = relationship(
-        "User", foreign_keys=[player_user_id], back_populates="player_characters"
-    )
-    created_by_user = relationship(
-        "User", foreign_keys=[created_by_user_id], back_populates="created_characters"
-    )
-    game_stats = relationship(
-        "CharacterGameStats", back_populates="character", uselist=False
-    )
-
     def __repr__(self):
         return f"<Character(id={self.id}, name='{self.name}', type='{self.type}')>"

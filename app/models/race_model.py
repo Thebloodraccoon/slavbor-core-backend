@@ -49,11 +49,5 @@ class Race(settings.Base):  # type: ignore
         ),
     )
 
-    # Relationships
-    characters = relationship("Character", back_populates="race", passive_deletes=True)
-    articles = relationship(
-        "Article", back_populates="primary_race", passive_deletes=True
-    )
-
     def __repr__(self):
         return f"<Race(id={self.id}, name='{self.name}', size='{self.size}')>"
