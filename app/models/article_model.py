@@ -1,19 +1,16 @@
 from datetime import datetime
 
-from sqlalchemy import (ARRAY, Boolean, CheckConstraint, Column, DateTime,
-                        ForeignKey, Index, Integer, String, Text)
+from sqlalchemy import (Boolean, CheckConstraint, Column, DateTime, ForeignKey,
+                        Index, Integer, String, Text)
 from sqlalchemy.orm import relationship
 
 from app.constants import (ARTICLE_CATEGORIES, ARTICLE_STATUSES, ARTICLE_TYPES,
-                           CANONICAL_STATUSES, SOURCE_TYPES, VISIBILITY_LEVELS,
                            create_enum_constraint)
 from app.settings import settings
 
 
 class Article(settings.Base):  # type: ignore
     __tablename__ = "articles"
-
-    # Primary key
     id = Column(Integer, primary_key=True)
 
     # Required basic information
@@ -34,7 +31,6 @@ class Article(settings.Base):  # type: ignore
 
     # Content structure
     summary = Column(Text)
-    tags = Column(ARRAY(String))  # type: ignore
 
     # Categorization
     category = Column(String(50), index=True)
@@ -54,20 +50,9 @@ class Article(settings.Base):  # type: ignore
         Integer, ForeignKey("races.id", ondelete="SET NULL"), index=True
     )
 
-    # Related entities (multiple relationships)
-    related_characters = Column(ARRAY(Integer))  # type: ignore
-    related_locations = Column(ARRAY(Integer))  # type: ignore
-    related_factions = Column(ARRAY(Integer))  # type: ignore
-    related_races = Column(ARRAY(Integer))  # type: ignore
-
-    # Source and authenticity
-    source_type = Column(String(30), default="original", index=True)
-    canonical_status = Column(String(20), default="canon", index=True)
-
     # Publication
     is_published = Column(Boolean, default=False, index=True)
     publication_date = Column(DateTime)
-    visibility_level = Column(String(20), default="public", index=True)
 
     __table_args__ = (
         CheckConstraint(
@@ -82,35 +67,9 @@ class Article(settings.Base):  # type: ignore
             create_enum_constraint("category", ARTICLE_CATEGORIES),
             name="check_article_category",
         ),
-        CheckConstraint(
-            create_enum_constraint("source_type", SOURCE_TYPES, nullable=False),
-            name="check_source_type",
-        ),
-        CheckConstraint(
-            create_enum_constraint(
-                "canonical_status", CANONICAL_STATUSES, nullable=False
-            ),
-            name="check_canonical_status",
-        ),
-        CheckConstraint(
-            create_enum_constraint(
-                "visibility_level", VISIBILITY_LEVELS, nullable=False
-            ),
-            name="check_visibility_level",
-        ),
         Index("idx_article_type_status", "article_type", "status"),
         Index("idx_article_category_published", "category", "is_published"),
-        Index("idx_article_publication", "is_published", "publication_date"),
         Index("idx_article_created_by", "created_by_user_id", "created_at"),
-        Index("idx_article_tags", "tags", postgresql_using="gin"),
-        Index(
-            "idx_article_related_chars", "related_characters", postgresql_using="gin"
-        ),
-        Index("idx_article_related_locs", "related_locations", postgresql_using="gin"),
-        Index(
-            "idx_article_related_factions", "related_factions", postgresql_using="gin"
-        ),
-        Index("idx_article_related_races", "related_races", postgresql_using="gin"),
         Index(
             "idx_article_title_trgm",
             "title",

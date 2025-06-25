@@ -1,173 +1,128 @@
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
-from pydantic import BaseModel, Field, constr, field_validator, model_validator
+from pydantic import (BaseModel, ConfigDict, Field, field_validator,
+                      model_validator)
 
-from app.races.utils import (validate_race_rarity, validate_race_size,
-                             validate_racial_abilities, validate_stat_bonuses,
-                             validate_text_field)
+from app.constants import RACE_RARITIES, RACE_SIZES
 
 
 class RaceBase(BaseModel):
-    name: constr(min_length=2, max_length=100, strip_whitespace=True) = Field(  # type: ignore
-        ..., description="Название расы", examples=["Люди", "Гориусы", "Кобы"]
+    """Base schema for Race"""
+
+    name: str = Field(
+        ...,
+        min_length=2,
+        max_length=100,
+        description="Race name",
+        examples=["Люди", "Гориусы", "Кобы"],
     )
     description: Optional[str] = Field(
-        None, max_length=2000, description="Описание расы"
+        None, max_length=2000, description="Race description"
     )
-    size: str = Field(default="Средний", description="Размер представителей расы")
+    size: str = Field(default="Средний", description="Size of race representatives")
+    special_traits: Optional[str] = Field(
+        None, max_length=1000, description="Special features of the race"
+    )
+    is_playable: bool = Field(..., description="Is the race available for players")
+    rarity: str = Field(default="обычная", description="Race rarity in the world")
+
+    @field_validator("name")
+    def validate_name(cls, v: str) -> str:
+        """Validate and clean race name"""
+        if not v or not v.strip():
+            raise ValueError("Race name cannot be empty")
+        return v.strip()
 
     @field_validator("size")
-    def validate_size_field(cls, v: str) -> str:
-        return validate_race_size(v)  # type: ignore
+    def validate_size(cls, v: str) -> str:
+        """Validate race size"""
+        if v not in RACE_SIZES:
+            raise ValueError(f'Size should be one of: {", ".join(RACE_SIZES)}')
+        return v
+
+    @field_validator("rarity")
+    def validate_rarity(cls, v: str) -> str:
+        """Validate race rarity"""
+        if v not in RACE_RARITIES:
+            raise ValueError(f'Rarity should be one of: {", ".join(RACE_RARITIES)}')
+        return v
 
     @field_validator("description")
-    def validate_description_field(cls, v: Optional[str]) -> Optional[str]:
-        return validate_text_field(v, max_length=2000)
+    def validate_description(cls, v: Optional[str]) -> Optional[str]:
+        """Validate and clean description"""
+        if v is None:
+            return v
+        if len(v.strip()) == 0:
+            return None
+        if len(v) > 2000:
+            raise ValueError("Description should not exceed 2000 characters")
+        return v.strip()
+
+    @field_validator("special_traits")
+    def validate_special_traits(cls, v: Optional[str]) -> Optional[str]:
+        """Validate and clean special traits"""
+        if v is None:
+            return v
+        if len(v.strip()) == 0:
+            return None
+        if len(v) > 1000:
+            raise ValueError("Special traits should not exceed 1000 characters")
+        return v.strip()
 
 
 class RaceCreate(RaceBase):
-    racial_abilities: Optional[List[str]] = Field(
-        default=[],
-        description="Расовые способности",
-        examples=[["Темное зрение", "Магическое сопротивление"]],
+    """Schema for creating a new race"""
+
+    pass
+
+
+class RaceUpdate(RaceBase):
+    """Schema for updating a race"""
+
+    name: Optional[str] = Field(  # type: ignore
+        None, min_length=2, max_length=100, description="New race name"
     )
-    stat_bonuses: Optional[Dict[str, int]] = Field(
-        default={},
-        description="Бонусы к характеристикам",
-        examples=[{"strength": 2, "constitution": 1}],
+    description: Optional[str] = Field(
+        None, max_length=2000, description="New race description"
     )
-    languages: Optional[List[str]] = Field(
-        default=[],
-        description="Известные языки",
-        examples=[["Гориуский", "Араратский"]],
-    )
+    size: Optional[str] = Field(None, description="New race size")  # type: ignore
     special_traits: Optional[str] = Field(
-        None, max_length=1000, description="Особые черты расы"
+        None, max_length=1000, description="New special traits"
     )
-    average_height: Optional[constr(max_length=50)] = Field(  # type: ignore
-        None, description="Средний рост", examples=["170-180 см"]
-    )
-    average_weight: Optional[constr(max_length=50)] = Field(  # type: ignore
-        None, description="Средний вес", examples=["60-80 кг"]
-    )
-    physical_features: Optional[str] = Field(
-        None, max_length=1000, description="Физические особенности"
-    )
-    is_playable: bool = Field(default=True, description="Доступна ли раса для игроков")
-    rarity: str = Field(default="обычная", description="Редкость расы в мире")
-    homeland_regions: Optional[List[str]] = Field(
-        default=[],
-        description="Регионы происхождения",
-        examples=[["Северные леса", "Эльфийское королевство"]],
-    )
-
-    @field_validator("rarity")
-    def validate_rarity_field(cls, v: str) -> str:
-        return validate_race_rarity(v)  # type: ignore
-
-    @field_validator("stat_bonuses")
-    def validate_stat_bonuses_field(
-        cls, v: Optional[Dict[str, int]]
-    ) -> Optional[Dict[str, int]]:
-        return validate_stat_bonuses(v)
-
-    @field_validator("racial_abilities")
-    def validate_racial_abilities_field(
-        cls, v: Optional[List[str]]
-    ) -> Optional[List[str]]:
-        return validate_racial_abilities(v)
-
-    @field_validator("special_traits")
-    def validate_special_traits_field(cls, v: Optional[str]) -> Optional[str]:
-        return validate_text_field(v, max_length=1000)
-
-    @field_validator("physical_features")
-    def validate_physical_features_field(cls, v: Optional[str]) -> Optional[str]:
-        return validate_text_field(v, max_length=1000)
-
-
-class RaceUpdate(BaseModel):
-    name: Optional[constr(min_length=2, max_length=100, strip_whitespace=True)] = None  # type: ignore
-    description: Optional[str] = Field(None, max_length=2000)
-    size: Optional[str] = None
-    racial_abilities: Optional[List[str]] = None
-    stat_bonuses: Optional[Dict[str, int]] = None
-    languages: Optional[List[str]] = None
-    special_traits: Optional[str] = Field(None, max_length=1000)
-    average_height: Optional[constr(max_length=50)] = None  # type: ignore
-    average_weight: Optional[constr(max_length=50)] = None  # type: ignore
-    physical_features: Optional[str] = Field(None, max_length=1000)
-    is_playable: Optional[bool] = None
-    rarity: Optional[str] = None
-    homeland_regions: Optional[List[str]] = None
-
-    @field_validator("size")
-    def validate_size_field(cls, v: Optional[str]) -> Optional[str]:
-        return validate_race_size(v) if v is not None else None
-
-    @field_validator("rarity")
-    def validate_rarity_field(cls, v: Optional[str]) -> Optional[str]:
-        return validate_race_rarity(v) if v is not None else None
-
-    @field_validator("stat_bonuses")
-    def validate_stat_bonuses_field(
-        cls, v: Optional[Dict[str, int]]
-    ) -> Optional[Dict[str, int]]:
-        return validate_stat_bonuses(v)
-
-    @field_validator("racial_abilities")
-    def validate_racial_abilities_field(
-        cls, v: Optional[List[str]]
-    ) -> Optional[List[str]]:
-        return validate_racial_abilities(v)
-
-    @field_validator("description")
-    def validate_description_field(cls, v: Optional[str]) -> Optional[str]:
-        return validate_text_field(v, max_length=2000)
-
-    @field_validator("special_traits")
-    def validate_special_traits_field(cls, v: Optional[str]) -> Optional[str]:
-        return validate_text_field(v, max_length=1000)
-
-    @field_validator("physical_features")
-    def validate_physical_features_field(cls, v: Optional[str]) -> Optional[str]:
-        return validate_text_field(v, max_length=1000)
+    is_playable: Optional[bool] = Field(None, description="Change playable status")  # type: ignore
+    rarity: Optional[str] = Field(None, description="New race rarity")  # type: ignore
 
     @model_validator(mode="after")
     def validate_at_least_one_field(self):
-        if not any(getattr(self, field) is not None for field in self.model_fields):
-            raise ValueError("Для обновления должно быть передано хотя бы одно поле")
+        """Check that at least one field is provided for update"""
+        field_values = [
+            self.name,
+            self.description,
+            self.size,
+            self.special_traits,
+            self.is_playable,
+            self.rarity,
+        ]
+        if all(value is None for value in field_values):
+            raise ValueError("At least one field should be provided for update")
         return self
 
 
-class RaceResponse(BaseModel):
-    id: int = Field(..., description="Уникальный идентификатор расы")
-    name: str = Field(..., description="Название расы")
-    description: Optional[str] = Field(None, description="Описание расы")
-    size: str = Field(..., description="Размер представителей расы")
-    racial_abilities: Optional[List[str]] = Field(
-        None, description="Расовые способности"
-    )
-    stat_bonuses: Optional[Dict[str, Any]] = Field(
-        None, description="Бонусы к характеристикам"
-    )
-    languages: Optional[List[str]] = Field(None, description="Известные языки")
-    special_traits: Optional[str] = Field(None, description="Особые черты расы")
-    average_height: Optional[str] = Field(None, description="Средний рост")
-    average_weight: Optional[str] = Field(None, description="Средний вес")
-    physical_features: Optional[str] = Field(None, description="Физические особенности")
-    is_playable: bool = Field(..., description="Доступна ли раса для игроков")
-    rarity: Optional[str] = Field(..., description="Редкость расы в мире")
-    homeland_regions: Optional[List[str]] = Field(
-        None, description="Регионы происхождения"
-    )
-    created_at: datetime = Field(..., description="Дата создания записи")
-    updated_at: datetime = Field(..., description="Дата последнего обновления записи")
+class RaceResponse(RaceBase):
+    """Schema for race response"""
+
+    id: int = Field(..., description="Unique race identifier")
+    created_at: datetime = Field(..., description="Record creation date")
+    updated_at: datetime = Field(..., description="Last update date")
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class RaceListResponse(BaseModel):
-    races: List[RaceResponse] = Field(..., description="Список рас")
-    total: int = Field(..., description="Общее количество рас")
-    page: int = Field(..., description="Номер страницы")
-    size: int = Field(..., description="Размер страницы")
+    """Schema for race list with pagination metadata"""
+
+    races: List[RaceResponse] = Field(..., description="List of races")
+    total: int = Field(..., description="Total number of races")
+    page: int = Field(..., description="Page number")
+    size: int = Field(..., description="Page size")
