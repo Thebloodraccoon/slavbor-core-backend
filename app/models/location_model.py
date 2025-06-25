@@ -10,11 +10,7 @@ from app.settings import settings
 
 
 class Location(settings.Base):  # type: ignore
-    """Основная модель локации - содержит базовую информацию"""
-
     __tablename__ = "locations"
-
-    # Primary key
     id = Column(Integer, primary_key=True)
 
     # Required basic information
@@ -23,23 +19,21 @@ class Location(settings.Base):  # type: ignore
 
     # Basic description
     description = Column(Text)
-    alternative_names = Column(ARRAY(String))  # type: ignore
 
     # Geographic hierarchy
     parent_location_id = Column(Integer, ForeignKey("locations.id"), index=True)
-    region = Column(String(50), index=True)
+    region = Column(String(50))
 
     # Basic geographic information
-    climate = Column(String(30), index=True)
-    terrain = Column(String(30))
+    climate = Column(String(30))
 
     # Current status
     current_status = Column(String(20), default="активная", index=True)
     danger_level = Column(String(20), default="безопасная", index=True)
 
     # Coordinates (basic positioning)
-    map_x = Column(Integer, index=True)
-    map_y = Column(Integer, index=True)
+    map_x = Column(Integer)
+    map_y = Column(Integer)
 
     # Metadata
     created_at = Column(DateTime, default=datetime.now, nullable=False)
@@ -71,12 +65,6 @@ class Location(settings.Base):  # type: ignore
             postgresql_using="gin",
             postgresql_ops={"name": "gin_trgm_ops"},
         ),
-        Index(
-            "idx_location_alternative_names",
-            "alternative_names",
-            postgresql_using="gin",
-        ),
-        Index("idx_location_description_fts", "description", postgresql_using="gin"),
     )
 
     # Relationships

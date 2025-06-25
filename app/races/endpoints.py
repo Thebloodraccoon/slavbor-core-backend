@@ -13,21 +13,13 @@ from app.settings import settings
 router = APIRouter()
 
 
-@router.get("/", response_model=List[RaceResponse])
+@router.get("/", response_model=RaceListResponse)
 def get_all_races(
-    db: Session = Depends(settings.get_db),
-):
-    """Get all races with pagination."""
-    return RaceService(db).get_all_races()
-
-
-@router.get("/paginated", response_model=RaceListResponse)
-def get_races_paginated(
     page: int = Query(1, ge=1, description="Page number"),
     size: int = Query(10, ge=1, le=100, description="Page size"),
     db: Session = Depends(settings.get_db),
 ):
-    """Get races with pagination and metadata."""
+    """Get all races with pagination."""
     return RaceService(db).get_races_with_pagination(page=page, size=size)
 
 

@@ -10,8 +10,6 @@ from app.settings import settings
 
 
 class CharacterGameStats(settings.Base):  # type: ignore
-    """D&d game statistics"""
-
     __tablename__ = "character_game_stats"
     id = Column(Integer, primary_key=True)
 
@@ -111,9 +109,6 @@ class CharacterGameStats(settings.Base):  # type: ignore
             name="check_hp_current_nonnegative",
         ),
         Index("idx_game_stats_level_class", "level", "character_class"),
-        Index("idx_game_stats_abilities", "strength", "dexterity", "constitution"),
-        Index("idx_game_stats_skills", "proficient_skills", postgresql_using="gin"),
-        Index("idx_game_stats_spells", "spells_known", postgresql_using="gin"),
     )
 
     # Relationships

@@ -16,7 +16,7 @@ class RaceAlreadyExistsException(HTTPException):
 
     def __init__(self, name: str):
         super().__init__(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Race with name {name} already exists",
         )
 
@@ -28,7 +28,7 @@ class RaceRarityException(HTTPException):
         super().__init__(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail={
-                "error": "Недопустимое значение редкости",
+                "error": "The unacceptable value of rarity",
                 "received": rarity,
                 "allowed_values": readable_rarities,
                 "examples": ["очень редкая", "редкая", "обычная", "очень_редкая"],

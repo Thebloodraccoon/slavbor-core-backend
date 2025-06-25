@@ -68,16 +68,6 @@ ARTICLE_CATEGORIES = [
 ]
 
 ARTICLE_STATUSES = ["draft", "review", "published", "archived", "deleted"]
-SOURCE_TYPES = [
-    "original",
-    "translated",
-    "adapted",
-    "compiled",
-    "referenced",
-    "player_created",
-]
-CANONICAL_STATUSES = ["canon", "semi_canon", "non_canon", "alternative", "disputed"]
-VISIBILITY_LEVELS = ["public", "players_only", "gm_only", "private"]
 
 # Faction model constants
 FACTION_TYPES = [
@@ -193,17 +183,6 @@ RACE_RARITIES = ["очень_редкая", "редкая", "необычная"
 
 # User model constants
 USER_ROLES = ["found_father", "keeper", "player"]
-
-# Shared wealth levels
-ENTITY_WEALTH_LEVELS = [
-    "нищая",
-    "бедная",
-    "скромная",
-    "средняя",
-    "богатая",
-    "очень_богатая",
-    "баснословно_богатая",
-]
 
 
 def create_enum_constraint(field_name: str, values: list, nullable: bool = True) -> str:

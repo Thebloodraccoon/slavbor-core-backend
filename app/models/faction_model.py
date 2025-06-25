@@ -10,28 +10,18 @@ from app.settings import settings
 
 
 class Faction(settings.Base):  # type: ignore
-    """The main model of the fraction - contains basic information"""
-
     __tablename__ = "factions"
-
-    # Primary key
     id = Column(Integer, primary_key=True)
 
-    # Required basic information
+    # Basic info
     name = Column(String(100), nullable=False, index=True)
     type = Column(String(50), nullable=False, index=True)
-
-    # Extended naming
-    full_name = Column(String(200), index=True)
-    alternative_names = Column(ARRAY(String))  # type: ignore
-
-    # Basic description
     description = Column(Text)
 
-    # Hierarchical structure
+    # Hierarchy
     parent_faction_id = Column(Integer, ForeignKey("factions.id"), index=True)
 
-    # Status and basic timeline
+    # Status
     status = Column(String(30), default="активная", index=True)
     founded_year = Column(Integer, index=True)
     fallen_year = Column(Integer)
@@ -39,6 +29,11 @@ class Faction(settings.Base):  # type: ignore
     # Leadership
     leadership_type = Column(String(30), index=True)
     current_leader_name = Column(String(200), index=True)
+
+    # Culture
+    dominant_culture = Column(String(50), index=True)
+    primary_religion = Column(String(50), index=True)
+    current_goals = Column(Text)
 
     # Metadata
     created_at = Column(DateTime, default=datetime.now, nullable=False)
@@ -74,17 +69,13 @@ class Faction(settings.Base):  # type: ignore
         # Basic indexes
         Index("idx_faction_type_status", "type", "status"),
         Index("idx_faction_hierarchy", "parent_faction_id", "type"),
-        Index("idx_faction_leader", "current_leader_name", "leadership_type"),
         Index(
             "idx_faction_name_trgm",
             "name",
             postgresql_using="gin",
             postgresql_ops={"name": "gin_trgm_ops"},
         ),
-        Index(
-            "idx_faction_alternative_names", "alternative_names", postgresql_using="gin"
-        ),
-        Index("idx_faction_description_fts", "description", postgresql_using="gin"),
+        Index("idx_faction_culture_religion", "dominant_culture", "primary_religion"),
     )
 
     # Relationships
@@ -93,8 +84,6 @@ class Faction(settings.Base):  # type: ignore
     created_by_user = relationship(
         "User", foreign_keys=[created_by_user_id], back_populates="created_factions"
     )
-
-    culture = relationship("FactionCulture", back_populates="faction", uselist=False)
 
     articles = relationship(
         "Article",

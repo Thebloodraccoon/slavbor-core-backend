@@ -32,7 +32,7 @@ app.add_middleware(
 )
 
 app.include_router(ping_router, prefix="/ping", tags=["Health Check"])
-app.include_router(race_router, prefix="/race", tags=["Race"])
+app.include_router(race_router, prefix="/races", tags=["Race"])
 app.include_router(user_router, prefix="/users", tags=["Users"])
 
 if __name__ == "__main__":
