@@ -79,24 +79,6 @@ class Article(settings.Base):  # type: ignore
         Index("idx_article_content_fts", "content", postgresql_using="gin"),
     )
 
-    # SQLAlchemy relationships
-    created_by_user = relationship(
-        "User", foreign_keys=[created_by_user_id], back_populates="created_articles"
-    )
-    last_modified_by_user = relationship(
-        "User",
-        foreign_keys=[last_modified_by_user_id],
-        back_populates="last_modified_articles",
-    )
-    primary_character = relationship("Character", foreign_keys=[primary_character_id])
-    primary_location = relationship("Location", foreign_keys=[primary_location_id])
-    primary_faction = relationship(
-        "Faction", foreign_keys=[primary_faction_id], back_populates="articles"
-    )
-    primary_race = relationship(
-        "Race", foreign_keys=[primary_race_id], back_populates="articles"
-    )
-
     def __repr__(self):
         return (
             f"<Article(id={self.id}, title='{self.title}', type='{self.article_type}')>"

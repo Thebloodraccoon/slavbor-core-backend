@@ -67,12 +67,5 @@ class Location(settings.Base):  # type: ignore
         ),
     )
 
-    # Relationships
-    parent_location = relationship("Location", remote_side=[id])
-    child_locations = relationship("Location", overlaps="parent_location")
-    created_by_user = relationship(
-        "User", foreign_keys=[created_by_user_id], back_populates="created_locations"
-    )
-
     def __repr__(self):
         return f"<Location(id={self.id}, name='{self.name}', type='{self.type}')>"
