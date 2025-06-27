@@ -11,10 +11,9 @@ from typing import Sequence, Union
 
 import sqlalchemy as sa
 from alembic import op
-from sqlalchemy import text
 
+from app.auth.utils.pwd_utils import get_password_hash
 from app.settings import settings
-from app.utils.auth import get_password_hash
 
 # revision identifiers, used by Alembic.
 revision: str = "d0b85052499a"

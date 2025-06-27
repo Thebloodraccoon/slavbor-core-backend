@@ -86,6 +86,7 @@ docker-compose up -d
 First go in container
 ```bash
 docker exec -it slavbor_fastapi_app bash
+
 # Then 
 tox
 

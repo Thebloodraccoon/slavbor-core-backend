@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
+from app.auth.utils.pwd_utils import get_password_hash, verify_password
 from app.models import User
-from app.utils.auth import get_password_hash, verify_password
 
 
 def test_database_connection(db_session: Session):
