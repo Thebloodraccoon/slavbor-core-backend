@@ -1,10 +1,19 @@
 from fastapi import HTTPException, status
 
 
-class InvalidJWTException(HTTPException):
-    def __init__(self, message="Could not validate credentials"):
-        self.message = message
-        super().__init__(status_code=status.HTTP_401_UNAUTHORIZED, detail=message)
+class TokenBlacklistedException(HTTPException):
+    def __init__(self):
+        super().__init__(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            headers={"WWW-Authenticate": "Bearer"},
+            detail="Token has been blacklisted",
+        )
 
-    def __str__(self):
-        return f"Error 401: {self.message}"
+
+class InvalidTokenException(HTTPException):
+    def __init__(self):
+        super().__init__(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            headers={"WWW-Authenticate": "Bearer"},
+            detail="Could not validate credentials",
+        )

@@ -2,6 +2,7 @@ services:
   db:
     image: postgres:15.4-alpine
     container_name: slavbor_db
+    restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -16,6 +17,7 @@ services:
   test_db:
     image: postgres:15.4-alpine
     container_name: slavbor_test_db
+    restart: "no"
     environment:
       POSTGRES_USER: slavbor_user
       POSTGRES_PASSWORD: test_secret
@@ -30,6 +32,7 @@ services:
   pgadmin:
     image: dpage/pgadmin4:7.6
     container_name: slavbor_pgadmin
+    restart: unless-stopped
     ports:
       - "5050:80"
     volumes:
@@ -44,6 +47,7 @@ services:
   redis:
     image: redis:7.2.3-alpine
     container_name: slavbor_redis
+    restart: unless-stopped
     ports:
       - "6380:6379"
     volumes:
@@ -54,6 +58,7 @@ services:
   test_redis:
     image: redis:7.2.3-alpine
     container_name: slavbor_test_redis
+    restart: "no"
     ports:
       - "6381:6379"
     volumes:
@@ -66,15 +71,14 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: slavbor_fastapi_app
+    restart: unless-stopped
     ports:
       - "8000:8000"
     env_file:
       - .env
     depends_on:
       - db
-      - test_db
       - redis
-      - test_redis
     volumes:
       - .:/app
     networks:

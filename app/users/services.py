@@ -3,12 +3,12 @@ from typing import Optional
 
 from sqlalchemy.orm import Session
 
+from app.auth.utils.pwd_utils import get_password_hash
 from app.exceptions.user_exceptions import (UserEmailAlreadyExistsException,
                                             UserNameAlreadyExistsException,
                                             UserNotFoundException)
 from app.users.repository import UserRepository
 from app.users.schemas import UserCreate, UserResponse, UserUpdate
-from app.utils.auth import get_password_hash
 
 
 class UserService:
