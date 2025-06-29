@@ -61,7 +61,7 @@ def test_normalize_rarity_exception_details():
 
     detail = exc_info.value.detail
     assert isinstance(detail, dict)
-    assert "error" in detail
+    assert "message" in detail
     assert "received" in detail
     assert "allowed_values" in detail
     assert "examples" in detail
