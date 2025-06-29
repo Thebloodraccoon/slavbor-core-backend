@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.auth.endpoints import router as auth_router
+from app.middleware.error_handler import setup_error_handlers
 from app.ping.endpoints import router as ping_router
 from app.races.endpoints import router as race_router
 from app.settings import settings
@@ -23,6 +24,8 @@ app = FastAPI(
     version=settings.APP_VERSION,
     description=settings.APP_NAME,
 )
+
+setup_error_handlers(app)
 
 app.add_middleware(
     CORSMiddleware,

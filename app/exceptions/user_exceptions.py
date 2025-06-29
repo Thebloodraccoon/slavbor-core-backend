@@ -8,10 +8,10 @@ class UserNotFoundException(HTTPException):
         detail = "404 User is not found"
 
         if user_id:
-            detail = f"404 User with ID {user_id} is not found."
+            detail = f"User with ID {user_id} is not found."
 
         if email:
-            detail = f"404 User with email {email} is not found."
+            detail = f"User with email {email} is not found."
 
         super().__init__(status_code=status.HTTP_404_NOT_FOUND, detail=detail)
 

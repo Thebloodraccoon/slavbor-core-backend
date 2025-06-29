@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta, timezone
-from typing import Optional
 
 from fastapi.security import HTTPAuthorizationCredentials
 from jose import jwt
@@ -64,3 +63,10 @@ async def verify_token(
         raise InvalidTokenException()
 
     return email
+
+
+async def verify_refresh_token(
+    token_str: str,
+) -> str:
+    token = HTTPAuthorizationCredentials(scheme="Bearer", credentials=token_str)
+    return await verify_token(token, "refresh")

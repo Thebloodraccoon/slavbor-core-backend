@@ -93,7 +93,7 @@ def test_get_race_by_id_not_found(client):
 
     assert response.status_code == 404
     data = response.json()
-    assert "not found" in data["detail"]
+    assert "not found" in data["error"]["detail"]
 
 
 def test_create_race_success(client):
@@ -139,7 +139,7 @@ def test_create_race_duplicate_name(client, test_race):
 
     assert response.status_code == 400
     data = response.json()
-    assert "already exists" in data["detail"]
+    assert "already exists" in data["error"]["detail"]
 
 
 def test_update_race_post_success(client, test_race):
@@ -171,7 +171,7 @@ def test_update_race_post_not_found(client):
 
     assert response.status_code == 404
     data = response.json()
-    assert "not found" in data["detail"]
+    assert "not found" in data["error"]["detail"]
 
 
 def test_update_race_post_duplicate_name(client, create_race):
@@ -185,7 +185,7 @@ def test_update_race_post_duplicate_name(client, create_race):
 
     assert response.status_code == 400
     data = response.json()
-    assert "already exists" in data["detail"]
+    assert "already exists" in data["error"]["detail"]
 
 
 def test_update_race_patch_success(client, test_race):
@@ -209,7 +209,7 @@ def test_update_race_patch_not_found(client):
 
     assert response.status_code == 404
     data = response.json()
-    assert "not found" in data["detail"]
+    assert "not found" in data["error"]["detail"]
 
 
 def test_update_race_patch_duplicate_name(client, create_race):
@@ -223,7 +223,7 @@ def test_update_race_patch_duplicate_name(client, create_race):
 
     assert response.status_code == 400
     data = response.json()
-    assert "already exists" in data["detail"]
+    assert "already exists" in data["error"]["detail"]
 
 
 def test_toggle_race_playable_status_success(client, test_race):
@@ -243,7 +243,7 @@ def test_toggle_race_playable_status_not_found(client):
 
     assert response.status_code == 404
     data = response.json()
-    assert "not found" in data["detail"]
+    assert "not found" in data["error"]["detail"]
 
 
 def test_delete_race_success(client, test_race):
@@ -262,7 +262,7 @@ def test_delete_race_not_found(client):
 
     assert response.status_code == 404
     data = response.json()
-    assert "not found" in data["detail"]
+    assert "not found" in data["error"]["detail"]
 
 
 def test_get_races_by_rarity_invalid(client):
@@ -271,8 +271,10 @@ def test_get_races_by_rarity_invalid(client):
 
     assert response.status_code == 400
     data = response.json()
-    assert "detail" in data
+    detail = data["error"]["detail"]
 
-    if isinstance(data["detail"], dict):
-        assert "error" in data["detail"]
-        assert "The unacceptable value of rarity" in data["detail"]["error"]
+    assert "The unacceptable value of rarity" in detail["message"]
+    assert detail["received"] == "invalid_rarity"
+    assert "очень редкая" in detail["allowed_values"]
+    assert "редкая" in detail["examples"]
+    assert data["error"]["type"] == "RaceRarityException"
