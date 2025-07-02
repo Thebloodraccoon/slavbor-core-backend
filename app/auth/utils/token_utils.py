@@ -14,7 +14,9 @@ def create_token(data: dict, token_type: str, expires_delta: timedelta) -> str:
     expire = datetime.now(timezone.utc) + expires_delta
     to_encode.update({"exp": expire})
 
-    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    return jwt.encode(
+        to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM
+    )
 
 
 def create_access_token(data: dict):
