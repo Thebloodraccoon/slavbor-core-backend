@@ -1,8 +1,10 @@
-from fastapi import APIRouter, Response
+from fastapi import APIRouter, Response, Request, Depends
+from sqlalchemy.orm import Session
 
-from app.auth.schemas import LoginRequest, LoginResponse
+from app.auth.schemas import LoginRequest, LoginResponse,LogoutResponse
 from app.auth.services import AuthService
-from app.core.dependencies import AuthServiceDep
+from app.core.dependencies import AuthServiceDep, CurrentUserDep, get_current_user
+from app.settings import settings
 
 router = APIRouter()
 
@@ -12,10 +14,21 @@ def login(request: LoginRequest, response: Response, auth_service: AuthServiceDe
     return auth_service.login(request, response)
 
 
-@router.post("/logout")
-def logout():
-    return {"LOGOUT": "TODO"}
+@router.post("/logout", response_model=LogoutResponse)
+async def logout(
+    http_request: Request,
+    response: Response,
+    auth_service: AuthServiceDep,
+    db: Session = Depends(settings.get_db),
+    _: CurrentUserDep = Depends(get_current_user),
+):
 
+    jwt_token = http_request.headers.get("Authorization").replace("Bearer ", "")
+    logout_response = await auth_service.logout_user(jwt_token, db)
+
+    response.delete_cookie("access_token")
+
+    return logout_response
 
 @router.post("/refresh")
 def refresh_tokens():
