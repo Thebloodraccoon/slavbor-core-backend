@@ -1,9 +1,5 @@
-from datetime import datetime, timedelta
-
 import pyotp
-from jose import JWTError, jwt
 
-from app.exceptions.token_exceptions import InvalidTokenException
 from app.settings import settings
 
 SECRET = settings.JWT_SECRET_KEY

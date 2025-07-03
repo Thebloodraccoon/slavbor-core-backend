@@ -1,4 +1,3 @@
-# Updated app/auth/services.py - clean version without DB access
 from fastapi import Response
 from sqlalchemy.orm import Session
 
