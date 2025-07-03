@@ -82,8 +82,8 @@ async def verify_token(
         raise TokenBlacklistedException()
 
     payload = decode_token(token.credentials)
-    email: str = payload.get("sub")
-    token_type: str = payload.get("token_type")
+    email: str = payload.get("sub")  # type: ignore
+    token_type: str = payload.get("token_type")  # type: ignore
 
     if email is None:
         raise InvalidTokenException()
