@@ -4,7 +4,7 @@ from sqlalchemy import (Boolean, CheckConstraint, Column, DateTime, ForeignKey,
                         Index, Integer, String, Text)
 
 from app.constants import (ARTICLE_CATEGORIES, ARTICLE_STATUSES, ARTICLE_TYPES,
-                           create_enum_constraint, ON_DELETE_SET_NULL)
+                           ON_DELETE_SET_NULL, create_enum_constraint)
 from app.settings import settings
 
 

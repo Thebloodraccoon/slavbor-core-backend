@@ -3,7 +3,7 @@ from typing import List
 from fastapi import APIRouter, Query
 from starlette import status
 
-from app.core.dependencies import RaceServiceDep, AdminUserDep, FounderUserDep
+from app.core.dependencies import AdminUserDep, FounderUserDep, RaceServiceDep
 from app.races.schemas import (RaceCreate, RaceListResponse, RaceResponse,
                                RaceUpdate)
 from app.races.utils import normalize_rarity
@@ -49,21 +49,14 @@ def get_race_by_id(
 
 
 @router.post("/", response_model=RaceResponse, status_code=status.HTTP_201_CREATED)
-def create_race(
-    race: RaceCreate,
-    race_service: RaceServiceDep,
-    _: AdminUserDep
-):
+def create_race(race: RaceCreate, race_service: RaceServiceDep, _: AdminUserDep):
     """Create a new race."""
     return race_service.create_race(race)
 
 
 @router.post("/{race_id}", response_model=RaceResponse)
 def update_race(
-    race_id: int,
-    race: RaceUpdate,
-    race_service: RaceServiceDep,
-    _: AdminUserDep
+    race_id: int, race: RaceUpdate, race_service: RaceServiceDep, _: AdminUserDep
 ):
     """Full update of a race."""
     return race_service.update_race(race_id, race)
@@ -71,10 +64,7 @@ def update_race(
 
 @router.patch("/{race_id}", response_model=RaceResponse)
 def update_race_patch(
-    race_id: int,
-    race: RaceUpdate,
-    race_service: RaceServiceDep,
-    _: AdminUserDep
+    race_id: int, race: RaceUpdate, race_service: RaceServiceDep, _: AdminUserDep
 ):
     """Partial update of a race."""
     return race_service.update_race(race_id, race)
@@ -82,20 +72,14 @@ def update_race_patch(
 
 @router.patch("/{race_id}/toggle-playable", response_model=RaceResponse)
 def toggle_race_playable_status(
-    race_id: int,
-    race_service: RaceServiceDep,
-    _: FounderUserDep
+    race_id: int, race_service: RaceServiceDep, _: FounderUserDep
 ):
     """Toggle the playable status of a race."""
     return race_service.toggle_playable_status(race_id)
 
 
 @router.delete("/{race_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_race(
-    race_id: int,
-    race_service: RaceServiceDep,
-    _: FounderUserDep
-):
+def delete_race(race_id: int, race_service: RaceServiceDep, _: FounderUserDep):
     """Delete a race."""
     race_service.delete_race(race_id)
     return None

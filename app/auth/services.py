@@ -2,16 +2,17 @@
 from fastapi import Response
 from sqlalchemy.orm import Session
 
-from app.auth.schemas import (
-    LoginRequest, LoginResponse, TwoFASetupResponse, TwoFARequiredResponse,
-    TwoFAVerifyRequest, LoginResponseUnion
-)
+from app.auth.schemas import (LoginRequest, LoginResponse, LoginResponseUnion,
+                              TwoFARequiredResponse, TwoFASetupResponse,
+                              TwoFAVerifyRequest)
 from app.auth.utils.pwd_utils import verify_password
-from app.auth.utils.token_utils import create_access_token, create_refresh_token, create_temp_token, decode_temp_token
-from app.auth.utils.twofa_utils import (
-    generate_otp_secret, generate_otp_uri, verify_otp_code,
-)
-from app.exceptions.auth_exceptions import InvalidCredentialsException, InvalidCodeException
+from app.auth.utils.token_utils import (create_access_token,
+                                        create_refresh_token,
+                                        create_temp_token, decode_temp_token)
+from app.auth.utils.twofa_utils import (generate_otp_secret, generate_otp_uri,
+                                        verify_otp_code)
+from app.exceptions.auth_exceptions import (InvalidCodeException,
+                                            InvalidCredentialsException)
 from app.settings import settings
 from app.users.repository import UserRepository
 
@@ -46,7 +47,7 @@ class AuthService:
 
         if user.email == settings.ADMIN_LOGIN:
             updated_user = self.user_repo.update_last_login(user)
-            return сreate_login_response(updated_user, response)
+            return create_login_response(updated_user, response)
 
         if not user.is_2fa_enabled:
             if not user.otp_secret:
@@ -54,25 +55,26 @@ class AuthService:
                 user = self.user_repo.setup_2fa(user, otp_secret)
 
             return TwoFASetupResponse(
-                otp_uri=generate_otp_uri(user.email, user.otp_secret),
-                temp_token=create_temp_token(user.id),
+                otp_uri=generate_otp_uri(str(user.email), str(user.otp_secret)),
+                temp_token=create_temp_token(int(user.id)),
             )
 
-        return TwoFARequiredResponse(temp_token=create_temp_token(user.id))
+        return TwoFARequiredResponse(temp_token=create_temp_token(int(user.id)))
 
-
-    def verify_2fa(self, request: TwoFAVerifyRequest, response: Response) -> LoginResponse:
+    def verify_2fa(
+        self, request: TwoFAVerifyRequest, response: Response
+    ) -> LoginResponse:
         """Verify 2FA code and complete login."""
         user_id = decode_temp_token(request.temp_token)
         user = self.user_repo.get_by_id(user_id)
         if not user:
             raise InvalidCredentialsException()
 
-        if not verify_otp_code(user.otp_secret, request.otp_code):
+        if not verify_otp_code(str(user.otp_secret), request.otp_code):
             raise InvalidCodeException()
 
         if not user.is_2fa_enabled:
             updated_user = self.user_repo.complete_2fa_setup(user)
         else:
             updated_user = self.user_repo.update_last_login(user)
-        return сreate_login_response(updated_user, response)
+        return create_login_response(updated_user, response)

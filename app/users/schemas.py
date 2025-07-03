@@ -2,8 +2,7 @@ import re
 from datetime import datetime
 from typing import Literal, Optional
 
-from pydantic import (BaseModel, ConfigDict, field_validator,
-                      model_validator)
+from pydantic import BaseModel, ConfigDict, field_validator, model_validator
 
 from app.exceptions.user_exceptions import (InvalidEmailException,
                                             InvalidPasswordException)
@@ -27,7 +26,9 @@ class UserBase(BaseModel):
         if len(username) < 3 or len(username) > 32:
             raise ValueError("Username must be between 3 and 32 characters long")
         if not re.match(r"^[a-zA-Z0-9_-]+$", username):
-            raise ValueError("Username can only contain letters, numbers, underscores, and hyphens")
+            raise ValueError(
+                "Username can only contain letters, numbers, underscores, and hyphens"
+            )
         return username
 
     @field_validator("phone")
@@ -45,7 +46,7 @@ class UserBase(BaseModel):
         if bio is not None:
             if len(bio) > 500:
                 raise ValueError("Bio must be less than 500 characters")
-            bio = re.sub(r'\s+', ' ', bio.strip())
+            bio = re.sub(r"\s+", " ", bio.strip())
             if len(bio) == 0:
                 return None
         return bio
@@ -84,7 +85,9 @@ class UserUpdate(BaseModel):
             if len(username) < 3 or len(username) > 32:
                 raise ValueError("Username must be between 3 and 32 characters long")
             if not re.match(r"^[a-zA-Z0-9_-]+$", username):
-                raise ValueError("Username can only contain letters, numbers, underscores, and hyphens")
+                raise ValueError(
+                    "Username can only contain letters, numbers, underscores, and hyphens"
+                )
         return username
 
     @field_validator("phone")
@@ -102,7 +105,7 @@ class UserUpdate(BaseModel):
         if bio is not None:
             if len(bio) > 500:
                 raise ValueError("Bio must be less than 500 characters")
-            bio = re.sub(r'\s+', ' ', bio.strip())
+            bio = re.sub(r"\s+", " ", bio.strip())
             if len(bio) == 0:
                 return None
         return bio

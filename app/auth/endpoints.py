@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Response
 
-from app.auth.schemas import (
-    LoginRequest, LoginResponse, TwoFAVerifyRequest, LoginResponseUnion
-)
+from app.auth.schemas import (LoginRequest, LoginResponse, LoginResponseUnion,
+                              TwoFAVerifyRequest)
 from app.core.dependencies import AuthServiceDep
 
 router = APIRouter()
@@ -14,7 +13,9 @@ def login(request: LoginRequest, response: Response, auth_service: AuthServiceDe
 
 
 @router.post("/2fa/verify", response_model=LoginResponse)
-def verify_2fa(request: TwoFAVerifyRequest, response: Response, auth_service: AuthServiceDep):
+def verify_2fa(
+    request: TwoFAVerifyRequest, response: Response, auth_service: AuthServiceDep
+):
     return auth_service.verify_2fa(request, response)
 
 

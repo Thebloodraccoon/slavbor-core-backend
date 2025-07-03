@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 from typing import Optional
 
+from sqlalchemy import Column
 from sqlalchemy.orm import Session
 
 from app.core.repository import BaseRepository
@@ -23,28 +24,28 @@ class UserRepository(BaseRepository[User]):
 
     def update_otp_secret(self, user: User, otp_secret: str) -> User:
         """Update user's OTP secret."""
-        user.otp_secret = otp_secret
+        user.otp_secret = Column(otp_secret)
         self.db.commit()
         self.db.refresh(user)
         return user
 
     def enable_2fa(self, user: User) -> User:
         """Enable 2FA for user."""
-        user.is_2fa_enabled = True
+        user.is_2fa_enabled = Column(True)
         self.db.commit()
         self.db.refresh(user)
         return user
 
     def update_last_login(self, user: User) -> User:
         """Update user's last login timestamp."""
-        user.last_login = datetime.now(timezone.utc)
+        user.last_login = Column(datetime.now(timezone.utc))
         self.db.commit()
         self.db.refresh(user)
         return user
 
     def setup_2fa(self, user: User, otp_secret: str) -> User:
         """Setup 2FA for user (set secret but don't enable yet)."""
-        user.otp_secret = otp_secret
+        user.otp_secret = Column(otp_secret)
         self.db.commit()
         self.db.refresh(user)
         return user

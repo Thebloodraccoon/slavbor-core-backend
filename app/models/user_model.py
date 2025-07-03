@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import CheckConstraint, Column, DateTime, Integer, String, Boolean, Text
+from sqlalchemy import (Boolean, CheckConstraint, Column, DateTime, Integer,
+                        String, Text)
 
 from app.constants import USER_ROLES, create_enum_constraint
 from app.settings import settings

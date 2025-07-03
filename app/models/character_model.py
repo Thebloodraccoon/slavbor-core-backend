@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from sqlalchemy import (CheckConstraint, Column, DateTime, ForeignKey,
-                        Index, Integer, String, Text)
+from sqlalchemy import (CheckConstraint, Column, DateTime, ForeignKey, Index,
+                        Integer, String, Text)
 
 from app.constants import (CHARACTER_STATUSES, CHARACTER_TYPES, SOCIAL_RANKS,
                            create_enum_constraint)

@@ -24,6 +24,7 @@ class InvalidCredentialsException(HTTPException):
             detail="Invalid email or password",
         )
 
+
 class InvalidCodeException(HTTPException):
     def __init__(self):
         super().__init__(

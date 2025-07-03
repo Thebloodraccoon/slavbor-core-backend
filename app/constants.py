@@ -186,6 +186,7 @@ USER_ROLES = ["found_father", "keeper", "player"]
 
 ON_DELETE_SET_NULL = "SET NULL"
 
+
 def create_enum_constraint(field_name: str, values: list, nullable: bool = True) -> str:
     """Creates a line for CheckContraint with ENUM values."""
     values_str = ", ".join(repr(v) for v in values)
