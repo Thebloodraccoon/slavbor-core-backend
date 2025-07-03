@@ -3,7 +3,6 @@ from datetime import datetime
 from sqlalchemy import (ARRAY, CheckConstraint, Column, DateTime, ForeignKey,
                         Index, Integer, String)
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy.orm import relationship
 
 from app.constants import create_range_constraint
 from app.settings import settings

@@ -3,7 +3,7 @@ from typing import List
 from fastapi import APIRouter, Query
 from starlette import status
 
-from app.core.dependencies import RaceServiceDep
+from app.core.dependencies import RaceServiceDep, AdminUserDep, FounderUserDep
 from app.races.schemas import (RaceCreate, RaceListResponse, RaceResponse,
                                RaceUpdate)
 from app.races.utils import normalize_rarity
@@ -52,6 +52,7 @@ def get_race_by_id(
 def create_race(
     race: RaceCreate,
     race_service: RaceServiceDep,
+    _: AdminUserDep
 ):
     """Create a new race."""
     return race_service.create_race(race)
@@ -62,6 +63,7 @@ def update_race(
     race_id: int,
     race: RaceUpdate,
     race_service: RaceServiceDep,
+    _: AdminUserDep
 ):
     """Full update of a race."""
     return race_service.update_race(race_id, race)
@@ -72,6 +74,7 @@ def update_race_patch(
     race_id: int,
     race: RaceUpdate,
     race_service: RaceServiceDep,
+    _: AdminUserDep
 ):
     """Partial update of a race."""
     return race_service.update_race(race_id, race)
@@ -81,6 +84,7 @@ def update_race_patch(
 def toggle_race_playable_status(
     race_id: int,
     race_service: RaceServiceDep,
+    _: FounderUserDep
 ):
     """Toggle the playable status of a race."""
     return race_service.toggle_playable_status(race_id)
@@ -90,6 +94,7 @@ def toggle_race_playable_status(
 def delete_race(
     race_id: int,
     race_service: RaceServiceDep,
+    _: FounderUserDep
 ):
     """Delete a race."""
     race_service.delete_race(race_id)

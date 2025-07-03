@@ -1,9 +1,7 @@
 from datetime import datetime
 
-from sqlalchemy import (ARRAY, Boolean, CheckConstraint, Column, DateTime,
+from sqlalchemy import (Boolean, CheckConstraint, Column, DateTime,
                         Index, Integer, String, Text)
-from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy.orm import relationship
 
 from app.constants import RACE_RARITIES, RACE_SIZES, create_enum_constraint
 from app.settings import settings

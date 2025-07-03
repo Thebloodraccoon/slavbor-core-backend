@@ -1,4 +1,4 @@
-from contextlib import asynccontextmanager, contextmanager
+from contextlib import asynccontextmanager
 
 from redis.asyncio import Redis
 from sqlalchemy import create_engine

@@ -2,7 +2,7 @@ import re
 from datetime import datetime
 from typing import Literal, Optional
 
-from pydantic import (BaseModel, ConfigDict, constr, field_validator,
+from pydantic import (BaseModel, ConfigDict, field_validator,
                       model_validator)
 
 from app.exceptions.user_exceptions import (InvalidEmailException,
@@ -13,6 +13,8 @@ class UserBase(BaseModel):
     username: str
     role: Literal["found_father", "keeper", "player"] = None  # type: ignore
     email: str
+    phone: Optional[str] = None
+    bio: Optional[str] = None
 
     @field_validator("email")
     def validate_email(cls, email):
@@ -24,7 +26,29 @@ class UserBase(BaseModel):
     def validate_username(cls, username):
         if len(username) < 3 or len(username) > 32:
             raise ValueError("Username must be between 3 and 32 characters long")
+        if not re.match(r"^[a-zA-Z0-9_-]+$", username):
+            raise ValueError("Username can only contain letters, numbers, underscores, and hyphens")
         return username
+
+    @field_validator("phone")
+    def validate_phone(cls, phone):
+        if phone is not None:
+            cleaned_phone = re.sub(r"[\s\-\(\)]", "", phone)
+            if not re.match(r"^\+?[1-9]\d{1,14}$", cleaned_phone):
+                raise ValueError("Invalid phone number format. Use format: +1234567890")
+            if len(cleaned_phone) > 20:
+                raise ValueError("Phone number is too long")
+        return phone
+
+    @field_validator("bio")
+    def validate_bio(cls, bio):
+        if bio is not None:
+            if len(bio) > 500:
+                raise ValueError("Bio must be less than 500 characters")
+            bio = re.sub(r'\s+', ' ', bio.strip())
+            if len(bio) == 0:
+                return None
+        return bio
 
 
 class UserCreate(UserBase):
@@ -42,6 +66,8 @@ class UserCreate(UserBase):
 class UserUpdate(BaseModel):
     username: Optional[str] = None
     email: Optional[str] = None
+    phone: Optional[str] = None
+    bio: Optional[str] = None
     role: Optional[Literal["found_father", "keeper", "player"]] = None
 
     @field_validator("email")
@@ -51,6 +77,35 @@ class UserUpdate(BaseModel):
         ):
             raise InvalidEmailException()
         return email
+
+    @field_validator("username")
+    def validate_username(cls, username):
+        if username is not None:
+            if len(username) < 3 or len(username) > 32:
+                raise ValueError("Username must be between 3 and 32 characters long")
+            if not re.match(r"^[a-zA-Z0-9_-]+$", username):
+                raise ValueError("Username can only contain letters, numbers, underscores, and hyphens")
+        return username
+
+    @field_validator("phone")
+    def validate_phone(cls, phone):
+        if phone is not None:
+            cleaned_phone = re.sub(r"[\s\-\(\)]", "", phone)
+            if not re.match(r"^\+?[1-9]\d{1,14}$", cleaned_phone):
+                raise ValueError("Invalid phone number format. Use format: +1234567890")
+            if len(cleaned_phone) > 20:
+                raise ValueError("Phone number is too long")
+        return phone
+
+    @field_validator("bio")
+    def validate_bio(cls, bio):
+        if bio is not None:
+            if len(bio) > 500:
+                raise ValueError("Bio must be less than 500 characters")
+            bio = re.sub(r'\s+', ' ', bio.strip())
+            if len(bio) == 0:
+                return None
+        return bio
 
     @model_validator(mode="before")
     def validate_data(cls, values):
