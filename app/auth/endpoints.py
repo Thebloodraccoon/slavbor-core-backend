@@ -1,11 +1,15 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Response
+
+from app.auth.schemas import LoginRequest, LoginResponse
+from app.auth.services import AuthService
+from app.core.dependencies import AuthServiceDep
 
 router = APIRouter()
 
 
-@router.post("/login")
-def login():
-    return {"LOGIN": "TODO"}
+@router.post("/login", response_model=LoginResponse)
+def login(request: LoginRequest, response: Response, auth_service: AuthServiceDep):
+    return auth_service.login(request, response)
 
 
 @router.post("/logout")

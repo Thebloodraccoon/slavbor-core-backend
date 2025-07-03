@@ -5,6 +5,7 @@ from fastapi.security import HTTPBearer
 from fastapi.security.http import HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
+from app.auth.services import AuthService
 from app.auth.utils.token_utils import verify_token
 from app.exceptions.auth_exceptions import (AdminAccessException,
                                             SuperAdminAccessException)
@@ -24,6 +25,11 @@ def get_user_service(db: DatabaseDep) -> UserService:
 def get_race_service(db: DatabaseDep) -> RaceService:
     """Get Race service instance."""
     return RaceService(db)
+
+
+def get_auth_service(db: DatabaseDep) -> AuthService:
+    """Get Race service instance."""
+    return AuthService(db)
 
 
 async def get_current_user(
@@ -54,6 +60,7 @@ def require_founder(
 
 UserServiceDep = Annotated[UserService, Depends(get_user_service)]
 RaceServiceDep = Annotated[RaceService, Depends(get_race_service)]
+AuthServiceDep = Annotated[AuthService, Depends(get_auth_service)]
 
 CurrentUserDep = Annotated[UserResponse, Depends(get_current_user)]
 AdminUserDep = Annotated[UserResponse, Depends(require_keeper_or_founder)]
