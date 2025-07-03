@@ -1,8 +1,7 @@
 from datetime import datetime
 
-from sqlalchemy import (ARRAY, CheckConstraint, Column, DateTime, ForeignKey,
-                        Index, Integer, String, Text)
-from sqlalchemy.orm import relationship
+from sqlalchemy import (CheckConstraint, Column, DateTime, ForeignKey, Index,
+                        Integer, String, Text)
 
 from app.constants import (CHARACTER_STATUSES, CHARACTER_TYPES, SOCIAL_RANKS,
                            create_enum_constraint)

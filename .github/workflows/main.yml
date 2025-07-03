@@ -18,6 +18,7 @@ env:
   REDIS_DB: 0
   SECRET_KEY: ${{ secrets.SECRET_KEY }}
   ALGORITHM: ${{ secrets.ALGORITHM }}
+  ADMIN_LOGIN: ${{ secrets.ADMIN_LOGIN }}
 
 jobs:
   test:
