@@ -1,5 +1,3 @@
-
-
 def test_get_all_races_success(client, test_race):
     """Test successful retrieval of all races"""
     response = client.get("/races?page=1&size=5")
@@ -112,7 +110,7 @@ def test_create_race_success(client, test_admin_token):
     response = client.post(
         "/races/",
         json=race_data,
-        headers={"Authorization": f"Bearer {test_admin_token.credentials}"}
+        headers={"Authorization": f"Bearer {test_admin_token.credentials}"},
     )
 
     assert response.status_code == 201
@@ -130,7 +128,7 @@ def test_create_race_invalid_data(client, test_admin_token):
     response = client.post(
         "/races/",
         json=race_data,
-        headers={"Authorization": f"Bearer {test_admin_token.credentials}"}
+        headers={"Authorization": f"Bearer {test_admin_token.credentials}"},
     )
 
     assert response.status_code == 422
@@ -148,7 +146,7 @@ def test_create_race_duplicate_name(client, test_race, test_admin_token):
     response = client.post(
         "/races/",
         json=race_data,
-        headers={"Authorization": f"Bearer {test_admin_token.credentials}"}
+        headers={"Authorization": f"Bearer {test_admin_token.credentials}"},
     )
 
     assert response.status_code == 400
@@ -170,7 +168,7 @@ def test_update_race_post_success(client, test_race, test_admin_token):
     response = client.post(
         f"/races/{test_race.id}",
         json=update_data,
-        headers={"Authorization": f"Bearer {test_admin_token.credentials}"}
+        headers={"Authorization": f"Bearer {test_admin_token.credentials}"},
     )
 
     assert response.status_code == 200
@@ -188,7 +186,7 @@ def test_update_race_post_not_found(client, test_admin_token):
     response = client.post(
         "/races/999",
         json=update_data,
-        headers={"Authorization": f"Bearer {test_admin_token.credentials}"}
+        headers={"Authorization": f"Bearer {test_admin_token.credentials}"},
     )
 
     assert response.status_code == 404
@@ -206,7 +204,7 @@ def test_update_race_post_duplicate_name(client, create_race, test_admin_token):
     response = client.post(
         f"/races/{race2.id}",
         json=update_data,
-        headers={"Authorization": f"Bearer {test_admin_token.credentials}"}
+        headers={"Authorization": f"Bearer {test_admin_token.credentials}"},
     )
 
     assert response.status_code == 400
@@ -221,7 +219,7 @@ def test_update_race_patch_success(client, test_race, test_admin_token):
     response = client.patch(
         f"/races/{test_race.id}",
         json=update_data,
-        headers={"Authorization": f"Bearer {test_admin_token.credentials}"}
+        headers={"Authorization": f"Bearer {test_admin_token.credentials}"},
     )
 
     assert response.status_code == 200
@@ -238,7 +236,7 @@ def test_update_race_patch_not_found(client, test_admin_token):
     response = client.patch(
         "/races/999",
         json=update_data,
-        headers={"Authorization": f"Bearer {test_admin_token.credentials}"}
+        headers={"Authorization": f"Bearer {test_admin_token.credentials}"},
     )
 
     assert response.status_code == 404
@@ -256,7 +254,7 @@ def test_update_race_patch_duplicate_name(client, create_race, test_admin_token)
     response = client.patch(
         f"/races/{race2.id}",
         json=update_data,
-        headers={"Authorization": f"Bearer {test_admin_token.credentials}"}
+        headers={"Authorization": f"Bearer {test_admin_token.credentials}"},
     )
 
     assert response.status_code == 400
@@ -270,7 +268,7 @@ def test_toggle_race_playable_status_success(client, test_race, test_admin_token
 
     response = client.patch(
         f"/races/{test_race.id}/toggle-playable",
-        headers={"Authorization": f"Bearer {test_admin_token.credentials}"}
+        headers={"Authorization": f"Bearer {test_admin_token.credentials}"},
     )
 
     assert response.status_code == 200
@@ -282,7 +280,7 @@ def test_toggle_race_playable_status_not_found(client, test_admin_token):
     """Test toggling playable status of a race that doesn't exist"""
     response = client.patch(
         "/races/999/toggle-playable",
-        headers={"Authorization": f"Bearer {test_admin_token.credentials}"}
+        headers={"Authorization": f"Bearer {test_admin_token.credentials}"},
     )
 
     assert response.status_code == 404
@@ -294,7 +292,7 @@ def test_delete_race_success(client, test_race, test_admin_token):
     """Test deleting a race"""
     response = client.delete(
         f"/races/{test_race.id}",
-        headers={"Authorization": f"Bearer {test_admin_token.credentials}"}
+        headers={"Authorization": f"Bearer {test_admin_token.credentials}"},
     )
 
     assert response.status_code == 204
@@ -307,7 +305,7 @@ def test_delete_race_not_found(client, test_admin_token):
     """Test deleting a race that doesn't exist"""
     response = client.delete(
         "/races/999",
-        headers={"Authorization": f"Bearer {test_admin_token.credentials}"}
+        headers={"Authorization": f"Bearer {test_admin_token.credentials}"},
     )
 
     assert response.status_code == 404

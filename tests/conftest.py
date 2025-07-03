@@ -3,9 +3,9 @@ import re
 import pyotp
 import pytest
 import pytest_asyncio
+from fastapi import status
 from fastapi.security import HTTPAuthorizationCredentials
 from fastapi.testclient import TestClient
-from fastapi import status
 from redis.asyncio import Redis
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
@@ -78,7 +78,7 @@ def create_user(db_session):
         username="testuser",
         email="test@example.com",
         password="testpassword123",
-        role="player"
+        role="player",
     ):
         existing_user = db_session.query(User).filter_by(email=email).first()
         if existing_user:
@@ -88,7 +88,7 @@ def create_user(db_session):
             username=username,
             email=email,
             hashed_password=get_password_hash(password),
-            role=role
+            role=role,
         )
 
         db_session.add(user)
