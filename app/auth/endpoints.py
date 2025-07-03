@@ -1,12 +1,8 @@
-from fastapi import APIRouter, Depends, Request, Response
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Request, Response
 
 from app.auth.schemas import (LoginRequest, LoginResponse, LoginResponseUnion,
                               LogoutResponse, TwoFAVerifyRequest)
-from app.auth.services import AuthService
-from app.core.dependencies import (AuthServiceDep, CurrentUserDep,
-                                   get_current_user)
-from app.settings import settings
+from app.core.dependencies import AuthServiceDep, CurrentUserDep
 
 router = APIRouter()
 
@@ -30,7 +26,9 @@ async def logout(
     auth_service: AuthServiceDep,
     _: CurrentUserDep,
 ):
-    access_token = http_request.headers.get("Authorization").replace("Bearer ", "")
+    access_token = (http_request.headers.get("Authorization") or "").replace(
+        "Bearer ", ""
+    )
     refresh_token = http_request.cookies.get("refresh_token", "")
     logout_response = await auth_service.logout_user(access_token, refresh_token)
 
