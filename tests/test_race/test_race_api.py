@@ -96,7 +96,7 @@ def test_get_race_by_id_not_found(client):
     assert "not found" in data["error"]["detail"]
 
 
-def test_create_race_success(client):
+def test_create_race_success(client, test_admin_token):
     """Test creating a new race"""
     race_data = {
         "name": "New Test Race",
@@ -117,7 +117,7 @@ def test_create_race_success(client):
     assert data["is_playable"] == race_data["is_playable"]
 
 
-def test_create_race_invalid_data(client):
+def test_create_race_invalid_data(client, test_admin_token):
     """Test creating a race with invalid data"""
     race_data = {"name": "", "size": "InvalidSize", "rarity": "invalid_rarity"}
 
@@ -126,7 +126,7 @@ def test_create_race_invalid_data(client):
     assert response.status_code == 422
 
 
-def test_create_race_duplicate_name(client, test_race):
+def test_create_race_duplicate_name(client, test_race, test_admin_token):
     """Test creating a race with duplicate name"""
     race_data = {
         "name": test_race.name,
@@ -142,7 +142,7 @@ def test_create_race_duplicate_name(client, test_race):
     assert "already exists" in data["error"]["detail"]
 
 
-def test_update_race_post_success(client, test_race):
+def test_update_race_post_success(client, test_race, test_admin_token):
     """Test full update of a race using POST"""
     update_data = {
         "name": "Updated Race Name",
@@ -163,7 +163,7 @@ def test_update_race_post_success(client, test_race):
     assert data["is_playable"] == update_data["is_playable"]
 
 
-def test_update_race_post_not_found(client):
+def test_update_race_post_not_found(client, test_admin_token):
     """Test updating a race that doesn't exist using POST"""
     update_data = {"name": "Non-existent Race", "description": "This won't work"}
 
@@ -174,7 +174,7 @@ def test_update_race_post_not_found(client):
     assert "not found" in data["error"]["detail"]
 
 
-def test_update_race_post_duplicate_name(client, create_race):
+def test_update_race_post_duplicate_name(client, create_race, test_admin_token):
     """Test updating a race with duplicate name using POST"""
     race1 = create_race(name="Race 1")
     race2 = create_race(name="Race 2")
@@ -188,7 +188,7 @@ def test_update_race_post_duplicate_name(client, create_race):
     assert "already exists" in data["error"]["detail"]
 
 
-def test_update_race_patch_success(client, test_race):
+def test_update_race_patch_success(client, test_race, test_admin_token):
     """Test partial update of a race using PATCH"""
     update_data = {"name": "Partially Updated Race", "is_playable": False}
 
@@ -201,7 +201,7 @@ def test_update_race_patch_success(client, test_race):
     assert data["description"] == test_race.description
 
 
-def test_update_race_patch_not_found(client):
+def test_update_race_patch_not_found(client, test_admin_token):
     """Test partial update of a race that doesn't exist"""
     update_data = {"name": "Won't work"}
 
@@ -212,7 +212,7 @@ def test_update_race_patch_not_found(client):
     assert "not found" in data["error"]["detail"]
 
 
-def test_update_race_patch_duplicate_name(client, create_race):
+def test_update_race_patch_duplicate_name(client, create_race, test_admin_token):
     """Test partial update of a race with duplicate name"""
     race1 = create_race(name="Race 1")
     race2 = create_race(name="Race 2")
@@ -226,7 +226,7 @@ def test_update_race_patch_duplicate_name(client, create_race):
     assert "already exists" in data["error"]["detail"]
 
 
-def test_toggle_race_playable_status_success(client, test_race):
+def test_toggle_race_playable_status_success(client, test_race, test_admin_token):
     """Test toggling playable status of a race"""
     original_status = test_race.is_playable
 
@@ -237,7 +237,7 @@ def test_toggle_race_playable_status_success(client, test_race):
     assert data["is_playable"] != original_status
 
 
-def test_toggle_race_playable_status_not_found(client):
+def test_toggle_race_playable_status_not_found(client, test_admin_token):
     """Test toggling playable status of a race that doesn't exist"""
     response = client.patch("/races/999/toggle-playable")
 
@@ -246,7 +246,7 @@ def test_toggle_race_playable_status_not_found(client):
     assert "not found" in data["error"]["detail"]
 
 
-def test_delete_race_success(client, test_race):
+def test_delete_race_success(client, test_race, test_admin_token):
     """Test deleting a race"""
     response = client.delete(f"/races/{test_race.id}")
 
@@ -256,7 +256,7 @@ def test_delete_race_success(client, test_race):
     assert get_response.status_code == 404
 
 
-def test_delete_race_not_found(client):
+def test_delete_race_not_found(client, test_admin_token):
     """Test deleting a race that doesn't exist"""
     response = client.delete("/races/999")
 
@@ -265,7 +265,7 @@ def test_delete_race_not_found(client):
     assert "not found" in data["error"]["detail"]
 
 
-def test_get_races_by_rarity_invalid(client):
+def test_get_races_by_rarity_invalid(client, test_admin_token):
     """Test getting races by invalid rarity"""
     response = client.get("/races/by-rarity/invalid_rarity")
 
