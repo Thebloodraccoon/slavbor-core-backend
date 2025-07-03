@@ -36,8 +36,7 @@ class TwoFAVerifyRequest(BaseModel):
 
 
 class LogoutResponse(BaseModel):
-    message: str
+    detail: str
 
 
 LoginResponseUnion = Union[LoginResponse, TwoFASetupResponse, TwoFARequiredResponse]
-
