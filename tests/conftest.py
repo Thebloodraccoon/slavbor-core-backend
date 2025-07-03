@@ -85,7 +85,7 @@ def create_user(db_session):
             return existing_user
 
         user = User(
-            username=username,  #
+            username=username,
             email=email,
             hashed_password=get_password_hash(password),
             role=role
@@ -99,6 +99,7 @@ def create_user(db_session):
 
     return _create_user
 
+
 @pytest.fixture
 def test_user(create_user):
     return create_user()
@@ -108,7 +109,7 @@ def test_user(create_user):
 def test_admin(create_user):
     return create_user(
         username="admin",
-        email="admin@example.com",
+        email="admin@admin.com",
         password="default_password",
         role="found_father",
     )
