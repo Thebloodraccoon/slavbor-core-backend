@@ -108,7 +108,6 @@ class Ability(settings.Base):  # type: ignore
             postgresql_using="gin",
             postgresql_ops={"name": "gin_trgm_ops"},
         ),
-        Index("idx_ability_description_fts", "description", postgresql_using="gin"),
     )
 
     def __repr__(self):
