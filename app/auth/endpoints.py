@@ -1,15 +1,9 @@
-from datetime import datetime, timedelta
-
 from fastapi import APIRouter, Request, Response
 
 from app.auth.schemas import (LoginRequest, LoginResponse, LoginResponseUnion,
                               LogoutResponse, RefreshResponse,
                               TwoFAVerifyRequest)
-from app.auth.utils.token_utils import (add_token_to_blacklist,
-                                        create_access_token, decode_token)
 from app.core.dependencies import AuthServiceDep, CurrentUserDep
-from app.exceptions.token_exceptions import (InvalidTokenException,
-                                             TokenBlacklistedException)
 
 router = APIRouter()
 
@@ -47,31 +41,8 @@ async def logout(
 
 
 @router.post("/refresh", response_model=RefreshResponse)
-def refresh_tokens(http_request: Request):
-    refresh_token = http_request.cookies.get("refresh_token", "")
-
-    if not refresh_token:
-        raise InvalidTokenException
-
-    payload = decode_token(refresh_token)
-    token_exp_timestamp = payload.get("exp")
-
-    if token_exp_timestamp is not None:
-        token_exp: datetime = datetime.fromtimestamp(token_exp_timestamp)
-    else:
-        token_exp = datetime.now() + timedelta(days=30)
-
-    if add_token_to_blacklist(refresh_token, token_exp):
-        raise TokenBlacklistedException
-
-    user_id = payload.get("sub")
-
-    if not user_id:
-        raise InvalidTokenException
-
-    new_access_token = create_access_token(data={"sub": user_id})
-
-    return new_access_token
+async def refresh_tokens(http_request: Request, auth_service: AuthServiceDep):
+    return await auth_service.refresh_tokens(http_request)
 
 
 @router.post("/register")
