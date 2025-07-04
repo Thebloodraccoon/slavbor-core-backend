@@ -61,7 +61,6 @@ def test_create_race_success(db_session):
         description="Test description",
         size="Средний",
         is_playable=True,
-        rarity="обычная",
     )
 
     result = service.create_race(race_data)
@@ -140,18 +139,6 @@ def test_get_playable_races(db_session, create_race):
 
     assert len(result) == 1
     assert result[0].name == "Playable"
-
-
-def test_get_races_by_rarity(db_session, create_race):
-    """Test getting races by rarity"""
-    service = RaceService(db_session)
-    create_race(name="Common", rarity="обычная")
-    create_race(name="Rare", rarity="редкая")
-
-    result = service.get_races_by_rarity("обычная")
-
-    assert len(result) == 1
-    assert result[0].name == "Common"
 
 
 def test_toggle_playable_status(db_session, test_race):

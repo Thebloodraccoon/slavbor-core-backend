@@ -1,8 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import (ARRAY, CheckConstraint, Column, DateTime, ForeignKey,
-                        Index, Integer, String)
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import CheckConstraint, Column, DateTime, ForeignKey, Integer
 
 from app.constants import create_range_constraint
 from app.settings import settings
@@ -14,7 +12,10 @@ class CharacterGameStats(settings.Base):  # type: ignore
 
     # Foreign key to character
     character_id = Column(
-        Integer, ForeignKey("characters.id"), nullable=False, unique=True, index=True
+        Integer,
+        ForeignKey("characters.id"),
+        nullable=False,
+        unique=True,
     )
 
     # D&D Core Statistics
@@ -33,33 +34,11 @@ class CharacterGameStats(settings.Base):  # type: ignore
     armor_class = Column(Integer)
     hit_points_max = Column(Integer)
     hit_points_current = Column(Integer)
-    hit_dice = Column(String(20))  # e.g., "8d8"
-
-    # Proficiency and Skills
-    proficiency_bonus = Column(Integer)
-    proficient_skills = Column(ARRAY(String))  # type: ignore
-    proficient_saves = Column(ARRAY(String))  # type: ignore
 
     # Character Build
-    character_class = Column(String(50))  # 'Fighter', 'Wizard', etc.
-    character_subclass = Column(String(50))  # 'Champion', 'Evocation', etc.
-    background = Column(String(50))  # 'Soldier', 'Noble', etc.
-    alignment = Column(String(20))  # 'Lawful Good', etc.
+    class_id = Column(Integer, ForeignKey("classes.id", ondelete="SET NULL"))
+    subclass_id = Column(Integer, ForeignKey("classes.id", ondelete="SET NULL"))
 
-    # Additional D&D specific info
-    languages = Column(ARRAY(String))  # type: ignore
-    tool_proficiencies = Column(ARRAY(String))  # type: ignore
-    weapon_proficiencies = Column(ARRAY(String))  # type: ignore
-    armor_proficiencies = Column(ARRAY(String))  # type: ignore
-
-    # Spellcasting (if applicable)
-    spellcasting_ability = Column(String(20))  # 'Intelligence', 'Wisdom', etc.
-    spell_save_dc = Column(Integer)
-    spell_attack_bonus = Column(Integer)
-    spell_slots = Column(JSONB)  # {"1": 4, "2": 3, "3": 2} etc.
-    spells_known = Column(ARRAY(String))  # type: ignore
-
-    # Timestamps
     created_at = Column(DateTime, default=datetime.now, nullable=False)
     updated_at = Column(
         DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
@@ -107,7 +86,6 @@ class CharacterGameStats(settings.Base):  # type: ignore
             "hit_points_current IS NULL OR hit_points_current >= 0",
             name="check_hp_current_nonnegative",
         ),
-        Index("idx_game_stats_level_class", "level", "character_class"),
     )
 
     def __repr__(self):

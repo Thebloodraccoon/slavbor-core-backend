@@ -1,6 +1,6 @@
 FROM python:3.10.13-slim AS builder
 
-LABEL description="Slavbor World Backend API"
+LABEL description="Slavbor World Backend API -- BUILDER"
 
 RUN apt-get update && apt-get install -y \
     gcc \
@@ -41,5 +41,10 @@ RUN pip install --no-deps --no-index --find-links=/wheels -r requirements.txt \
 COPY --chown=app:app . .
 USER app
 
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl --fail http://localhost:8000/ping || exit 1
+
+EXPOSE 8000
+
 ENTRYPOINT ["sh", "-c"]
-CMD ["sleep 15 && alembic upgrade head && python -m app.main"]
+CMD ["alembic upgrade head && python -m app.main"]

@@ -53,29 +53,6 @@ def test_get_playable_races_empty(client):
     assert len(data) == 0
 
 
-def test_get_races_by_rarity_success(client, create_race):
-    """Test getting races by rarity"""
-    create_race(name="Common Race", rarity="обычная")
-    create_race(name="Rare Race", rarity="редкая")
-
-    response = client.get("/races/by-rarity/обычная")
-
-    assert response.status_code == 200
-    data = response.json()
-    assert len(data) == 1
-    assert data[0]["name"] == "Common Race"
-    assert data[0]["rarity"] == "обычная"
-
-
-def test_get_races_by_rarity_empty(client):
-    """Test getting races by rarity when none exist"""
-    response = client.get("/races/by-rarity/редкая")
-
-    assert response.status_code == 200
-    data = response.json()
-    assert len(data) == 0
-
-
 def test_get_race_by_id_success(client, test_race):
     """Test getting a specific race by ID"""
     response = client.get(f"/races/{test_race.id}")
@@ -102,9 +79,7 @@ def test_create_race_success(client, test_admin_token):
         "name": "New Test Race",
         "description": "A new test race",
         "size": "Средний",
-        "special_traits": "Special abilities",
         "is_playable": True,
-        "rarity": "обычная",
     }
 
     response = client.post(
@@ -160,9 +135,7 @@ def test_update_race_post_success(client, test_race, test_admin_token):
         "name": "Updated Race Name",
         "description": "Updated description",
         "size": "Большой",
-        "special_traits": "Updated traits",
         "is_playable": False,
-        "rarity": "редкая",
     }
 
     response = client.post(
@@ -311,18 +284,3 @@ def test_delete_race_not_found(client, test_admin_token):
     assert response.status_code == 404
     data = response.json()
     assert "not found" in data["error"]["detail"]
-
-
-def test_get_races_by_rarity_invalid(client, test_admin_token):
-    """Test getting races by invalid rarity"""
-    response = client.get("/races/by-rarity/invalid_rarity")
-
-    assert response.status_code == 400
-    data = response.json()
-    detail = data["error"]["detail"]
-
-    assert "The unacceptable value of rarity" in detail["message"]
-    assert detail["received"] == "invalid_rarity"
-    assert "очень редкая" in detail["allowed_values"]
-    assert "редкая" in detail["examples"]
-    assert data["error"]["type"] == "RaceRarityException"

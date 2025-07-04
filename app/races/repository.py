@@ -23,10 +23,6 @@ class RaceRepository(BaseRepository[Race]):
             query = query.filter(Race.id != exclude_id)
         return query.first() is not None
 
-    def get_by_rarity(self, rarity: str) -> list[Race]:
-        """Obtaining races by rarity."""
-        return self.db.query(Race).filter(Race.rarity == rarity).all()
-
     def get_playable_races(self) -> list[Race]:
         """Obtaining only playable races."""
         return self.db.query(Race).filter(Race.is_playable).all()
