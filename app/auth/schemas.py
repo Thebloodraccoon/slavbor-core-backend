@@ -35,4 +35,8 @@ class TwoFAVerifyRequest(BaseModel):
     temp_token: str
 
 
+class LogoutResponse(BaseModel):
+    detail: str
+
+
 LoginResponseUnion = Union[LoginResponse, TwoFASetupResponse, TwoFARequiredResponse]

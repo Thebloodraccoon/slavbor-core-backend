@@ -1,13 +1,17 @@
+from datetime import datetime, timezone
+
 from fastapi import Response
 from sqlalchemy.orm import Session
 
 from app.auth.schemas import (LoginRequest, LoginResponse, LoginResponseUnion,
-                              TwoFARequiredResponse, TwoFASetupResponse,
-                              TwoFAVerifyRequest)
+                              LogoutResponse, TwoFARequiredResponse,
+                              TwoFASetupResponse, TwoFAVerifyRequest)
 from app.auth.utils.pwd_utils import verify_password
-from app.auth.utils.token_utils import (create_access_token,
+from app.auth.utils.token_utils import (add_token_to_blacklist,
+                                        create_access_token,
                                         create_refresh_token,
-                                        create_temp_token, decode_temp_token)
+                                        create_temp_token, decode_temp_token,
+                                        decode_token)
 from app.auth.utils.twofa_utils import (generate_otp_secret, generate_otp_uri,
                                         verify_otp_code)
 from app.exceptions.auth_exceptions import (InvalidCodeException,
@@ -77,3 +81,24 @@ class AuthService:
         else:
             updated_user = self.user_repo.update_last_login(user)
         return create_login_response(updated_user, response)
+
+    async def logout_user(
+        self, access_token: str, refresh_token: str
+    ) -> LogoutResponse:
+        payload = decode_token(access_token)
+        exp = payload.get("exp")
+        if exp is None:
+            raise ValueError("Token payload missing 'exp' field")
+
+        blacklist_access = await add_token_to_blacklist(
+            access_token, datetime.fromtimestamp(float(exp), tz=timezone.utc)
+        )
+        if refresh_token:
+            await add_token_to_blacklist(
+                refresh_token, datetime.fromtimestamp(exp, tz=timezone.utc)
+            )
+
+        if blacklist_access:
+            return LogoutResponse(detail="Successful logout")
+
+        return LogoutResponse(detail="Token is already expired")
