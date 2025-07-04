@@ -85,7 +85,7 @@ class AuthService:
 
     async def refresh_tokens(self, refresh_token: str) -> RefreshResponse:
         email = await verify_refresh_token(refresh_token)
-        new_access_token = create_access_token(data={"sub": email })
+        new_access_token = create_access_token(data={"sub": email})
 
         return RefreshResponse(access_token=new_access_token)
 
