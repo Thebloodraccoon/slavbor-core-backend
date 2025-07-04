@@ -1,11 +1,9 @@
 from datetime import datetime
 
+from sqlalchemy import (Boolean, CheckConstraint, Column, DateTime, Index,
+                        Integer, String, Text)
 
-from sqlalchemy import (
-    CheckConstraint, Column, DateTime, Index, Integer, String, Boolean, Text
-)
-
-from app.constants import create_enum_constraint, CLASS_TYPES
+from app.constants import CLASS_TYPES, create_enum_constraint
 from app.settings import settings
 
 

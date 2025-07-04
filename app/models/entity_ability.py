@@ -1,10 +1,9 @@
 from datetime import datetime
 
-from sqlalchemy import (
-    CheckConstraint, Column, DateTime, Index, Integer, String, UniqueConstraint
-)
+from sqlalchemy import (CheckConstraint, Column, DateTime, Index, Integer,
+                        String, UniqueConstraint)
 
-from app.constants import create_enum_constraint, ENTITY_TYPES
+from app.constants import ENTITY_TYPES, create_enum_constraint
 from app.settings import settings
 
 
@@ -26,7 +25,9 @@ class EntityAbility(settings.Base):  # type: ignore
             create_enum_constraint("entity_type", ENTITY_TYPES, nullable=False),
             name="check_entity_type",
         ),
-        UniqueConstraint("entity_type", "entity_id", "ability_id", name="uq_entity_ability"),
+        UniqueConstraint(
+            "entity_type", "entity_id", "ability_id", name="uq_entity_ability"
+        ),
         Index("idx_entity_ability_entity", "entity_type", "entity_id"),
         Index("idx_entity_ability_ability", "ability_id"),
         Index("idx_entity_ability_type", "entity_type"),

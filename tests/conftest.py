@@ -190,9 +190,7 @@ def create_race(db_session):
         name="Test name",
         description="Test description",
         size="Средний",
-        special_traits="Test special traits",
         is_playable=True,
-        rarity="обычная",
     ):
         existing_race = db_session.query(Race).filter_by(name=name).first()
         if existing_race:
@@ -202,9 +200,7 @@ def create_race(db_session):
             name=name,
             description=description,
             size=size,
-            special_traits=special_traits,
             is_playable=is_playable,
-            rarity=rarity,
         )
 
         db_session.add(race)

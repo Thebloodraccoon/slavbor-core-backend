@@ -1,7 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import (CheckConstraint, Column, DateTime, ForeignKey,
-                        Index, Integer, String)
+from sqlalchemy import CheckConstraint, Column, DateTime, ForeignKey, Integer
 
 from app.constants import create_range_constraint
 from app.settings import settings
@@ -13,7 +12,10 @@ class CharacterGameStats(settings.Base):  # type: ignore
 
     # Foreign key to character
     character_id = Column(
-        Integer, ForeignKey("characters.id"), nullable=False, unique=True,
+        Integer,
+        ForeignKey("characters.id"),
+        nullable=False,
+        unique=True,
     )
 
     # D&D Core Statistics

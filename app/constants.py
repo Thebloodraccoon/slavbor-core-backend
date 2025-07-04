@@ -145,26 +145,22 @@ RACE_SIZES = ["Крошечный", "Маленький", "Средний", "Б�
 # User model constants
 USER_ROLES = ["found_father", "keeper", "player"]
 
-ABILITY_CATEGORIES = [
-    "racial",
-    "class",
-    "spell",
-    "feat",
-    "item",
-    "condition",
-    "custom"
-]
+ABILITY_CATEGORIES = ["racial", "class", "spell", "feat", "item", "condition", "custom"]
 
-ENTITY_TYPES = [
-    "character",
-    "race",
-    "class",
-    "faction",
-    "location",
-    "item"
-]
+ENTITY_TYPES = ["character", "race", "class", "faction", "location", "item"]
 
-CLASS_TYPES = ["боец", "маг", "жрец", "разбойник", "следопыт", "варвар", "бард", "паладин", "колдун", "друид"]
+CLASS_TYPES = [
+    "боец",
+    "маг",
+    "жрец",
+    "разбойник",
+    "следопыт",
+    "варвар",
+    "бард",
+    "паладин",
+    "колдун",
+    "друид",
+]
 
 ON_DELETE_SET_NULL = "SET NULL"
 

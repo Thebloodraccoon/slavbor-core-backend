@@ -1,12 +1,10 @@
 from datetime import datetime
 
-from sqlalchemy import (
-    Boolean, CheckConstraint, Column, DateTime, Index, Integer, String, Text
-)
+from sqlalchemy import (Boolean, CheckConstraint, Column, DateTime, Index,
+                        Integer, String, Text)
 
-from app.constants import (
-    ABILITY_CATEGORIES, create_range_constraint, create_enum_constraint
-)
+from app.constants import (ABILITY_CATEGORIES, create_enum_constraint,
+                           create_range_constraint)
 from app.settings import settings
 
 
@@ -99,17 +97,21 @@ class Ability(settings.Base):  # type: ignore
             create_range_constraint("charisma_modifier", -10, 10),
             name="check_charisma_modifier_range",
         ),
-
         Index("idx_ability_category", "category"),
         Index("idx_ability_usage_type", "usage_type"),
         Index("idx_ability_level_requirement", "level_requirement"),
         Index("idx_ability_class_requirement", "class_requirement_id"),
         Index("idx_ability_race_requirement", "race_requirement_id"),
-        Index("idx_ability_name_trgm", "name",
-              postgresql_using="gin",
-              postgresql_ops={"name": "gin_trgm_ops"}),
+        Index(
+            "idx_ability_name_trgm",
+            "name",
+            postgresql_using="gin",
+            postgresql_ops={"name": "gin_trgm_ops"},
+        ),
         Index("idx_ability_description_fts", "description", postgresql_using="gin"),
     )
 
     def __repr__(self):
-        return f"<Ability(id={self.id}, name='{self.name}', category='{self.category}')>"
+        return (
+            f"<Ability(id={self.id}, name='{self.name}', category='{self.category}')>"
+        )
