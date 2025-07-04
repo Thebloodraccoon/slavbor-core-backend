@@ -33,7 +33,6 @@ class Character(settings.Base):  # type: ignore
 
     # Biography information
     biography = Column(Text)
-    personality_traits = Column(Text)
     birth_year = Column(Integer, index=True)
     death_year = Column(Integer, index=True)
 

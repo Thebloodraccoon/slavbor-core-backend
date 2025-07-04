@@ -17,9 +17,6 @@ class Faction(settings.Base):  # type: ignore
     type = Column(String(50), nullable=False, index=True)
     description = Column(Text)
 
-    # Hierarchy
-    parent_faction_id = Column(Integer, ForeignKey("factions.id"), index=True)
-
     # Status
     status = Column(String(30), default="активная", index=True)
     founded_year = Column(Integer, index=True)
@@ -67,7 +64,6 @@ class Faction(settings.Base):  # type: ignore
         ),
         # Basic indexes
         Index("idx_faction_type_status", "type", "status"),
-        Index("idx_faction_hierarchy", "parent_faction_id", "type"),
         Index(
             "idx_faction_name_trgm",
             "name",

@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import (CheckConstraint, Column, DateTime, ForeignKey, Index,
                         Integer, String, Text)
 
-from app.constants import (DANGER_LEVELS, LOCATION_STATUSES, LOCATION_TYPES,
+from app.constants import (DANGER_LEVELS, LOCATION_STATUSES,
                            create_enum_constraint)
 from app.settings import settings
 
@@ -14,16 +14,10 @@ class Location(settings.Base):  # type: ignore
 
     # Required basic information
     name = Column(String(100), nullable=False, index=True)
-    type = Column(String(30), nullable=False, index=True)
-
-    # Basic description
     description = Column(Text)
 
-    # Geographic hierarchy
     parent_location_id = Column(Integer, ForeignKey("locations.id"), index=True)
     region = Column(String(50))
-
-    # Basic geographic information
     climate = Column(String(30))
 
     # Current status
@@ -43,10 +37,6 @@ class Location(settings.Base):  # type: ignore
 
     __table_args__ = (
         CheckConstraint(
-            create_enum_constraint("type", LOCATION_TYPES, nullable=False),
-            name="check_location_type",
-        ),
-        CheckConstraint(
             create_enum_constraint("current_status", LOCATION_STATUSES, nullable=False),
             name="check_current_status",
         ),
@@ -55,7 +45,6 @@ class Location(settings.Base):  # type: ignore
             name="check_danger_level",
         ),
         # Basic indexes
-        Index("idx_location_type_region", "type", "region"),
         Index("idx_location_coordinates", "map_x", "map_y"),
         Index("idx_location_status_danger", "current_status", "danger_level"),
         Index(

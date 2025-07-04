@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import (Boolean, CheckConstraint, Column, DateTime, Index,
                         Integer, String, Text)
 
-from app.constants import RACE_RARITIES, RACE_SIZES, create_enum_constraint
+from app.constants import RACE_SIZES, create_enum_constraint
 from app.settings import settings
 
 
@@ -18,11 +18,9 @@ class Race(settings.Base):  # type: ignore
     # Optional descriptive information
     description = Column(Text)
     size = Column(String(20), default="Средний", index=True)
-    special_traits = Column(Text)
 
     # Gameplay mechanics
     is_playable = Column(Boolean, default=True, index=True)
-    rarity = Column(String(20), default="обычная", index=True)
 
     # Metadata and versioning
     created_at = Column(DateTime, default=datetime.now, nullable=False)
@@ -34,10 +32,6 @@ class Race(settings.Base):  # type: ignore
         CheckConstraint(
             create_enum_constraint("size", RACE_SIZES, nullable=False),
             name="check_race_size",
-        ),
-        CheckConstraint(
-            create_enum_constraint("rarity", RACE_RARITIES),
-            name="check_race_rarity",
         ),
         Index(
             "idx_race_name_trgm",
