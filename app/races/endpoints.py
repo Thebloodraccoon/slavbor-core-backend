@@ -6,7 +6,6 @@ from starlette import status
 from app.core.dependencies import AdminUserDep, FounderUserDep, RaceServiceDep
 from app.races.schemas import (RaceCreate, RaceListResponse, RaceResponse,
                                RaceUpdate)
-from app.races.utils import normalize_rarity
 
 router = APIRouter()
 
@@ -27,16 +26,6 @@ def get_playable_races(
 ):
     """Get only playable races."""
     return race_service.get_playable_races()
-
-
-@router.get("/by-rarity/{rarity}", response_model=List[RaceResponse])
-def get_races_by_rarity(
-    rarity: str,
-    race_service: RaceServiceDep,
-):
-    """Get races by rarity level."""
-    normalized_rarity = normalize_rarity(rarity)
-    return race_service.get_races_by_rarity(normalized_rarity)
 
 
 @router.get("/{race_id}", response_model=RaceResponse)

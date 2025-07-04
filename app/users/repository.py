@@ -1,7 +1,7 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import Boolean, Column
+from sqlalchemy import Column
 from sqlalchemy.orm import Session
 
 from app.core.repository import BaseRepository

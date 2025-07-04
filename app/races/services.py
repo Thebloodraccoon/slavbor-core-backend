@@ -81,11 +81,6 @@ class RaceService:
 
         return self.repository.delete(race)
 
-    def get_races_by_rarity(self, rarity: str) -> List[RaceResponse]:
-        """Obtaining races by rarity."""
-        races = self.repository.get_by_rarity(rarity)
-        return [RaceResponse.model_validate(race) for race in races]
-
     def get_playable_races(self) -> List[RaceResponse]:
         """Obtaining only playable races."""
         races = self.repository.get_playable_races()
