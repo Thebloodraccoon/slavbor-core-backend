@@ -39,4 +39,8 @@ class LogoutResponse(BaseModel):
     detail: str
 
 
+class RefreshResponse(BaseModel):
+    detail: str
+
+
 LoginResponseUnion = Union[LoginResponse, TwoFASetupResponse, TwoFARequiredResponse]
