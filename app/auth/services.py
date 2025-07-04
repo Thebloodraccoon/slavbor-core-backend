@@ -1,6 +1,6 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 
-from fastapi import Request, Response
+from fastapi import Response
 from sqlalchemy.orm import Session
 
 from app.auth.schemas import (LoginRequest, LoginResponse, LoginResponseUnion,
@@ -17,8 +17,6 @@ from app.auth.utils.twofa_utils import (generate_otp_secret, generate_otp_uri,
                                         verify_otp_code)
 from app.exceptions.auth_exceptions import (InvalidCodeException,
                                             InvalidCredentialsException)
-from app.exceptions.token_exceptions import (InvalidTokenException,
-                                             TokenBlacklistedException)
 from app.settings import settings
 from app.users.repository import UserRepository
 
@@ -85,36 +83,11 @@ class AuthService:
             updated_user = self.user_repo.update_last_login(user)
         return create_login_response(updated_user, response)
 
-    async def refresh_tokens(self, http_request: Request) -> RefreshResponse:
-        refresh_token = http_request.cookies.get("refresh_token", "")
-
-        if not refresh_token:
-            raise InvalidTokenException
-
+    async def refresh_tokens(self, refresh_token: str) -> RefreshResponse:
         email = await verify_refresh_token(refresh_token)
+        new_access_token = create_access_token(data={"sub": email })
 
-        if not email:
-            raise InvalidTokenException
-
-        payload = decode_token(refresh_token)
-        token_exp_timestamp = payload.get("exp")
-
-        if token_exp_timestamp is not None:
-            token_exp: datetime = datetime.fromtimestamp(token_exp_timestamp)
-        else:
-            token_exp = datetime.now() + timedelta(days=30)
-
-        if add_token_to_blacklist(refresh_token, token_exp):
-            raise TokenBlacklistedException
-
-        user_id = payload.get("sub")
-
-        if not user_id:
-            raise InvalidTokenException
-
-        new_access_token = create_access_token(data={"sub": user_id})
-
-        return new_access_token
+        return RefreshResponse(access_token=new_access_token)
 
     async def logout_user(
         self, access_token: str, refresh_token: str

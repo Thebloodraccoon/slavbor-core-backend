@@ -42,7 +42,8 @@ async def logout(
 
 @router.post("/refresh", response_model=RefreshResponse)
 async def refresh_tokens(http_request: Request, auth_service: AuthServiceDep):
-    return await auth_service.refresh_tokens(http_request)
+    refresh_token = http_request.cookies.get("refresh_token", "")
+    return await auth_service.refresh_tokens(refresh_token)
 
 
 @router.post("/register")
