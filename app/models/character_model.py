@@ -1,8 +1,7 @@
 from datetime import datetime
 
-from sqlalchemy import (ARRAY, CheckConstraint, Column, DateTime, ForeignKey,
-                        Index, Integer, String, Text)
-from sqlalchemy.orm import relationship
+from sqlalchemy import (CheckConstraint, Column, DateTime, ForeignKey, Index,
+                        Integer, String, Text)
 
 from app.constants import (CHARACTER_STATUSES, CHARACTER_TYPES, SOCIAL_RANKS,
                            create_enum_constraint)
@@ -34,7 +33,6 @@ class Character(settings.Base):  # type: ignore
 
     # Biography information
     biography = Column(Text)
-    personality_traits = Column(Text)
     birth_year = Column(Integer, index=True)
     death_year = Column(Integer, index=True)
 
@@ -77,18 +75,6 @@ class Character(settings.Base):  # type: ignore
             postgresql_using="gin",
             postgresql_ops={"name": "gin_trgm_ops"},
         ),
-    )
-
-    # SQLAlchemy relationships
-    race = relationship("Race", back_populates="characters")
-    player_user = relationship(
-        "User", foreign_keys=[player_user_id], back_populates="player_characters"
-    )
-    created_by_user = relationship(
-        "User", foreign_keys=[created_by_user_id], back_populates="created_characters"
-    )
-    game_stats = relationship(
-        "CharacterGameStats", back_populates="character", uselist=False
     )
 
     def __repr__(self):

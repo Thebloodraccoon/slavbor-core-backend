@@ -2,10 +2,9 @@ from datetime import datetime
 
 from sqlalchemy import (Boolean, CheckConstraint, Column, DateTime, ForeignKey,
                         Index, Integer, String, Text)
-from sqlalchemy.orm import relationship
 
 from app.constants import (ARTICLE_CATEGORIES, ARTICLE_STATUSES, ARTICLE_TYPES,
-                           create_enum_constraint)
+                           ON_DELETE_SET_NULL, create_enum_constraint)
 from app.settings import settings
 
 
@@ -38,16 +37,16 @@ class Article(settings.Base):  # type: ignore
 
     # Primary entity relationships
     primary_character_id = Column(
-        Integer, ForeignKey("characters.id", ondelete="SET NULL"), index=True
+        Integer, ForeignKey("characters.id", ondelete=ON_DELETE_SET_NULL), index=True
     )
     primary_location_id = Column(
-        Integer, ForeignKey("locations.id", ondelete="SET NULL"), index=True
+        Integer, ForeignKey("locations.id", ondelete=ON_DELETE_SET_NULL), index=True
     )
     primary_faction_id = Column(
-        Integer, ForeignKey("factions.id", ondelete="SET NULL"), index=True
+        Integer, ForeignKey("factions.id", ondelete=ON_DELETE_SET_NULL), index=True
     )
     primary_race_id = Column(
-        Integer, ForeignKey("races.id", ondelete="SET NULL"), index=True
+        Integer, ForeignKey("races.id", ondelete=ON_DELETE_SET_NULL), index=True
     )
 
     # Publication
@@ -77,24 +76,6 @@ class Article(settings.Base):  # type: ignore
             postgresql_ops={"title": "gin_trgm_ops"},
         ),
         Index("idx_article_content_fts", "content", postgresql_using="gin"),
-    )
-
-    # SQLAlchemy relationships
-    created_by_user = relationship(
-        "User", foreign_keys=[created_by_user_id], back_populates="created_articles"
-    )
-    last_modified_by_user = relationship(
-        "User",
-        foreign_keys=[last_modified_by_user_id],
-        back_populates="last_modified_articles",
-    )
-    primary_character = relationship("Character", foreign_keys=[primary_character_id])
-    primary_location = relationship("Location", foreign_keys=[primary_location_id])
-    primary_faction = relationship(
-        "Faction", foreign_keys=[primary_faction_id], back_populates="articles"
-    )
-    primary_race = relationship(
-        "Race", foreign_keys=[primary_race_id], back_populates="articles"
     )
 
     def __repr__(self):

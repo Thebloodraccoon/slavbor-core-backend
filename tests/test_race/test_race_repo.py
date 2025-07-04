@@ -48,7 +48,6 @@ def test_create_race(db_session):
         "description": "Test description",
         "size": "Средний",
         "is_playable": True,
-        "rarity": "обычная",
     }
 
     result = repo.create(race_data)
@@ -110,19 +109,6 @@ def test_get_playable_races(db_session, create_race):
     assert len(result) == 1
     assert result[0].name == "Playable"
     assert result[0].is_playable is True
-
-
-def test_get_by_rarity(db_session, create_race):
-    """Test getting races by rarity"""
-    repo = RaceRepository(db_session)
-    create_race(name="Common", rarity="обычная")
-    create_race(name="Rare", rarity="редкая")
-
-    result = repo.get_by_rarity("обычная")
-
-    assert len(result) == 1
-    assert result[0].name == "Common"
-    assert result[0].rarity == "обычная"
 
 
 def test_count_all(db_session, create_race):

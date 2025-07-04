@@ -3,26 +3,24 @@ from datetime import datetime
 from sqlalchemy import (Boolean, CheckConstraint, Column, DateTime, Index,
                         Integer, String, Text)
 
-from app.constants import RACE_SIZES, create_enum_constraint
+from app.constants import CLASS_TYPES, create_enum_constraint
 from app.settings import settings
 
 
-class Race(settings.Base):  # type: ignore
-    __tablename__ = "races"
-
+class Class(settings.Base):  # type: ignore
+    __tablename__ = "classes"
     id = Column(Integer, primary_key=True)
 
-    # Required basic information
     name = Column(String(100), nullable=False, unique=True, index=True)
-
-    # Optional descriptive information
     description = Column(Text)
-    size = Column(String(20), default="Средний", index=True)
+    type = Column(String(50), nullable=False, index=True)
 
-    # Gameplay mechanics
+    hit_dice = Column(String(10), default="d8")
+    primary_ability = Column(String(20))
+
+    is_spellcaster = Column(Boolean, default=False)
     is_playable = Column(Boolean, default=True, index=True)
 
-    # Metadata and versioning
     created_at = Column(DateTime, default=datetime.now, nullable=False)
     updated_at = Column(
         DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
@@ -30,11 +28,11 @@ class Race(settings.Base):  # type: ignore
 
     __table_args__ = (
         CheckConstraint(
-            create_enum_constraint("size", RACE_SIZES, nullable=False),
-            name="check_race_size",
+            create_enum_constraint("type", CLASS_TYPES, nullable=False),
+            name="check_class_type",
         ),
         Index(
-            "idx_race_name_trgm",
+            "idx_class_name_trgm",
             "name",
             postgresql_using="gin",
             postgresql_ops={"name": "gin_trgm_ops"},
@@ -42,4 +40,4 @@ class Race(settings.Base):  # type: ignore
     )
 
     def __repr__(self):
-        return f"<Race(id={self.id}, name='{self.name}', size='{self.size}')>"
+        return f"<Class(id={self.id}, name='{self.name}', type='{self.type}')>"

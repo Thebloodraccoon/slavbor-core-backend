@@ -1,8 +1,7 @@
 from datetime import datetime
 
-from sqlalchemy import (ARRAY, CheckConstraint, Column, DateTime, ForeignKey,
-                        Index, Integer, String, Text)
-from sqlalchemy.orm import relationship
+from sqlalchemy import (CheckConstraint, Column, DateTime, ForeignKey, Index,
+                        Integer, String, Text)
 
 from app.constants import (FACTION_STATUSES, FACTION_TYPES, LEADERSHIP_TYPES,
                            create_enum_constraint)
@@ -17,9 +16,6 @@ class Faction(settings.Base):  # type: ignore
     name = Column(String(100), nullable=False, index=True)
     type = Column(String(50), nullable=False, index=True)
     description = Column(Text)
-
-    # Hierarchy
-    parent_faction_id = Column(Integer, ForeignKey("factions.id"), index=True)
 
     # Status
     status = Column(String(30), default="активная", index=True)
@@ -68,7 +64,6 @@ class Faction(settings.Base):  # type: ignore
         ),
         # Basic indexes
         Index("idx_faction_type_status", "type", "status"),
-        Index("idx_faction_hierarchy", "parent_faction_id", "type"),
         Index(
             "idx_faction_name_trgm",
             "name",
@@ -76,19 +71,6 @@ class Faction(settings.Base):  # type: ignore
             postgresql_ops={"name": "gin_trgm_ops"},
         ),
         Index("idx_faction_culture_religion", "dominant_culture", "primary_religion"),
-    )
-
-    # Relationships
-    parent_faction = relationship("Faction", remote_side=[id])
-    child_factions = relationship("Faction", overlaps="parent_faction")
-    created_by_user = relationship(
-        "User", foreign_keys=[created_by_user_id], back_populates="created_factions"
-    )
-
-    articles = relationship(
-        "Article",
-        foreign_keys="Article.primary_faction_id",
-        back_populates="primary_faction",
     )
 
     def __repr__(self):

@@ -28,7 +28,7 @@ class RaceRarityException(HTTPException):
         super().__init__(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail={
-                "error": "The unacceptable value of rarity",
+                "message": "The unacceptable value of rarity",
                 "received": rarity,
                 "allowed_values": readable_rarities,
                 "examples": ["очень редкая", "редкая", "обычная", "очень_редкая"],

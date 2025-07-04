@@ -4,6 +4,8 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.auth.endpoints import router as auth_router
+from app.middleware.error_handler import setup_error_handlers
 from app.ping.endpoints import router as ping_router
 from app.races.endpoints import router as race_router
 from app.settings import settings
@@ -23,6 +25,8 @@ app = FastAPI(
     description=settings.APP_NAME,
 )
 
+setup_error_handlers(app)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.ALLOWED_HOSTS,
@@ -32,6 +36,7 @@ app.add_middleware(
 )
 
 app.include_router(ping_router, prefix="/ping", tags=["Health Check"])
+app.include_router(auth_router, prefix="/auth", tags=["Auth"])
 app.include_router(race_router, prefix="/races", tags=["Race"])
 app.include_router(user_router, prefix="/users", tags=["Users"])
 

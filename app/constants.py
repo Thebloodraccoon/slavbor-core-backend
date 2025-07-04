@@ -119,45 +119,7 @@ LEADERSHIP_TYPES = [
     "коллективная",
 ]
 
-# Location model constants
-LOCATION_TYPES = [
-    "континент",
-    "страна",
-    "регион",
-    "княжество",
-    "провинция",
-    "город",
-    "столица",
-    "деревня",
-    "поселок",
-    "хутор",
-    "крепость",
-    "замок",
-    "форт",
-    "застава",
-    "храм",
-    "монастырь",
-    "святилище",
-    "руины",
-    "развалины",
-    "древний_город",
-    "порт",
-    "пристань",
-    "переправа",
-    "дорога",
-    "торговый_путь",
-    "перевал",
-    "лес",
-    "роща",
-    "болото",
-    "пустыня",
-    "горы",
-    "река",
-    "озеро",
-    "море",
-    "залив",
-]
-
+# Location model constant
 LOCATION_STATUSES = [
     "процветающая",
     "активная",
@@ -179,10 +141,28 @@ DANGER_LEVELS = [
 
 # Race model constants
 RACE_SIZES = ["Крошечный", "Маленький", "Средний", "Большой", "Огромный", "Гигантский"]
-RACE_RARITIES = ["очень_редкая", "редкая", "необычная", "обычная", "распространенная"]
 
 # User model constants
 USER_ROLES = ["found_father", "keeper", "player"]
+
+ABILITY_CATEGORIES = ["racial", "class", "spell", "feat", "item", "condition", "custom"]
+
+ENTITY_TYPES = ["character", "race", "class", "faction", "location", "item"]
+
+CLASS_TYPES = [
+    "боец",
+    "маг",
+    "жрец",
+    "разбойник",
+    "следопыт",
+    "варвар",
+    "бард",
+    "паладин",
+    "колдун",
+    "друид",
+]
+
+ON_DELETE_SET_NULL = "SET NULL"
 
 
 def create_enum_constraint(field_name: str, values: list, nullable: bool = True) -> str:

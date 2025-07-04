@@ -53,29 +53,6 @@ def test_get_playable_races_empty(client):
     assert len(data) == 0
 
 
-def test_get_races_by_rarity_success(client, create_race):
-    """Test getting races by rarity"""
-    create_race(name="Common Race", rarity="обычная")
-    create_race(name="Rare Race", rarity="редкая")
-
-    response = client.get("/races/by-rarity/обычная")
-
-    assert response.status_code == 200
-    data = response.json()
-    assert len(data) == 1
-    assert data[0]["name"] == "Common Race"
-    assert data[0]["rarity"] == "обычная"
-
-
-def test_get_races_by_rarity_empty(client):
-    """Test getting races by rarity when none exist"""
-    response = client.get("/races/by-rarity/редкая")
-
-    assert response.status_code == 200
-    data = response.json()
-    assert len(data) == 0
-
-
 def test_get_race_by_id_success(client, test_race):
     """Test getting a specific race by ID"""
     response = client.get(f"/races/{test_race.id}")
@@ -93,21 +70,23 @@ def test_get_race_by_id_not_found(client):
 
     assert response.status_code == 404
     data = response.json()
-    assert "not found" in data["detail"]
+    assert "not found" in data["error"]["detail"]
 
 
-def test_create_race_success(client):
+def test_create_race_success(client, test_admin_token):
     """Test creating a new race"""
     race_data = {
         "name": "New Test Race",
         "description": "A new test race",
         "size": "Средний",
-        "special_traits": "Special abilities",
         "is_playable": True,
-        "rarity": "обычная",
     }
 
-    response = client.post("/races/", json=race_data)
+    response = client.post(
+        "/races/",
+        json=race_data,
+        headers={"Authorization": f"Bearer {test_admin_token.credentials}"},
+    )
 
     assert response.status_code == 201
     data = response.json()
@@ -117,16 +96,20 @@ def test_create_race_success(client):
     assert data["is_playable"] == race_data["is_playable"]
 
 
-def test_create_race_invalid_data(client):
+def test_create_race_invalid_data(client, test_admin_token):
     """Test creating a race with invalid data"""
     race_data = {"name": "", "size": "InvalidSize", "rarity": "invalid_rarity"}
 
-    response = client.post("/races/", json=race_data)
+    response = client.post(
+        "/races/",
+        json=race_data,
+        headers={"Authorization": f"Bearer {test_admin_token.credentials}"},
+    )
 
     assert response.status_code == 422
 
 
-def test_create_race_duplicate_name(client, test_race):
+def test_create_race_duplicate_name(client, test_race, test_admin_token):
     """Test creating a race with duplicate name"""
     race_data = {
         "name": test_race.name,
@@ -135,25 +118,31 @@ def test_create_race_duplicate_name(client, test_race):
         "is_playable": False,
     }
 
-    response = client.post("/races/", json=race_data)
+    response = client.post(
+        "/races/",
+        json=race_data,
+        headers={"Authorization": f"Bearer {test_admin_token.credentials}"},
+    )
 
     assert response.status_code == 400
     data = response.json()
-    assert "already exists" in data["detail"]
+    assert "already exists" in data["error"]["detail"]
 
 
-def test_update_race_post_success(client, test_race):
+def test_update_race_post_success(client, test_race, test_admin_token):
     """Test full update of a race using POST"""
     update_data = {
         "name": "Updated Race Name",
         "description": "Updated description",
         "size": "Большой",
-        "special_traits": "Updated traits",
         "is_playable": False,
-        "rarity": "редкая",
     }
 
-    response = client.post(f"/races/{test_race.id}", json=update_data)
+    response = client.post(
+        f"/races/{test_race.id}",
+        json=update_data,
+        headers={"Authorization": f"Bearer {test_admin_token.credentials}"},
+    )
 
     assert response.status_code == 200
     data = response.json()
@@ -163,36 +152,48 @@ def test_update_race_post_success(client, test_race):
     assert data["is_playable"] == update_data["is_playable"]
 
 
-def test_update_race_post_not_found(client):
+def test_update_race_post_not_found(client, test_admin_token):
     """Test updating a race that doesn't exist using POST"""
     update_data = {"name": "Non-existent Race", "description": "This won't work"}
 
-    response = client.post("/races/999", json=update_data)
+    response = client.post(
+        "/races/999",
+        json=update_data,
+        headers={"Authorization": f"Bearer {test_admin_token.credentials}"},
+    )
 
     assert response.status_code == 404
     data = response.json()
-    assert "not found" in data["detail"]
+    assert "not found" in data["error"]["detail"]
 
 
-def test_update_race_post_duplicate_name(client, create_race):
+def test_update_race_post_duplicate_name(client, create_race, test_admin_token):
     """Test updating a race with duplicate name using POST"""
     race1 = create_race(name="Race 1")
     race2 = create_race(name="Race 2")
 
     update_data = {"name": race1.name, "description": "Updated description"}
 
-    response = client.post(f"/races/{race2.id}", json=update_data)
+    response = client.post(
+        f"/races/{race2.id}",
+        json=update_data,
+        headers={"Authorization": f"Bearer {test_admin_token.credentials}"},
+    )
 
     assert response.status_code == 400
     data = response.json()
-    assert "already exists" in data["detail"]
+    assert "already exists" in data["error"]["detail"]
 
 
-def test_update_race_patch_success(client, test_race):
+def test_update_race_patch_success(client, test_race, test_admin_token):
     """Test partial update of a race using PATCH"""
     update_data = {"name": "Partially Updated Race", "is_playable": False}
 
-    response = client.patch(f"/races/{test_race.id}", json=update_data)
+    response = client.patch(
+        f"/races/{test_race.id}",
+        json=update_data,
+        headers={"Authorization": f"Bearer {test_admin_token.credentials}"},
+    )
 
     assert response.status_code == 200
     data = response.json()
@@ -201,54 +202,71 @@ def test_update_race_patch_success(client, test_race):
     assert data["description"] == test_race.description
 
 
-def test_update_race_patch_not_found(client):
+def test_update_race_patch_not_found(client, test_admin_token):
     """Test partial update of a race that doesn't exist"""
     update_data = {"name": "Won't work"}
 
-    response = client.patch("/races/999", json=update_data)
+    response = client.patch(
+        "/races/999",
+        json=update_data,
+        headers={"Authorization": f"Bearer {test_admin_token.credentials}"},
+    )
 
     assert response.status_code == 404
     data = response.json()
-    assert "not found" in data["detail"]
+    assert "not found" in data["error"]["detail"]
 
 
-def test_update_race_patch_duplicate_name(client, create_race):
+def test_update_race_patch_duplicate_name(client, create_race, test_admin_token):
     """Test partial update of a race with duplicate name"""
     race1 = create_race(name="Race 1")
     race2 = create_race(name="Race 2")
 
     update_data = {"name": race1.name}
 
-    response = client.patch(f"/races/{race2.id}", json=update_data)
+    response = client.patch(
+        f"/races/{race2.id}",
+        json=update_data,
+        headers={"Authorization": f"Bearer {test_admin_token.credentials}"},
+    )
 
     assert response.status_code == 400
     data = response.json()
-    assert "already exists" in data["detail"]
+    assert "already exists" in data["error"]["detail"]
 
 
-def test_toggle_race_playable_status_success(client, test_race):
+def test_toggle_race_playable_status_success(client, test_race, test_admin_token):
     """Test toggling playable status of a race"""
     original_status = test_race.is_playable
 
-    response = client.patch(f"/races/{test_race.id}/toggle-playable")
+    response = client.patch(
+        f"/races/{test_race.id}/toggle-playable",
+        headers={"Authorization": f"Bearer {test_admin_token.credentials}"},
+    )
 
     assert response.status_code == 200
     data = response.json()
     assert data["is_playable"] != original_status
 
 
-def test_toggle_race_playable_status_not_found(client):
+def test_toggle_race_playable_status_not_found(client, test_admin_token):
     """Test toggling playable status of a race that doesn't exist"""
-    response = client.patch("/races/999/toggle-playable")
+    response = client.patch(
+        "/races/999/toggle-playable",
+        headers={"Authorization": f"Bearer {test_admin_token.credentials}"},
+    )
 
     assert response.status_code == 404
     data = response.json()
-    assert "not found" in data["detail"]
+    assert "not found" in data["error"]["detail"]
 
 
-def test_delete_race_success(client, test_race):
+def test_delete_race_success(client, test_race, test_admin_token):
     """Test deleting a race"""
-    response = client.delete(f"/races/{test_race.id}")
+    response = client.delete(
+        f"/races/{test_race.id}",
+        headers={"Authorization": f"Bearer {test_admin_token.credentials}"},
+    )
 
     assert response.status_code == 204
 
@@ -256,23 +274,13 @@ def test_delete_race_success(client, test_race):
     assert get_response.status_code == 404
 
 
-def test_delete_race_not_found(client):
+def test_delete_race_not_found(client, test_admin_token):
     """Test deleting a race that doesn't exist"""
-    response = client.delete("/races/999")
+    response = client.delete(
+        "/races/999",
+        headers={"Authorization": f"Bearer {test_admin_token.credentials}"},
+    )
 
     assert response.status_code == 404
     data = response.json()
-    assert "not found" in data["detail"]
-
-
-def test_get_races_by_rarity_invalid(client):
-    """Test getting races by invalid rarity"""
-    response = client.get("/races/by-rarity/invalid_rarity")
-
-    assert response.status_code == 400
-    data = response.json()
-    assert "detail" in data
-
-    if isinstance(data["detail"], dict):
-        assert "error" in data["detail"]
-        assert "The unacceptable value of rarity" in data["detail"]["error"]
+    assert "not found" in data["error"]["detail"]
