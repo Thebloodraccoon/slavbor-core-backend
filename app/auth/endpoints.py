@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Response
+from fastapi import APIRouter, Request, Response
 
 from app.auth.schemas import (LoginRequest, LoginResponse, LoginResponseUnion,
-                              TwoFAVerifyRequest)
-from app.core.dependencies import AuthServiceDep
+                              LogoutResponse, TwoFAVerifyRequest)
+from app.core.dependencies import AuthServiceDep, CurrentUserDep
 
 router = APIRouter()
 
@@ -19,9 +19,24 @@ def verify_2fa(
     return auth_service.verify_2fa(request, response)
 
 
-@router.post("/logout")
-def logout():
-    return {"LOGOUT": "TODO"}
+@router.post("/logout", response_model=LogoutResponse)
+async def logout(
+    http_request: Request,
+    response: Response,
+    auth_service: AuthServiceDep,
+    _: CurrentUserDep,
+):
+    access_token = (http_request.headers.get("Authorization") or "").replace(
+        "Bearer ", ""
+    )
+    refresh_token = http_request.cookies.get("refresh_token", "")
+    logout_response = await auth_service.logout_user(access_token, refresh_token)
+
+    response.delete_cookie(
+        key="refresh_token", httponly=True, samesite="none", secure=True
+    )
+
+    return logout_response
 
 
 @router.post("/refresh")
