@@ -32,12 +32,24 @@ def get_auth_service(db: DatabaseDep) -> AuthService:
     return AuthService(db)
 
 
+UserServiceDep = Annotated[UserService, Depends(get_user_service)]
+RaceServiceDep = Annotated[RaceService, Depends(get_race_service)]
+AuthServiceDep = Annotated[AuthService, Depends(get_auth_service)]
+
+security = HTTPBearer(
+    scheme_name="JWT Bearer",
+    description="JWT Bearer token for authentication",
+    auto_error=False,
+)
+TokenDep = Annotated[HTTPAuthorizationCredentials, Depends(security)]
+
+
 async def get_current_user(
-    token: HTTPAuthorizationCredentials = Depends(HTTPBearer()),
-    db: Session = Depends(settings.get_db),
+    user_service: UserServiceDep,
+    token: TokenDep,
 ) -> UserResponse:
     email = await verify_token(token, "access")
-    return UserService(db).get_user_by_email(email)
+    return user_service.get_user_by_email(email)
 
 
 def require_keeper_or_founder(
@@ -57,10 +69,6 @@ def require_founder(
 
     return current_user
 
-
-UserServiceDep = Annotated[UserService, Depends(get_user_service)]
-RaceServiceDep = Annotated[RaceService, Depends(get_race_service)]
-AuthServiceDep = Annotated[AuthService, Depends(get_auth_service)]
 
 CurrentUserDep = Annotated[UserResponse, Depends(get_current_user)]
 AdminUserDep = Annotated[UserResponse, Depends(require_keeper_or_founder)]
