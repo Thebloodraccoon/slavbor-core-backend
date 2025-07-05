@@ -1,7 +1,56 @@
-from fastapi import HTTPException, Request
+import logging
+from datetime import datetime
+from typing import Any, Dict, Optional
+
+from fastapi import HTTPException, Request, status
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
+logger = logging.getLogger(__name__)
+
+
+def get_timestamp() -> str:
+    """Get current timestamp in ISO format."""
+    return datetime.now().isoformat() + "Z"
+
+
+class ErrorResponse:
+    """Standardized error response format."""
+
+    def __init__(
+        self,
+        error_type: str,
+        message: str,
+        status_code: int,
+        details: Any = None,
+        request_id: Optional[str] = None,
+    ):
+        self.error_type = error_type
+        self.message = message
+        self.status_code = status_code
+        self.details = details
+        self.request_id = request_id
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert error response to dictionary format."""
+        response = {
+            "error": {
+                "type": self.error_type,
+                "message": self.message,
+                "status_code": self.status_code,
+                "timestamp": get_timestamp(),
+            }
+        }
+
+        if self.details:
+            response["error"]["details"] = self.details
+
+        if self.request_id:
+            response["error"]["request_id"] = self.request_id
+
+        return response
 
 
 def setup_error_handlers(app):
@@ -9,48 +58,91 @@ def setup_error_handlers(app):
 
     @app.exception_handler(HTTPException)
     async def http_exception_handler(request: Request, exc: HTTPException):
-        """The processor of all HTTP exceptions including your custom."""
+        """Handle HTTP exceptions."""
+        request_id = getattr(request.state, "request_id", None)
+
+        logger.warning(
+            f"HTTP Exception: {exc.status_code} - {exc.detail} - "
+            f"Path: {request.url.path} - Request ID: {request_id}"
+        )
+
+        error_response = ErrorResponse(
+            error_type="HTTPException",
+            message=str(exc.detail),
+            status_code=exc.status_code,
+            request_id=request_id,
+        )
+
         return JSONResponse(
             status_code=exc.status_code,
-            content={
-                "error": {
-                    "status_code": exc.status_code,
-                    "detail": exc.detail,
-                    "type": type(exc).__name__,
-                }
-            },
+            content=error_response.to_dict(),
             headers=getattr(exc, "headers", None),
+        )
+
+    @app.exception_handler(StarletteHTTPException)
+    async def starlette_exception_handler(
+        request: Request, exc: StarletteHTTPException
+    ):
+        """Handle Starlette HTTP exceptions."""
+        request_id = getattr(request.state, "request_id", None)
+
+        error_response = ErrorResponse(
+            error_type="StarletteHTTPException",
+            message=str(exc.detail),
+            status_code=exc.status_code,
+            request_id=request_id,
+        )
+
+        return JSONResponse(
+            status_code=exc.status_code, content=error_response.to_dict()
         )
 
     @app.exception_handler(ValidationError)
     async def validation_exception_handler(request: Request, exc: ValidationError):
-        """Pydantic validation error processor."""
+        """Handle Pydantic validation errors."""
+        request_id = getattr(request.state, "request_id", None)
+
+        logger.warning(
+            f"Validation Error: {exc.errors()} - "
+            f"Path: {request.url.path} - Request ID: {request_id}"
+        )
+
+        validation_errors = [
+            {
+                "field": ".".join(str(loc) for loc in error["loc"]),
+                "message": error["msg"],
+                "type": error["type"],
+                "input": error.get("input"),
+            }
+            for error in exc.errors()
+        ]
+
+        error_response = ErrorResponse(
+            error_type="ValidationError",
+            message="Validation failed",
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details={"validation_errors": validation_errors},
+            request_id=request_id,
+        )
+
         return JSONResponse(
-            status_code=422,
-            content={
-                "error": {
-                    "status_code": 422,
-                    "detail": "Validation failed",
-                    "type": "ValidationError",
-                    "validation_errors": [
-                        {
-                            "field": ".".join(str(loc) for loc in error["loc"]),
-                            "message": error["msg"],
-                            "type": error["type"],
-                        }
-                        for error in exc.errors()
-                    ],
-                }
-            },
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            content=error_response.to_dict(),
         )
 
     @app.exception_handler(SQLAlchemyError)
     async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError):
-        """SQLCHEMY error handler."""
+        """Handle SQLAlchemy database errors."""
+        request_id = getattr(request.state, "request_id", None)
+
+        logger.error(
+            f"Database Error: {str(exc)} - "
+            f"Path: {request.url.path} - Request ID: {request_id}"
+        )
 
         if isinstance(exc, IntegrityError):
             error_detail = "Database integrity constraint violation"
-            status_code = 400
+            status_code = status.HTTP_400_BAD_REQUEST
 
             error_str = str(exc.orig) if hasattr(exc, "orig") else str(exc)
             if "UNIQUE" in error_str.upper():
@@ -61,30 +153,39 @@ def setup_error_handlers(app):
                 error_detail = "Required field cannot be empty"
         else:
             error_detail = "Database operation failed"
-            status_code = 500
+            status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+
+        error_response = ErrorResponse(
+            error_type="DatabaseError",
+            message=error_detail,
+            status_code=status_code,
+            request_id=request_id,
+        )
 
         return JSONResponse(
             status_code=status_code,
-            content={
-                "error": {
-                    "status_code": status_code,
-                    "detail": error_detail,
-                    "type": "DatabaseError",
-                }
-            },
+            content=error_response.to_dict(),
         )
 
     @app.exception_handler(Exception)
     async def global_exception_handler(request: Request, exc: Exception):
-        """Global handler of all unprocessed exceptions."""
+        """Handle all unhandled exceptions."""
+        request_id = getattr(request.state, "request_id", None)
+
+        logger.error(
+            f"Unhandled Exception: {type(exc).__name__} - {str(exc)} - "
+            f"Path: {request.url.path} - Request ID: {request_id}",
+            exc_info=True,
+        )
+
+        error_response = ErrorResponse(
+            error_type="InternalServerError",
+            message="Internal server error",
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            request_id=request_id,
+        )
 
         return JSONResponse(
-            status_code=500,
-            content={
-                "error": {
-                    "status_code": 500,
-                    "detail": "Internal server error",
-                    "type": type(exc).__name__,
-                }
-            },
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content=error_response.to_dict(),
         )

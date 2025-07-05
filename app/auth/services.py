@@ -85,20 +85,21 @@ class AuthService:
 
     async def refresh_tokens(self, refresh_token: str) -> RefreshResponse:
         email = await verify_refresh_token(refresh_token)
-        new_access_token = create_access_token(data={"sub": email})
+        user = self.user_repo.get_by_email(email)
 
+        if not user:
+            raise InvalidCredentialsException()
+
+        new_access_token = create_access_token(data={"sub": user.email})
         return RefreshResponse(access_token=new_access_token)
 
-    async def logout_user(
-        self, access_token: str, refresh_token: str
-    ) -> LogoutResponse:
+    @classmethod
+    async def logout_user(cls, access_token: str, refresh_token: str) -> LogoutResponse:
         payload = decode_token(access_token)
-        exp = payload.get("exp")
-        if exp is None:
-            raise ValueError("Token payload missing 'exp' field")
+        exp = float(payload.get("exp", "0.0"))
 
         blacklist_access = await add_token_to_blacklist(
-            access_token, datetime.fromtimestamp(float(exp), tz=timezone.utc)
+            access_token, datetime.fromtimestamp(exp, tz=timezone.utc)
         )
         if refresh_token:
             await add_token_to_blacklist(
