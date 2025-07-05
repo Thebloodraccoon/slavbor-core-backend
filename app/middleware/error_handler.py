@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from fastapi import HTTPException, Request, status
 from fastapi.responses import JSONResponse
@@ -11,16 +11,21 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 logger = logging.getLogger(__name__)
 
 
+def get_timestamp() -> str:
+    """Get current timestamp in ISO format."""
+    return datetime.now().isoformat() + "Z"
+
+
 class ErrorResponse:
     """Standardized error response format."""
 
     def __init__(
-            self,
-            error_type: str,
-            message: str,
-            status_code: int,
-            details: Any = None,
-            request_id: str = None
+        self,
+        error_type: str,
+        message: str,
+        status_code: int,
+        details: Any = None,
+        request_id: Optional[str] = None,
     ):
         self.error_type = error_type
         self.message = message
@@ -35,7 +40,7 @@ class ErrorResponse:
                 "type": self.error_type,
                 "message": self.message,
                 "status_code": self.status_code,
-                "timestamp": self._get_timestamp(),
+                "timestamp": get_timestamp(),
             }
         }
 
@@ -46,11 +51,6 @@ class ErrorResponse:
             response["error"]["request_id"] = self.request_id
 
         return response
-
-    @staticmethod
-    def _get_timestamp() -> str:
-        """Get current timestamp in ISO format."""
-        return datetime.now().isoformat() + "Z"
 
 
 def setup_error_handlers(app):
@@ -70,7 +70,7 @@ def setup_error_handlers(app):
             error_type="HTTPException",
             message=str(exc.detail),
             status_code=exc.status_code,
-            request_id=request_id
+            request_id=request_id,
         )
 
         return JSONResponse(
@@ -80,7 +80,9 @@ def setup_error_handlers(app):
         )
 
     @app.exception_handler(StarletteHTTPException)
-    async def starlette_exception_handler(request: Request, exc: StarletteHTTPException):
+    async def starlette_exception_handler(
+        request: Request, exc: StarletteHTTPException
+    ):
         """Handle Starlette HTTP exceptions."""
         request_id = getattr(request.state, "request_id", None)
 
@@ -88,12 +90,11 @@ def setup_error_handlers(app):
             error_type="StarletteHTTPException",
             message=str(exc.detail),
             status_code=exc.status_code,
-            request_id=request_id
+            request_id=request_id,
         )
 
         return JSONResponse(
-            status_code=exc.status_code,
-            content=error_response.to_dict()
+            status_code=exc.status_code, content=error_response.to_dict()
         )
 
     @app.exception_handler(ValidationError)
@@ -121,7 +122,7 @@ def setup_error_handlers(app):
             message="Validation failed",
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             details={"validation_errors": validation_errors},
-            request_id=request_id
+            request_id=request_id,
         )
 
         return JSONResponse(
@@ -158,7 +159,7 @@ def setup_error_handlers(app):
             error_type="DatabaseError",
             message=error_detail,
             status_code=status_code,
-            request_id=request_id
+            request_id=request_id,
         )
 
         return JSONResponse(
@@ -174,14 +175,14 @@ def setup_error_handlers(app):
         logger.error(
             f"Unhandled Exception: {type(exc).__name__} - {str(exc)} - "
             f"Path: {request.url.path} - Request ID: {request_id}",
-            exc_info=True
+            exc_info=True,
         )
 
         error_response = ErrorResponse(
             error_type="InternalServerError",
             message="Internal server error",
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            request_id=request_id
+            request_id=request_id,
         )
 
         return JSONResponse(

@@ -54,7 +54,7 @@ def db_session():
 
 @pytest.fixture(scope="function")
 def client(db_session, redis_test):
-    with TestClient(app) as c:
+    with TestClient(app, base_url="http://testserver/api") as c:
         yield c
 
 

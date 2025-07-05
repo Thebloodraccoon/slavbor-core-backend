@@ -70,7 +70,7 @@ def test_get_race_by_id_not_found(client):
 
     assert response.status_code == 404
     data = response.json()
-    assert "not found" in data["error"]["detail"]
+    assert "not found" in data["error"]["message"]
 
 
 def test_create_race_success(client, test_admin_token):
@@ -126,7 +126,7 @@ def test_create_race_duplicate_name(client, test_race, test_admin_token):
 
     assert response.status_code == 400
     data = response.json()
-    assert "already exists" in data["error"]["detail"]
+    assert "already exists" in data["error"]["message"]
 
 
 def test_update_race_post_success(client, test_race, test_admin_token):
@@ -164,7 +164,7 @@ def test_update_race_post_not_found(client, test_admin_token):
 
     assert response.status_code == 404
     data = response.json()
-    assert "not found" in data["error"]["detail"]
+    assert "not found" in data["error"]["message"]
 
 
 def test_update_race_post_duplicate_name(client, create_race, test_admin_token):
@@ -182,7 +182,7 @@ def test_update_race_post_duplicate_name(client, create_race, test_admin_token):
 
     assert response.status_code == 400
     data = response.json()
-    assert "already exists" in data["error"]["detail"]
+    assert "already exists" in data["error"]["message"]
 
 
 def test_update_race_patch_success(client, test_race, test_admin_token):
@@ -214,7 +214,7 @@ def test_update_race_patch_not_found(client, test_admin_token):
 
     assert response.status_code == 404
     data = response.json()
-    assert "not found" in data["error"]["detail"]
+    assert "not found" in data["error"]["message"]
 
 
 def test_update_race_patch_duplicate_name(client, create_race, test_admin_token):
@@ -232,7 +232,7 @@ def test_update_race_patch_duplicate_name(client, create_race, test_admin_token)
 
     assert response.status_code == 400
     data = response.json()
-    assert "already exists" in data["error"]["detail"]
+    assert "already exists" in data["error"]["message"]
 
 
 def test_toggle_race_playable_status_success(client, test_race, test_admin_token):
@@ -258,7 +258,7 @@ def test_toggle_race_playable_status_not_found(client, test_admin_token):
 
     assert response.status_code == 404
     data = response.json()
-    assert "not found" in data["error"]["detail"]
+    assert "not found" in data["error"]["message"]
 
 
 def test_delete_race_success(client, test_race, test_admin_token):
@@ -283,4 +283,4 @@ def test_delete_race_not_found(client, test_admin_token):
 
     assert response.status_code == 404
     data = response.json()
-    assert "not found" in data["error"]["detail"]
+    assert "not found" in data["error"]["message"]

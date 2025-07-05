@@ -1,3 +1,4 @@
+import logging
 from contextlib import asynccontextmanager
 
 import uvicorn
@@ -5,48 +6,91 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.auth.endpoints import router as auth_router
+from app.middleware.config import MiddlewareConfig
 from app.middleware.error_handler import setup_error_handlers
+from app.middleware.logging import LoggingMiddleware
+from app.middleware.rate_limit import RateLimitMiddleware
+from app.middleware.request_id import RequestIDMiddleware
+from app.middleware.security import SecurityHeadersMiddleware
+from app.middleware.timing import TimingMiddleware
 from app.ping.endpoints import router as ping_router
 from app.races.endpoints import router as race_router
 from app.settings import settings
 from app.users.endpoints import router as user_router
 
+logger = logging.getLogger(__name__)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    """Application lifespan manager."""
+    logger.info("Starting up Slavbor World Backend API...")
     settings.Base.metadata.create_all(bind=settings.engine)
     yield
-    print("Application is shutting down.")
+    logger.info("Shutting down Slavbor World Backend API...")
+
+
+def setup_middleware(app: FastAPI) -> None:
+    """Setup application middleware in the correct order."""
+    cors_config = MiddlewareConfig.get_cors_config()
+    app.add_middleware(CORSMiddleware, **cors_config)
+
+    if MiddlewareConfig.should_enable_middleware("security"):
+        app.add_middleware(SecurityHeadersMiddleware)
+
+    if MiddlewareConfig.should_enable_middleware("rate_limit"):
+        rate_limit_config = MiddlewareConfig.get_rate_limit_config()
+        app.add_middleware(RateLimitMiddleware, **rate_limit_config)
+
+    if MiddlewareConfig.should_enable_middleware("logging"):
+        logging_config = MiddlewareConfig.get_logging_config()
+        app.add_middleware(LoggingMiddleware, **logging_config)
+
+    if MiddlewareConfig.should_enable_middleware("timing"):
+        timing_config = MiddlewareConfig.get_timing_config()
+        app.add_middleware(TimingMiddleware, **timing_config)
+
+    if MiddlewareConfig.should_enable_middleware("request_id"):
+        app.add_middleware(RequestIDMiddleware)
+
+
+def setup_routers(app: FastAPI) -> None:
+    """Setup API routes with proper versioning."""
+    logger.info("Setting up API routes...")
+
+    api_prefix = "/api"
+
+    # Health check без версіювання
+    app.include_router(ping_router, prefix=f"{api_prefix}/ping", tags=["Health Check"])
+
+    app.include_router(auth_router, prefix=f"{api_prefix}/auth", tags=["Auth"])
+    app.include_router(race_router, prefix=f"{api_prefix}/races", tags=["Races"])
+    app.include_router(user_router, prefix=f"{api_prefix}/users", tags=["Users"])
 
 
 app = FastAPI(
-    lifespan=lifespan,
+    title=settings.APP_NAME,
     version=settings.APP_VERSION,
-    description=settings.APP_NAME,
+    description="Slavbor World Backend API - A D&D world management system",
+    lifespan=lifespan,
+    docs_url="/docs" if settings.STAGE != "prod" else None,
+    redoc_url="/redoc" if settings.STAGE != "prod" else None,
+    openapi_url="/openapi.json" if settings.STAGE != "prod" else None,
+    separate_input_output_schemas=True,
 )
 
+setup_middleware(app)
 setup_error_handlers(app)
+setup_routers(app)
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.ALLOWED_HOSTS,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-app.include_router(ping_router, prefix="/ping", tags=["Health Check"])
-app.include_router(auth_router, prefix="/auth", tags=["Auth"])
-app.include_router(race_router, prefix="/races", tags=["Race"])
-app.include_router(user_router, prefix="/users", tags=["Users"])
 
 if __name__ == "__main__":
-    if settings.STAGE == "prod":
-        uvicorn.run(
-            "app.main:app",
-            host=settings.HOST,
-            port=8000,
-            reload=True,
-        )
-    else:
-        uvicorn.run("app.main:app", host=settings.HOST, port=8000, reload=True)
+    uvicorn.run(
+        "app.main:app",
+        host=settings.HOST,
+        port=8000,
+        reload=settings.STAGE == "local",
+        workers=1 if settings.STAGE == "local" else 4,
+        access_log=settings.STAGE != "prod",
+        log_level="info" if settings.STAGE != "prod" else "warning",
+    )
