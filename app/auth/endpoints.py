@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Request, Response
 
 from app.auth.schemas import (LoginRequest, LoginResponse, LoginResponseUnion,
-                              LogoutResponse, TwoFAVerifyRequest)
+                              LogoutResponse, RefreshResponse,
+                              TwoFAVerifyRequest)
 from app.core.dependencies import AuthServiceDep, CurrentUserDep
 
 router = APIRouter()
@@ -39,9 +40,10 @@ async def logout(
     return logout_response
 
 
-@router.post("/refresh")
-def refresh_tokens():
-    return {"REFRESH_TOKENS": "TODO"}
+@router.post("/refresh", response_model=RefreshResponse)
+async def refresh_tokens(http_request: Request, auth_service: AuthServiceDep):
+    refresh_token = http_request.cookies.get("refresh_token", "")
+    return await auth_service.refresh_tokens(refresh_token)
 
 
 @router.post("/register")

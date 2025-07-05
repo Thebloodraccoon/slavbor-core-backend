@@ -99,7 +99,7 @@ services:
     networks:
       - app_network
     healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:8000/ping"]
+      test: ["CMD", "curl", "--fail", "http://localhost:8000/api/ping"]
       interval: 30s
       timeout: 10s
       retries: 3
