@@ -56,13 +56,9 @@ def setup_middleware(app: FastAPI) -> None:
 
 def setup_routers(app: FastAPI) -> None:
     """Setup API routes with proper versioning."""
-    logger.info("Setting up API routes...")
-
     api_prefix = "/api"
 
-    # Health check без версіювання
     app.include_router(ping_router, prefix=f"{api_prefix}/ping", tags=["Health Check"])
-
     app.include_router(auth_router, prefix=f"{api_prefix}/auth", tags=["Auth"])
     app.include_router(race_router, prefix=f"{api_prefix}/races", tags=["Races"])
     app.include_router(user_router, prefix=f"{api_prefix}/users", tags=["Users"])
