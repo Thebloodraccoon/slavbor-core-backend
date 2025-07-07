@@ -1,20 +1,25 @@
 import re
 from typing import Union
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, constr
 
 from app.exceptions.user_exceptions import InvalidEmailException
 
 
 class LoginRequest(BaseModel):
+    username: constr(min_length=3, max_length=32)
     email: str
-    password: str
+    password: constr(min_length=8)
 
     @field_validator("email")
     def validate_email(cls, email):
         if not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
             raise InvalidEmailException()
         return email
+
+
+class RegisterResponse(BaseModel):
+    access_token: str
 
 
 class LoginResponse(BaseModel):
