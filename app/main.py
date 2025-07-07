@@ -6,13 +6,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.auth.endpoints import router as auth_router
-from app.middleware.config import MiddlewareConfig
+from app.middleware import (AutoTokenRefreshMiddleware, LoggingMiddleware,
+                            MiddlewareConfig, RateLimitMiddleware,
+                            RequestIDMiddleware, SecurityHeadersMiddleware,
+                            TimingMiddleware)
 from app.middleware.error_handler import setup_error_handlers
-from app.middleware.logging import LoggingMiddleware
-from app.middleware.rate_limit import RateLimitMiddleware
-from app.middleware.request_id import RequestIDMiddleware
-from app.middleware.security import SecurityHeadersMiddleware
-from app.middleware.timing import TimingMiddleware
 from app.ping.endpoints import router as ping_router
 from app.races.endpoints import router as race_router
 from app.settings import settings
@@ -34,6 +32,10 @@ def setup_middleware(app: FastAPI) -> None:
     """Setup application middleware in the correct order."""
     cors_config = MiddlewareConfig.get_cors_config()
     app.add_middleware(CORSMiddleware, **cors_config)
+
+    if MiddlewareConfig.should_enable_middleware("token_refresh"):
+        token_refresh_config = MiddlewareConfig.get_token_refresh_config()
+        app.add_middleware(AutoTokenRefreshMiddleware, **token_refresh_config)
 
     if MiddlewareConfig.should_enable_middleware("security"):
         app.add_middleware(SecurityHeadersMiddleware)

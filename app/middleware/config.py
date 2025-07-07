@@ -34,6 +34,24 @@ class MiddlewareConfig:
         return config.get(settings.STAGE, config["prod"])
 
     @staticmethod
+    def get_token_refresh_config() -> Dict[str, Any]:
+        """Get configuration for AutoTokenRefreshMiddleware."""
+        return {
+            "refresh_threshold_minutes": 5,
+            "skip_paths": [
+                "/api/auth/login",
+                "/api/auth/2fa/verify",
+                "/api/auth/logout",
+                "/api/auth/refresh",
+                "/api/ping",
+                "/api/health",
+                "/docs",
+                "/openapi.json",
+                "/redoc",
+            ],
+        }
+
+    @staticmethod
     def get_cors_config() -> Dict[str, Any]:
         """Get configuration for CORS middleware."""
         return {
@@ -41,7 +59,12 @@ class MiddlewareConfig:
             "allow_credentials": True,
             "allow_methods": ["GET", "POST", "PUT", "DELETE", "PATCH"],
             "allow_headers": ["*"],
-            "expose_headers": ["X-Process-Time", "X-Request-ID"],
+            "expose_headers": [
+                "X-Process-Time",
+                "X-Request-ID",
+                "X-New-Access-Token",
+                "X-Token-Refreshed",
+            ],
         }
 
     @staticmethod
@@ -58,6 +81,7 @@ class MiddlewareConfig:
             "rate_limit": settings.STAGE == "prod",
             "security": settings.STAGE == "prod",
             "request_id": True,
+            "token_refresh": True,
         }
 
         return middleware_settings.get(middleware_name, True)

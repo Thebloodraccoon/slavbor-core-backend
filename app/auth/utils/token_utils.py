@@ -46,6 +46,13 @@ def decode_token(token: str) -> dict:
         raise InvalidTokenException()
 
 
+def get_token_expiration(token: str) -> datetime:
+    """Get expiration time of JWT token."""
+    payload = decode_token(token)
+    exp_timestamp = payload.get("exp")
+    return datetime.fromtimestamp(exp_timestamp) if exp_timestamp else None
+
+
 def decode_temp_token(token: str) -> int:
     """Decode temporary token and return user_id."""
     try:
@@ -78,6 +85,9 @@ async def verify_token(
     token: HTTPAuthorizationCredentials, required_token_type: str
 ) -> str:
     """Verify token and return email."""
+    if token is None:
+        raise InvalidTokenException()
+
     if await is_token_blacklisted(token.credentials):
         raise TokenBlacklistedException()
 
