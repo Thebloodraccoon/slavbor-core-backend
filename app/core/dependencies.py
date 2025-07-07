@@ -41,7 +41,7 @@ security = HTTPBearer(
     description="JWT Bearer token for authentication",
     auto_error=False,
 )
-TokenDep = Annotated[HTTPAuthorizationCredentials, Depends(security)]
+TokenDep = Annotated[HTTPAuthorizationCredentials | None, Depends(security)]
 
 
 async def get_current_user(

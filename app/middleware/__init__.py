@@ -5,6 +5,7 @@ from .rate_limit import RateLimitMiddleware
 from .request_id import RequestIDMiddleware
 from .security import SecurityHeadersMiddleware
 from .timing import TimingMiddleware
+from .token_refresh import AutoTokenRefreshMiddleware
 
 __all__ = [
     # Configuration
@@ -18,4 +19,5 @@ __all__ = [
     "RequestIDMiddleware",
     "SecurityHeadersMiddleware",
     "TimingMiddleware",
+    "AutoTokenRefreshMiddleware",
 ]
