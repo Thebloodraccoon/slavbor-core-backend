@@ -50,7 +50,7 @@ def get_token_expiration(token: str) -> datetime:
     """Get expiration time of JWT token."""
     payload = decode_token(token)
     exp_timestamp = payload.get("exp")
-    return datetime.fromtimestamp(exp_timestamp) if exp_timestamp else None
+    return datetime.fromtimestamp(exp_timestamp, tz=timezone.utc)
 
 
 def decode_temp_token(token: str) -> int:
