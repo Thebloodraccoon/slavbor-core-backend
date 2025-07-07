@@ -68,6 +68,30 @@ class MiddlewareConfig:
         }
 
     @staticmethod
+    def get_gzip_config() -> Dict[str, Any]:
+        """Get configuration for GZipMiddleware (built-in FastAPI)."""
+        return {
+            "minimum_size": 500,
+        }
+
+    @staticmethod
+    def get_trusted_host_config() -> Dict[str, Any]:
+        """Get configuration for TrustedHostMiddleware."""
+        if settings.STAGE == "prod":
+            allowed_hosts = settings.ALLOWED_HOSTS
+        else:
+            allowed_hosts = ["*"]
+
+        return {
+            "allowed_hosts": allowed_hosts,
+        }
+
+    @staticmethod
+    def get_httpsredirect_config() -> Dict[str, Any]:
+        """Get configuration for HTTPSRedirectMiddleware."""
+        return {}
+
+    @staticmethod
     def get_security_paths() -> List[str]:
         """Get list of paths that should skip certain security checks."""
         return ["/ping", "/health", "/docs", "/openapi.json", "/redoc"]
@@ -82,6 +106,9 @@ class MiddlewareConfig:
             "security": settings.STAGE == "prod",
             "request_id": True,
             "token_refresh": True,
+            "gzip": True,
+            "trusted_host": settings.STAGE == "prod",
+            "https_redirect": settings.STAGE == "prod",
         }
 
         return middleware_settings.get(middleware_name, True)

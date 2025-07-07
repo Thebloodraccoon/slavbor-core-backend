@@ -15,20 +15,10 @@ logger = logging.getLogger(__name__)
 class AutoTokenRefreshMiddleware(BaseHTTPMiddleware):
     """Middleware to automatically update tokens upon expiration"""
 
-    def __init__(
-        self, app, refresh_threshold_minutes: int = 5, skip_paths: list = None
-    ):
+    def __init__(self, app, skip_paths: list[str], refresh_threshold_minutes: int = 5):
         super().__init__(app)
         self.refresh_threshold = refresh_threshold_minutes * 60
-        self.skip_paths = skip_paths or [
-            "/api/auth/login",
-            "/api/auth/2fa/verify",
-            "/api/auth/logout",
-            "/api/auth/refresh",
-            "/api/ping",
-            "/docs",
-            "/openapi.json",
-        ]
+        self.skip_paths = skip_paths
 
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
         if any(request.url.path.startswith(path) for path in self.skip_paths):

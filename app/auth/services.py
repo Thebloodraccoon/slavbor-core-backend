@@ -1,5 +1,3 @@
-from datetime import datetime, timezone
-
 from fastapi import Response
 from sqlalchemy.orm import Session
 
@@ -12,7 +10,8 @@ from app.auth.utils.token_utils import (add_token_to_blacklist,
                                         create_access_token,
                                         create_refresh_token,
                                         create_temp_token, decode_temp_token,
-                                        decode_token, verify_refresh_token)
+                                        get_token_expiration,
+                                        verify_refresh_token)
 from app.auth.utils.twofa_utils import (generate_otp_secret, generate_otp_uri,
                                         verify_otp_code)
 from app.exceptions.auth_exceptions import (InvalidCodeException,
@@ -95,16 +94,11 @@ class AuthService:
 
     @classmethod
     async def logout_user(cls, access_token: str, refresh_token: str) -> LogoutResponse:
-        payload = decode_token(access_token)
-        exp = float(payload.get("exp", "0.0"))
+        exp = get_token_expiration(access_token)
 
-        blacklist_access = await add_token_to_blacklist(
-            access_token, datetime.fromtimestamp(exp, tz=timezone.utc)
-        )
+        blacklist_access = await add_token_to_blacklist(access_token, exp)
         if refresh_token:
-            await add_token_to_blacklist(
-                refresh_token, datetime.fromtimestamp(exp, tz=timezone.utc)
-            )
+            await add_token_to_blacklist(refresh_token, exp)
 
         if blacklist_access:
             return LogoutResponse(detail="Successful logout")

@@ -4,6 +4,8 @@ from contextlib import asynccontextmanager
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
 from app.auth.endpoints import router as auth_router
 from app.middleware import (AutoTokenRefreshMiddleware, LoggingMiddleware,
@@ -33,6 +35,14 @@ def setup_middleware(app: FastAPI) -> None:
     cors_config = MiddlewareConfig.get_cors_config()
     app.add_middleware(CORSMiddleware, **cors_config)
 
+    if MiddlewareConfig.should_enable_middleware("trusted_host"):
+        trusted_host_config = MiddlewareConfig.get_trusted_host_config()
+        app.add_middleware(TrustedHostMiddleware, **trusted_host_config)
+
+    if MiddlewareConfig.should_enable_middleware("gzip"):
+        gzip_config = MiddlewareConfig.get_gzip_config()
+        app.add_middleware(GZipMiddleware, **gzip_config)
+
     if MiddlewareConfig.should_enable_middleware("token_refresh"):
         token_refresh_config = MiddlewareConfig.get_token_refresh_config()
         app.add_middleware(AutoTokenRefreshMiddleware, **token_refresh_config)
@@ -44,6 +54,9 @@ def setup_middleware(app: FastAPI) -> None:
         rate_limit_config = MiddlewareConfig.get_rate_limit_config()
         app.add_middleware(RateLimitMiddleware, **rate_limit_config)
 
+    if MiddlewareConfig.should_enable_middleware("request_id"):
+        app.add_middleware(RequestIDMiddleware)
+
     if MiddlewareConfig.should_enable_middleware("logging"):
         logging_config = MiddlewareConfig.get_logging_config()
         app.add_middleware(LoggingMiddleware, **logging_config)
@@ -51,9 +64,6 @@ def setup_middleware(app: FastAPI) -> None:
     if MiddlewareConfig.should_enable_middleware("timing"):
         timing_config = MiddlewareConfig.get_timing_config()
         app.add_middleware(TimingMiddleware, **timing_config)
-
-    if MiddlewareConfig.should_enable_middleware("request_id"):
-        app.add_middleware(RequestIDMiddleware)
 
 
 def setup_routers(app: FastAPI) -> None:
