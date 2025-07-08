@@ -71,7 +71,22 @@ docker exec -it slavbor_fastapi_app alembic upgrade head
 
 ### Local Development Setup
 
-Install dependencies
+**With Poetry (recommended):**
+```bash
+# Install Poetry if not installed
+curl -sSL https://install.python-poetry.org | python3 -
+
+# Install dependencies
+poetry install
+
+# Activate virtual environment
+poetry shell
+
+# Start services
+docker-compose up -d
+```
+
+**With pip:**
 ```bash
 pip install -r requirements.txt
 ```
@@ -81,17 +96,17 @@ Start project
 docker-compose up -d 
 ```
 
-### Testing
+#### In Docker:
 
-First go in container
 ```bash
+# Enter container
 docker exec -it slavbor_fastapi_app bash
 
 # Then 
 tox
 
 # Or for only testing
-tox -e testing
+tox -e test
 ```
 
 ## 🗄️ Database Management
@@ -112,7 +127,19 @@ alembic downgrade -1
 ## 📚 API Documentation
 
 - **Swagger UI**: http://localhost:8000/docs
-- **Health Check**: http://localhost:8000/ping
+- **ReDoc**: http://localhost:8000/redoc
+- **Health Check**: http://localhost:8000/api/ping
+
+## 🛠️ Development Tools
+
+- **Poetry** - Dependency management
+- **Ruff** - Lightning-fast linter and formatter
+- **MyPy** - Static type checking
+- **Bandit** - Security linting
+- **Pytest** - Testing framework
+- **Tox** - Testing automation
+- **Alembic** - Database migrations
+- **Docker** - Containerization
 
 ## 📄 License
 
