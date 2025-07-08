@@ -1,6 +1,6 @@
+from collections.abc import Callable
 import logging
 import time
-from typing import Callable, List, Optional
 
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -18,7 +18,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         app,
         log_requests: bool = True,
         log_responses: bool = True,
-        skip_paths: Optional[List[str]] = None,
+        skip_paths: list[str] | None = None,
     ):
         super().__init__(app)
         self.log_requests = log_requests

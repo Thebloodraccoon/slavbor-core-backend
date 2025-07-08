@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any
 
 from app.settings import settings
 
@@ -7,7 +7,7 @@ class MiddlewareConfig:
     """Configuration class for middleware components."""
 
     @staticmethod
-    def get_timing_config() -> Dict[str, Any]:
+    def get_timing_config() -> dict[str, Any]:
         """Get configuration for TimingMiddleware."""
         return {
             "log_slow_requests": settings.STAGE != "prod",
@@ -15,7 +15,7 @@ class MiddlewareConfig:
         }
 
     @staticmethod
-    def get_logging_config() -> Dict[str, Any]:
+    def get_logging_config() -> dict[str, Any]:
         """Get configuration for LoggingMiddleware."""
         return {
             "log_requests": settings.STAGE != "prod",
@@ -24,7 +24,7 @@ class MiddlewareConfig:
         }
 
     @staticmethod
-    def get_rate_limit_config() -> Dict[str, Any]:
+    def get_rate_limit_config() -> dict[str, Any]:
         """Get configuration for RateLimitMiddleware."""
         config = {
             "local": {"calls": 1000, "period": 60},
@@ -34,7 +34,7 @@ class MiddlewareConfig:
         return config.get(settings.STAGE, config["prod"])
 
     @staticmethod
-    def get_token_refresh_config() -> Dict[str, Any]:
+    def get_token_refresh_config() -> dict[str, Any]:
         """Get configuration for AutoTokenRefreshMiddleware."""
         return {
             "refresh_threshold_minutes": 5,
@@ -52,7 +52,7 @@ class MiddlewareConfig:
         }
 
     @staticmethod
-    def get_cors_config() -> Dict[str, Any]:
+    def get_cors_config() -> dict[str, Any]:
         """Get configuration for CORS middleware."""
         return {
             "allow_origins": settings.ALLOWED_HOSTS,
@@ -68,31 +68,28 @@ class MiddlewareConfig:
         }
 
     @staticmethod
-    def get_gzip_config() -> Dict[str, Any]:
+    def get_gzip_config() -> dict[str, Any]:
         """Get configuration for GZipMiddleware (built-in FastAPI)."""
         return {
             "minimum_size": 500,
         }
 
     @staticmethod
-    def get_trusted_host_config() -> Dict[str, Any]:
+    def get_trusted_host_config() -> dict[str, Any]:
         """Get configuration for TrustedHostMiddleware."""
-        if settings.STAGE == "prod":
-            allowed_hosts = settings.ALLOWED_HOSTS
-        else:
-            allowed_hosts = ["*"]
+        allowed_hosts = settings.ALLOWED_HOSTS if settings.STAGE == "prod" else ["*"]
 
         return {
             "allowed_hosts": allowed_hosts,
         }
 
     @staticmethod
-    def get_httpsredirect_config() -> Dict[str, Any]:
+    def get_httpsredirect_config() -> dict[str, Any]:
         """Get configuration for HTTPSRedirectMiddleware."""
         return {}
 
     @staticmethod
-    def get_security_paths() -> List[str]:
+    def get_security_paths() -> list[str]:
         """Get list of paths that should skip certain security checks."""
         return ["/ping", "/health", "/docs", "/openapi.json", "/redoc"]
 

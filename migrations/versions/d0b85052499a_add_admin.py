@@ -43,9 +43,7 @@ def upgrade() -> None:
     conn = op.get_bind()
 
     stmt = sa.text("SELECT id FROM users WHERE email = :email")
-    admin_exists = (
-        conn.execute(stmt, {"email": DEFAULT_ADMIN_EMAIL}).fetchone() is not None
-    )
+    admin_exists = conn.execute(stmt, {"email": DEFAULT_ADMIN_EMAIL}).fetchone() is not None
 
     if admin_exists:
         stmt = sa.text(

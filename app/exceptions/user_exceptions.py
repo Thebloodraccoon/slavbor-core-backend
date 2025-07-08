@@ -1,10 +1,8 @@
-from typing import Optional
-
 from fastapi import HTTPException, status
 
 
 class UserNotFoundException(HTTPException):
-    def __init__(self, user_id: Optional[int] = None, email: Optional[str] = None):
+    def __init__(self, user_id: int | None = None, email: str | None = None):
         detail = "404 User is not found"
 
         if user_id:

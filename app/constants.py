@@ -175,9 +175,7 @@ def create_enum_constraint(field_name: str, values: list, nullable: bool = True)
         return f"{field_name} IN ({values_str})"
 
 
-def create_range_constraint(
-    field_name: str, min_val: int, max_val: int, nullable: bool = True
-) -> str:
+def create_range_constraint(field_name: str, min_val: int, max_val: int, nullable: bool = True) -> str:
     """Creates a line for CheckContraint with a numerical range."""
     constraint = f"({field_name} >= {min_val} AND {field_name} <= {max_val})"
 

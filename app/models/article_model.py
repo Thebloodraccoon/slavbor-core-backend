@@ -1,10 +1,14 @@
 from datetime import datetime
 
-from sqlalchemy import (Boolean, CheckConstraint, Column, DateTime, ForeignKey,
-                        Index, Integer, String, Text)
+from sqlalchemy import Boolean, CheckConstraint, Column, DateTime, ForeignKey, Index, Integer, String, Text
 
-from app.constants import (ARTICLE_CATEGORIES, ARTICLE_STATUSES, ARTICLE_TYPES,
-                           ON_DELETE_SET_NULL, create_enum_constraint)
+from app.constants import (
+    ARTICLE_CATEGORIES,
+    ARTICLE_STATUSES,
+    ARTICLE_TYPES,
+    ON_DELETE_SET_NULL,
+    create_enum_constraint,
+)
 from app.settings import settings
 
 
@@ -20,13 +24,9 @@ class Article(settings.Base):  # type: ignore
 
     # Authorship and timestamps
     created_at = Column(DateTime, default=datetime.now, nullable=False)
-    updated_at = Column(
-        DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
-    )
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now, nullable=False)
     last_modified_by_user_id = Column(Integer, ForeignKey("users.id"), index=True)
-    created_by_user_id = Column(
-        Integer, ForeignKey("users.id"), nullable=False, index=True
-    )
+    created_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
 
     # Content structure
     summary = Column(Text)
@@ -36,18 +36,10 @@ class Article(settings.Base):  # type: ignore
     historical_period = Column(String(100), index=True)
 
     # Primary entity relationships
-    primary_character_id = Column(
-        Integer, ForeignKey("characters.id", ondelete=ON_DELETE_SET_NULL), index=True
-    )
-    primary_location_id = Column(
-        Integer, ForeignKey("locations.id", ondelete=ON_DELETE_SET_NULL), index=True
-    )
-    primary_faction_id = Column(
-        Integer, ForeignKey("factions.id", ondelete=ON_DELETE_SET_NULL), index=True
-    )
-    primary_race_id = Column(
-        Integer, ForeignKey("races.id", ondelete=ON_DELETE_SET_NULL), index=True
-    )
+    primary_character_id = Column(Integer, ForeignKey("characters.id", ondelete=ON_DELETE_SET_NULL), index=True)
+    primary_location_id = Column(Integer, ForeignKey("locations.id", ondelete=ON_DELETE_SET_NULL), index=True)
+    primary_faction_id = Column(Integer, ForeignKey("factions.id", ondelete=ON_DELETE_SET_NULL), index=True)
+    primary_race_id = Column(Integer, ForeignKey("races.id", ondelete=ON_DELETE_SET_NULL), index=True)
 
     # Publication
     is_published = Column(Boolean, default=False, index=True)
@@ -79,6 +71,4 @@ class Article(settings.Base):  # type: ignore
     )
 
     def __repr__(self):
-        return (
-            f"<Article(id={self.id}, title='{self.title}', type='{self.article_type}')>"
-        )
+        return f"<Article(id={self.id}, title='{self.title}', type='{self.article_type}')>"

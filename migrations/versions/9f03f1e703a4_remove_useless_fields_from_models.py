@@ -38,32 +38,20 @@ def upgrade() -> None:
         table_name="faction_culture",
         postgresql_using="gin",
     )
-    op.drop_index(
-        op.f("ix_faction_culture_dominant_culture"), table_name="faction_culture"
-    )
+    op.drop_index(op.f("ix_faction_culture_dominant_culture"), table_name="faction_culture")
     op.drop_index(op.f("ix_faction_culture_faction_id"), table_name="faction_culture")
-    op.drop_index(
-        op.f("ix_faction_culture_primary_religion"), table_name="faction_culture"
-    )
+    op.drop_index(op.f("ix_faction_culture_primary_religion"), table_name="faction_culture")
     op.drop_table("faction_culture")
     op.drop_index(op.f("idx_article_publication"), table_name="articles")
-    op.drop_index(
-        op.f("idx_article_related_chars"), table_name="articles", postgresql_using="gin"
-    )
+    op.drop_index(op.f("idx_article_related_chars"), table_name="articles", postgresql_using="gin")
     op.drop_index(
         op.f("idx_article_related_factions"),
         table_name="articles",
         postgresql_using="gin",
     )
-    op.drop_index(
-        op.f("idx_article_related_locs"), table_name="articles", postgresql_using="gin"
-    )
-    op.drop_index(
-        op.f("idx_article_related_races"), table_name="articles", postgresql_using="gin"
-    )
-    op.drop_index(
-        op.f("idx_article_tags"), table_name="articles", postgresql_using="gin"
-    )
+    op.drop_index(op.f("idx_article_related_locs"), table_name="articles", postgresql_using="gin")
+    op.drop_index(op.f("idx_article_related_races"), table_name="articles", postgresql_using="gin")
+    op.drop_index(op.f("idx_article_tags"), table_name="articles", postgresql_using="gin")
     op.drop_index(op.f("ix_articles_canonical_status"), table_name="articles")
     op.drop_index(op.f("ix_articles_source_type"), table_name="articles")
     op.drop_index(op.f("ix_articles_visibility_level"), table_name="articles")
@@ -99,12 +87,8 @@ def upgrade() -> None:
     op.drop_column("characters", "dexterity")
     op.drop_column("characters", "intelligence")
     op.drop_column("characters", "level")
-    op.add_column(
-        "factions", sa.Column("dominant_culture", sa.String(length=50), nullable=True)
-    )
-    op.add_column(
-        "factions", sa.Column("primary_religion", sa.String(length=50), nullable=True)
-    )
+    op.add_column("factions", sa.Column("dominant_culture", sa.String(length=50), nullable=True))
+    op.add_column("factions", sa.Column("primary_religion", sa.String(length=50), nullable=True))
     op.add_column("factions", sa.Column("current_goals", sa.Text(), nullable=True))
     op.drop_index(
         op.f("idx_faction_alternative_names"),
@@ -154,17 +138,11 @@ def upgrade() -> None:
     op.drop_index(op.f("ix_locations_region"), table_name="locations")
     op.drop_column("locations", "alternative_names")
     op.drop_column("locations", "terrain")
-    op.drop_index(
-        op.f("idx_race_abilities"), table_name="races", postgresql_using="gin"
-    )
-    op.drop_index(
-        op.f("idx_race_languages"), table_name="races", postgresql_using="gin"
-    )
+    op.drop_index(op.f("idx_race_abilities"), table_name="races", postgresql_using="gin")
+    op.drop_index(op.f("idx_race_languages"), table_name="races", postgresql_using="gin")
     op.drop_index(op.f("idx_race_playable_size"), table_name="races")
     op.drop_index(op.f("idx_race_regions"), table_name="races", postgresql_using="gin")
-    op.drop_index(
-        op.f("idx_race_stat_bonuses"), table_name="races", postgresql_using="gin"
-    )
+    op.drop_index(op.f("idx_race_stat_bonuses"), table_name="races", postgresql_using="gin")
     op.drop_column("races", "average_height")
     op.drop_column("races", "stat_bonuses")
     op.drop_column("races", "average_weight")
@@ -211,9 +189,7 @@ def downgrade() -> None:
     )
     op.add_column(
         "races",
-        sa.Column(
-            "average_weight", sa.VARCHAR(length=50), autoincrement=False, nullable=True
-        ),
+        sa.Column("average_weight", sa.VARCHAR(length=50), autoincrement=False, nullable=True),
     )
     op.add_column(
         "races",
@@ -226,9 +202,7 @@ def downgrade() -> None:
     )
     op.add_column(
         "races",
-        sa.Column(
-            "average_height", sa.VARCHAR(length=50), autoincrement=False, nullable=True
-        ),
+        sa.Column("average_height", sa.VARCHAR(length=50), autoincrement=False, nullable=True),
     )
     op.create_index(
         op.f("idx_race_stat_bonuses"),
@@ -244,9 +218,7 @@ def downgrade() -> None:
         unique=False,
         postgresql_using="gin",
     )
-    op.create_index(
-        op.f("idx_race_playable_size"), "races", ["is_playable", "size"], unique=False
-    )
+    op.create_index(op.f("idx_race_playable_size"), "races", ["is_playable", "size"], unique=False)
     op.create_index(
         op.f("idx_race_languages"),
         "races",
@@ -277,9 +249,7 @@ def downgrade() -> None:
     op.create_index(op.f("ix_locations_region"), "locations", ["region"], unique=False)
     op.create_index(op.f("ix_locations_map_y"), "locations", ["map_y"], unique=False)
     op.create_index(op.f("ix_locations_map_x"), "locations", ["map_x"], unique=False)
-    op.create_index(
-        op.f("ix_locations_climate"), "locations", ["climate"], unique=False
-    )
+    op.create_index(op.f("ix_locations_climate"), "locations", ["climate"], unique=False)
     op.create_index(
         op.f("idx_location_description_fts"),
         "locations",
@@ -296,9 +266,7 @@ def downgrade() -> None:
     )
     op.add_column(
         "factions",
-        sa.Column(
-            "full_name", sa.VARCHAR(length=200), autoincrement=False, nullable=True
-        ),
+        sa.Column("full_name", sa.VARCHAR(length=200), autoincrement=False, nullable=True),
     )
     op.add_column(
         "factions",
@@ -312,9 +280,7 @@ def downgrade() -> None:
     op.drop_index(op.f("ix_factions_primary_religion"), table_name="factions")
     op.drop_index(op.f("ix_factions_dominant_culture"), table_name="factions")
     op.drop_index("idx_faction_culture_religion", table_name="factions")
-    op.create_index(
-        op.f("ix_factions_full_name"), "factions", ["full_name"], unique=False
-    )
+    op.create_index(op.f("ix_factions_full_name"), "factions", ["full_name"], unique=False)
     op.create_index(
         op.f("idx_faction_leader"),
         "factions",
@@ -368,9 +334,7 @@ def downgrade() -> None:
     )
     op.add_column(
         "characters",
-        sa.Column(
-            "titles", postgresql.ARRAY(sa.VARCHAR()), autoincrement=False, nullable=True
-        ),
+        sa.Column("titles", postgresql.ARRAY(sa.VARCHAR()), autoincrement=False, nullable=True),
     )
     op.add_column(
         "characters",
@@ -389,12 +353,8 @@ def downgrade() -> None:
         "characters",
         sa.Column("strength", sa.INTEGER(), autoincrement=False, nullable=True),
     )
-    op.create_index(
-        op.f("ix_characters_player_id"), "characters", ["player_id"], unique=False
-    )
-    op.create_index(
-        op.f("ix_characters_campaign_id"), "characters", ["campaign_id"], unique=False
-    )
+    op.create_index(op.f("ix_characters_player_id"), "characters", ["player_id"], unique=False)
+    op.create_index(op.f("ix_characters_campaign_id"), "characters", ["campaign_id"], unique=False)
     op.create_index(
         op.f("idx_game_stats_spells"),
         "character_game_stats",
@@ -444,9 +404,7 @@ def downgrade() -> None:
     )
     op.add_column(
         "articles",
-        sa.Column(
-            "tags", postgresql.ARRAY(sa.VARCHAR()), autoincrement=False, nullable=True
-        ),
+        sa.Column("tags", postgresql.ARRAY(sa.VARCHAR()), autoincrement=False, nullable=True),
     )
     op.add_column(
         "articles",
@@ -468,9 +426,7 @@ def downgrade() -> None:
     )
     op.add_column(
         "articles",
-        sa.Column(
-            "source_type", sa.VARCHAR(length=30), autoincrement=False, nullable=True
-        ),
+        sa.Column("source_type", sa.VARCHAR(length=30), autoincrement=False, nullable=True),
     )
     op.add_column(
         "articles",
@@ -487,9 +443,7 @@ def downgrade() -> None:
         ["visibility_level"],
         unique=False,
     )
-    op.create_index(
-        op.f("ix_articles_source_type"), "articles", ["source_type"], unique=False
-    )
+    op.create_index(op.f("ix_articles_source_type"), "articles", ["source_type"], unique=False)
     op.create_index(
         op.f("ix_articles_canonical_status"),
         "articles",
@@ -554,9 +508,7 @@ def downgrade() -> None:
             nullable=True,
         ),
         sa.Column("cultural_practices", sa.TEXT(), autoincrement=False, nullable=True),
-        sa.Column(
-            "symbols_and_heraldry", sa.TEXT(), autoincrement=False, nullable=True
-        ),
+        sa.Column("symbols_and_heraldry", sa.TEXT(), autoincrement=False, nullable=True),
         sa.Column(
             "internal_structure",
             postgresql.JSONB(astext_type=sa.Text()),
@@ -569,9 +521,7 @@ def downgrade() -> None:
             autoincrement=False,
             nullable=True,
         ),
-        sa.Column(
-            "membership_requirements", sa.TEXT(), autoincrement=False, nullable=True
-        ),
+        sa.Column("membership_requirements", sa.TEXT(), autoincrement=False, nullable=True),
         sa.Column("internal_politics", sa.TEXT(), autoincrement=False, nullable=True),
         sa.Column("current_goals", sa.TEXT(), autoincrement=False, nullable=True),
         sa.Column("current_conflicts", sa.TEXT(), autoincrement=False, nullable=True),
@@ -581,12 +531,8 @@ def downgrade() -> None:
             autoincrement=False,
             nullable=True,
         ),
-        sa.Column(
-            "created_at", postgresql.TIMESTAMP(), autoincrement=False, nullable=False
-        ),
-        sa.Column(
-            "updated_at", postgresql.TIMESTAMP(), autoincrement=False, nullable=False
-        ),
+        sa.Column("created_at", postgresql.TIMESTAMP(), autoincrement=False, nullable=False),
+        sa.Column("updated_at", postgresql.TIMESTAMP(), autoincrement=False, nullable=False),
         sa.ForeignKeyConstraint(
             ["faction_id"],
             ["factions.id"],

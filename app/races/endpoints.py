@@ -1,11 +1,8 @@
-from typing import List
-
 from fastapi import APIRouter, Query
 from starlette import status
 
 from app.core.dependencies import AdminUserDep, FounderUserDep, RaceServiceDep
-from app.races.schemas import (RaceCreate, RaceListResponse, RaceResponse,
-                               RaceUpdate)
+from app.races.schemas import RaceCreate, RaceListResponse, RaceResponse, RaceUpdate
 
 router = APIRouter()
 
@@ -20,7 +17,7 @@ def get_all_races(
     return race_service.get_races_with_pagination(page=page, size=size)
 
 
-@router.get("/playable", response_model=List[RaceResponse])
+@router.get("/playable", response_model=list[RaceResponse])
 def get_playable_races(
     race_service: RaceServiceDep,
 ):
@@ -44,25 +41,19 @@ def create_race(race: RaceCreate, race_service: RaceServiceDep, _: AdminUserDep)
 
 
 @router.post("/{race_id}", response_model=RaceResponse)
-def update_race(
-    race_id: int, race: RaceUpdate, race_service: RaceServiceDep, _: AdminUserDep
-):
+def update_race(race_id: int, race: RaceUpdate, race_service: RaceServiceDep, _: AdminUserDep):
     """Full update of a race."""
     return race_service.update_race(race_id, race)
 
 
 @router.patch("/{race_id}", response_model=RaceResponse)
-def update_race_patch(
-    race_id: int, race: RaceUpdate, race_service: RaceServiceDep, _: AdminUserDep
-):
+def update_race_patch(race_id: int, race: RaceUpdate, race_service: RaceServiceDep, _: AdminUserDep):
     """Partial update of a race."""
     return race_service.update_race(race_id, race)
 
 
 @router.patch("/{race_id}/toggle-playable", response_model=RaceResponse)
-def toggle_race_playable_status(
-    race_id: int, race_service: RaceServiceDep, _: FounderUserDep
-):
+def toggle_race_playable_status(race_id: int, race_service: RaceServiceDep, _: FounderUserDep):
     """Toggle the playable status of a race."""
     return race_service.toggle_playable_status(race_id)
 
