@@ -52,7 +52,7 @@ class AuthService:
         """Handle login with 2FA support."""
         user = self.user_repo.get_by_email(request.email)
 
-        if not user or not verify_password(request.password, user.hashed_password):
+        if not user or not verify_password(request.password, str(user.hashed_password)):
             raise InvalidCredentialsException()
 
         if user.email == settings.ADMIN_LOGIN:

@@ -21,7 +21,7 @@ env:
   ADMIN_LOGIN: ${{ secrets.ADMIN_LOGIN }}
 
 jobs:
-  test:
+  full-check:
     runs-on: ubuntu-latest
 
     services:
@@ -91,59 +91,5 @@ jobs:
         sleep 5
         echo "PostgreSQL is ready!"
 
-    - name: Run tests
-      run: poetry run tox -e testing
-
-  lint-and-format:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
-
-    - name: Load cached Poetry installation
-      id: cached-poetry
-      uses: actions/cache@v3
-      with:
-        path: ~/.local
-        key: poetry-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
-
-    - name: Install Poetry
-      if: steps.cached-poetry.outputs.cache-hit != 'true'
-      uses: snok/install-poetry@v1
-      with:
-        version: latest
-        virtualenvs-create: true
-        virtualenvs-in-project: true
-        installer-parallel: true
-
-    - name: Load cached venv
-      id: cached-poetry-dependencies
-      uses: actions/cache@v3
-      with:
-        path: .venv
-        key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
-
-    - name: Install dependencies
-      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      run: poetry install --no-interaction --no-root
-
-    - name: Install project
-      run: poetry install --no-interaction
-
-    - name: Run linting
-      run: poetry run tox -e lint
-
-    - name: Run formatting check
-      run: poetry run tox -e format
-
-    - name: Run security check
-      run: poetry run tox -e security
-
-    - name: Run type checking
-      run: poetry run tox -e typecheck
+    - name: Run all checks (Ruff + MyPy + Bandit + Tests)
+      run: poetry run tox -e all
