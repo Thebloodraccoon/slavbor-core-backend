@@ -2,7 +2,8 @@ name: Check Source Branch
 on:
   pull_request:
     branches: [main]
-    types: [opened, synchronize, reopened]
+  pull_request_target:
+    branches: [main]
 
 jobs:
   check-source-branch:
@@ -10,17 +11,13 @@ jobs:
     steps:
       - name: Check source branch
         run: |
-          echo "Source branch: ${{ github.head_ref }}"
-          echo "Target branch: ${{ github.base_ref }}"
+          SOURCE_BRANCH="${{ github.event.pull_request.head.ref }}"
+          echo "Checking source branch: $SOURCE_BRANCH"
           
-          if [ "${{ github.head_ref }}" != "development" ]; then
-            echo "❌ ERROR: Pull requests to main are only allowed from 'dev' branch"
-            echo "Current source branch: ${{ github.head_ref }}"
-            echo "Please:"
-            echo "1. Close this PR"
-            echo "2. Merge your changes into 'development' branch"
-            echo "3. Create PR from 'development' to 'main'"
+          if [ "$SOURCE_BRANCH" != "development" ]; then
+            echo "❌ Pull requests to main must come from 'dev' branch only"
+            echo "Current source: $SOURCE_BRANCH"
             exit 1
           fi
           
-          echo "✅ SUCCESS: Pull request from dev branch is allowed"
+          echo "✅ Source branch check passed"
