@@ -1,7 +1,5 @@
 FROM python:3.10.13-slim AS builder
 
-LABEL description="Slavbor World Backend API -- BUILDER"
-
 RUN apt-get update && apt-get install -y \
     gcc \
     build-essential \
