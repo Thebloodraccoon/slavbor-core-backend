@@ -3,8 +3,7 @@ from datetime import datetime, timedelta, timezone
 from fastapi.security import HTTPAuthorizationCredentials
 from jose import JWTError, jwt
 
-from app.exceptions.token_exceptions import (InvalidTokenException,
-                                             TokenBlacklistedException)
+from app.exceptions.token_exceptions import InvalidTokenException, TokenBlacklistedException
 from app.settings import settings
 
 
@@ -15,9 +14,7 @@ def create_token(data: dict, token_type: str, expires_delta: timedelta) -> str:
     expire = datetime.now(timezone.utc) + expires_delta
     to_encode.update({"exp": expire})
 
-    return jwt.encode(
-        to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM
-    )
+    return jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
 
 
 def create_access_token(data: dict):
@@ -39,9 +36,7 @@ def create_temp_token(user_id: int) -> str:
 def decode_token(token: str) -> dict:
     """Decode JWT token and return payload."""
     try:
-        return jwt.decode(
-            token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
-        )
+        return jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
     except JWTError:
         raise InvalidTokenException()
 
@@ -81,9 +76,7 @@ async def is_token_blacklisted(token: str):
         return await redis.exists(f"blacklist:{token}")
 
 
-async def verify_token(
-    token: HTTPAuthorizationCredentials | None, required_token_type: str
-) -> str:
+async def verify_token(token: HTTPAuthorizationCredentials | None, required_token_type: str) -> str:
     """Verify token and return email."""
     if token is None:
         raise InvalidTokenException()

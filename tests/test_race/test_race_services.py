@@ -1,7 +1,6 @@
 import pytest
 
-from app.exceptions.race_exceptions import (RaceAlreadyExistsException,
-                                            RaceNotFoundException)
+from app.exceptions.race_exceptions import RaceAlreadyExistsException, RaceNotFoundException
 from app.races.schemas import RaceCreate, RaceUpdate
 from app.races.services import RaceService
 

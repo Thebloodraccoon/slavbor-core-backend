@@ -1,6 +1,6 @@
-import logging
+from collections.abc import Callable
 from datetime import datetime, timezone
-from typing import Callable
+import logging
 
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -24,9 +24,7 @@ class AutoTokenRefreshMiddleware(BaseHTTPMiddleware):
         if any(request.url.path.startswith(path) for path in self.skip_paths):
             return await call_next(request)
 
-        access_token = (request.headers.get("Authorization") or "").replace(
-            "Bearer ", ""
-        )
+        access_token = (request.headers.get("Authorization") or "").replace("Bearer ", "")
         refresh_token = request.cookies.get("refresh_token", "")
 
         if not access_token:

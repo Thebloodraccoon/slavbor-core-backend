@@ -1,10 +1,8 @@
 from datetime import datetime
 
-from sqlalchemy import (CheckConstraint, Column, DateTime, ForeignKey, Index,
-                        Integer, String, Text)
+from sqlalchemy import CheckConstraint, Column, DateTime, ForeignKey, Index, Integer, String, Text
 
-from app.constants import (CHARACTER_STATUSES, CHARACTER_TYPES, SOCIAL_RANKS,
-                           create_enum_constraint)
+from app.constants import CHARACTER_STATUSES, CHARACTER_TYPES, SOCIAL_RANKS, create_enum_constraint
 from app.settings import settings
 
 
@@ -17,14 +15,10 @@ class Character(settings.Base):  # type: ignore
     type = Column(String(20), nullable=False, default="npc", index=True)
     status = Column(String(20), nullable=False, default="alive", index=True)
     created_at = Column(DateTime, default=datetime.now, nullable=False)
-    updated_at = Column(
-        DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
-    )
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now, nullable=False)
 
     player_user_id = Column(Integer, ForeignKey("users.id"), index=True)
-    created_by_user_id = Column(
-        Integer, ForeignKey("users.id"), nullable=False, index=True
-    )
+    created_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
 
     # Optional name information
     full_name = Column(String(400), index=True)
@@ -56,12 +50,8 @@ class Character(settings.Base):  # type: ignore
             create_enum_constraint("social_rank", SOCIAL_RANKS),
             name="check_social_rank",
         ),
-        CheckConstraint(
-            "birth_year IS NULL OR birth_year > 0", name="check_birth_year"
-        ),
-        CheckConstraint(
-            "death_year IS NULL OR death_year > 0", name="check_death_year"
-        ),
+        CheckConstraint("birth_year IS NULL OR birth_year > 0", name="check_birth_year"),
+        CheckConstraint("death_year IS NULL OR death_year > 0", name="check_death_year"),
         CheckConstraint(
             "death_year IS NULL OR birth_year IS NULL OR death_year >= birth_year",
             name="check_death_after_birth",

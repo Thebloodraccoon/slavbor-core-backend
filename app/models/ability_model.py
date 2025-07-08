@@ -1,10 +1,8 @@
 from datetime import datetime
 
-from sqlalchemy import (Boolean, CheckConstraint, Column, DateTime, Index,
-                        Integer, String, Text)
+from sqlalchemy import Boolean, CheckConstraint, Column, DateTime, Index, Integer, String, Text
 
-from app.constants import (ABILITY_CATEGORIES, create_enum_constraint,
-                           create_range_constraint)
+from app.constants import ABILITY_CATEGORIES, create_enum_constraint, create_range_constraint
 from app.settings import settings
 
 
@@ -52,9 +50,7 @@ class Ability(settings.Base):  # type: ignore
     is_homebrew = Column(Boolean, default=False)
 
     created_at = Column(DateTime, default=datetime.now, nullable=False)
-    updated_at = Column(
-        DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
-    )
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now, nullable=False)
 
     __table_args__ = (
         CheckConstraint(
@@ -111,6 +107,4 @@ class Ability(settings.Base):  # type: ignore
     )
 
     def __repr__(self):
-        return (
-            f"<Ability(id={self.id}, name='{self.name}', category='{self.category}')>"
-        )
+        return f"<Ability(id={self.id}, name='{self.name}', category='{self.category}')>"

@@ -7,8 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.auth.services import AuthService
 from app.auth.utils.token_utils import verify_token
-from app.exceptions.auth_exceptions import (AdminAccessException,
-                                            SuperAdminAccessException)
+from app.exceptions.auth_exceptions import AdminAccessException, SuperAdminAccessException
 from app.races.services import RaceService
 from app.settings import settings
 from app.users.schemas import UserResponse

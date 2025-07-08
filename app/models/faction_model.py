@@ -1,10 +1,8 @@
 from datetime import datetime
 
-from sqlalchemy import (CheckConstraint, Column, DateTime, ForeignKey, Index,
-                        Integer, String, Text)
+from sqlalchemy import CheckConstraint, Column, DateTime, ForeignKey, Index, Integer, String, Text
 
-from app.constants import (FACTION_STATUSES, FACTION_TYPES, LEADERSHIP_TYPES,
-                           create_enum_constraint)
+from app.constants import FACTION_STATUSES, FACTION_TYPES, LEADERSHIP_TYPES, create_enum_constraint
 from app.settings import settings
 
 
@@ -33,9 +31,7 @@ class Faction(settings.Base):  # type: ignore
 
     # Metadata
     created_at = Column(DateTime, default=datetime.now, nullable=False)
-    updated_at = Column(
-        DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
-    )
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now, nullable=False)
     created_by_user_id = Column(Integer, ForeignKey("users.id"), index=True)
 
     __table_args__ = (
@@ -55,9 +51,7 @@ class Faction(settings.Base):  # type: ignore
             "founded_year IS NULL OR founded_year > 0",
             name="check_founded_year_positive",
         ),
-        CheckConstraint(
-            "fallen_year IS NULL OR fallen_year > 0", name="check_fallen_year_positive"
-        ),
+        CheckConstraint("fallen_year IS NULL OR fallen_year > 0", name="check_fallen_year_positive"),
         CheckConstraint(
             "fallen_year IS NULL OR founded_year IS NULL OR fallen_year >= founded_year",
             name="check_fall_after_founding",

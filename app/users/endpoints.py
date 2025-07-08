@@ -1,5 +1,3 @@
-from typing import List
-
 from fastapi import APIRouter, Query, status
 
 from app.core.dependencies import FounderUserDep, UserServiceDep
@@ -8,7 +6,7 @@ from app.users.schemas import UserCreate, UserResponse, UserUpdate
 router = APIRouter()
 
 
-@router.get("/", response_model=List[UserResponse])
+@router.get("/", response_model=list[UserResponse])
 def get_all_users(
     user_service: UserServiceDep,
     _: FounderUserDep,
@@ -32,9 +30,7 @@ def create_user(user_data: UserCreate, user_service: UserServiceDep, _: FounderU
 
 
 @router.put("/{user_id}", response_model=UserResponse)
-def update_user(
-    user_id: int, user_data: UserUpdate, user_service: UserServiceDep, _: FounderUserDep
-):
+def update_user(user_id: int, user_data: UserUpdate, user_service: UserServiceDep, _: FounderUserDep):
     """Update user by ID."""
     return user_service.update_user(user_id, user_data)
 
