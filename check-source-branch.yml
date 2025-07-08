@@ -1,0 +1,26 @@
+name: Check Source Branch
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+jobs:
+  check-source-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check source branch
+        run: |
+          echo "Source branch: ${{ github.head_ref }}"
+          echo "Target branch: ${{ github.base_ref }}"
+          
+          if [ "${{ github.head_ref }}" != "development" ]; then
+            echo "❌ ERROR: Pull requests to main are only allowed from 'dev' branch"
+            echo "Current source branch: ${{ github.head_ref }}"
+            echo "Please:"
+            echo "1. Close this PR"
+            echo "2. Merge your changes into 'development' branch"
+            echo "3. Create PR from 'development' to 'main'"
+            exit 1
+          fi
+          
+          echo "✅ SUCCESS: Pull request from dev branch is allowed"
