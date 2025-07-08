@@ -7,6 +7,21 @@ from app.exceptions.user_exceptions import InvalidEmailException
 
 
 class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+    @field_validator("email")
+    def validate_email(cls, email):
+        if not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
+            raise InvalidEmailException()
+        return email
+
+
+class LoginResponse(BaseModel):
+    access_token: str
+
+
+class RegisterRequest(BaseModel):
     username: constr(min_length=3, max_length=32)
     email: str
     password: constr(min_length=8)
@@ -19,10 +34,6 @@ class LoginRequest(BaseModel):
 
 
 class RegisterResponse(BaseModel):
-    access_token: str
-
-
-class LoginResponse(BaseModel):
     access_token: str
 
 

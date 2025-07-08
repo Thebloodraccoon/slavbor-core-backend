@@ -76,6 +76,7 @@ def setup_routers(app: FastAPI) -> None:
     app.include_router(user_router, prefix=f"{api_prefix}/users", tags=["Users"])
 
 
+
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,

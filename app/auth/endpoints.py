@@ -1,14 +1,16 @@
-from fastapi import APIRouter, Request, Response
+from fastapi import APIRouter, Request, Response, HTTPException, Depends
 
 from app.auth.schemas import (LoginRequest, LoginResponse, LoginResponseUnion,
                               LogoutResponse, RefreshResponse,
                               TwoFAVerifyRequest)
 from app.core.dependencies import AuthServiceDep, CurrentUserDep
 
-from fastapi import APIRouter, HTTPException, status, Depends, Response
+from fastapi import APIRouter, Depends, Response, status
+from sqlalchemy.orm import Session
 from app.auth.schemas import RegisterRequest, RegisterResponse
-from app.auth.utils import hash_password, create_jwt_token
-from app.users.repository import UserRepo
+from app.users.services import UserService
+from app.settings.local import get_db
+from app.auth.utils.token_utils import create_access_token
 
 router = APIRouter()
 
@@ -51,34 +53,21 @@ async def refresh_tokens(http_request: Request, auth_service: AuthServiceDep):
     return await auth_service.refresh_tokens(refresh_token)
 
 
-@router.post("/auth/register", response_model=RegisterResponse, status_code=201)
-async def register(
+@router.post("/auth/register", response_model=RegisterResponse, status_code=status.HTTP_201_CREATED)
+def register(
     request: RegisterRequest,
     response: Response,
-    user_repo: UserRepo = Depends(),
+    db: Session = Depends(get_db)
 ):
-    # 1. Проверка email
-    if await user_repo.get_by_email(request.email):
-        raise HTTPException(status_code=409, detail="Email already registered")
+    service = UserService(db)
 
-    # 2. Проверка username
-    if await user_repo.get_by_username(request.username):
-        raise HTTPException(status_code=409, detail="Username already taken")
+    # Создать нового юзера с полной бизнес-логикой
+    user = service.create_user(request)
 
-    # 3. Хэш пароля
-    hashed_pw = hash_password(request.password)
+    # Сгенерировать токен
+    access_token = create_access_token(user_id=user.id)
 
-    # 4. Создание юзера
-    user = await user_repo.create_user(
-        username=request.username.strip(),
-        email=request.email.strip(),
-        password_hash=hashed_pw
-    )
-
-    # 5. Генерация JWT
-    access_token = create_jwt_token(user_id=user.id)
-
-    # 6. Ставим httpOnly cookie
+    # Поставить httpOnly cookie
     response.set_cookie(
         key="access_token",
         value=access_token,
