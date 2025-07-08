@@ -47,12 +47,36 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: '3.10'
-        cache: 'pip'
+
+    - name: Load cached Poetry installation
+      id: cached-poetry
+      uses: actions/cache@v3
+      with:
+        path: ~/.local
+        key: poetry-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+
+    - name: Install Poetry
+      if: steps.cached-poetry.outputs.cache-hit != 'true'
+      uses: snok/install-poetry@v1
+      with:
+        version: latest
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+        installer-parallel: true
+
+    - name: Load cached venv
+      id: cached-poetry-dependencies
+      uses: actions/cache@v3
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
 
     - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install tox
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      run: poetry install --no-interaction --no-root
+
+    - name: Install project
+      run: poetry install --no-interaction
 
     - name: Wait for services
       run: |
@@ -68,7 +92,7 @@ jobs:
         echo "PostgreSQL is ready!"
 
     - name: Run tests
-      run: tox -e testing
+      run: poetry run tox -e testing
 
   lint-and-format:
     runs-on: ubuntu-latest
@@ -81,21 +105,45 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: '3.10'
-        cache: 'pip'
+
+    - name: Load cached Poetry installation
+      id: cached-poetry
+      uses: actions/cache@v3
+      with:
+        path: ~/.local
+        key: poetry-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+
+    - name: Install Poetry
+      if: steps.cached-poetry.outputs.cache-hit != 'true'
+      uses: snok/install-poetry@v1
+      with:
+        version: latest
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+        installer-parallel: true
+
+    - name: Load cached venv
+      id: cached-poetry-dependencies
+      uses: actions/cache@v3
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
 
     - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install tox
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      run: poetry install --no-interaction --no-root
+
+    - name: Install project
+      run: poetry install --no-interaction
 
     - name: Run linting
-      run: tox -e lint
+      run: poetry run tox -e lint
 
     - name: Run formatting check
-      run: tox -e format
+      run: poetry run tox -e format
 
     - name: Run security check
-      run: tox -e security
+      run: poetry run tox -e security
 
     - name: Run type checking
-      run: tox -e typecheck
+      run: poetry run tox -e typecheck

@@ -1,5 +1,7 @@
 FROM python:3.10.13-slim AS builder
 
+LABEL description="Slavbor World Backend API -- BUILDER"
+
 RUN apt-get update && apt-get install -y \
     gcc \
     build-essential \
@@ -7,10 +9,13 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /install
 
-COPY requirements.txt .
+RUN pip install --upgrade pip poetry poetry-plugin-export
 
-RUN pip install --upgrade pip \
-    && pip wheel --no-deps --wheel-dir /wheels -r requirements.txt
+COPY pyproject.toml poetry.lock* ./
+
+RUN poetry config virtualenvs.create false
+
+RUN poetry install --no-root
 
 FROM python:3.10.13-slim
 
@@ -28,13 +33,13 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 RUN useradd --create-home --shell /bin/bash --uid 1000 app \
-    && chown -R app:app /app
+    && chown -R app:app /app \
+    && pip install --upgrade pip poetry poetry-plugin-export
 
-COPY --from=builder /wheels /wheels
-COPY requirements.txt .
+COPY --from=builder /usr/local/lib/python3.10/site-packages/ /usr/local/lib/python3.10/site-packages/
+COPY --from=builder /usr/local/bin/ /usr/local/bin/
 
-RUN pip install --no-deps --no-index --find-links=/wheels -r requirements.txt \
-    && rm -rf /wheels
+COPY pyproject.toml poetry.lock* ./
 
 COPY --chown=app:app . .
 USER app
