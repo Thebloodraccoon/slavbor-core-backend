@@ -53,7 +53,7 @@ async def refresh_tokens(http_request: Request, auth_service: AuthServiceDep):
     return await auth_service.refresh_tokens(refresh_token)
 
 
-@router.post("/auth/register", response_model=RegisterResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/register", response_model=RegisterResponse, status_code=status.HTTP_201_CREATED)
 def register(
     request: RegisterRequest,
     response: Response,
@@ -65,7 +65,7 @@ def register(
     user = service.create_user(request)
 
     # Сгенерировать токен
-    access_token = create_access_token(user_id=user.id)
+    access_token = create_access_token({"sub": str(user.id)})
 
     # Поставить httpOnly cookie
     response.set_cookie(

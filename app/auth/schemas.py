@@ -25,6 +25,7 @@ class RegisterRequest(BaseModel):
     username: constr(min_length=3, max_length=32)
     email: str
     password: constr(min_length=8)
+    role: str
 
     @field_validator("email")
     def validate_email(cls, email):
