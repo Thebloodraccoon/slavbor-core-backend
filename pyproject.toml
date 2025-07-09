@@ -41,7 +41,6 @@ typing-extensions = "4.14.0"
 greenlet = "3.2.3"
 ruff = "^0.12.2"
 nox = "^2025.5.1"
-pre-commit = "^4.2.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "8.4.0"
