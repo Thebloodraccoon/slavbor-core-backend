@@ -21,23 +21,6 @@ class LoginResponse(BaseModel):
     access_token: str
 
 
-class RegisterRequest(BaseModel):
-    username: constr(min_length=3, max_length=32)
-    email: str
-    password: constr(min_length=8)
-    role: str
-
-    @field_validator("email")
-    def validate_email(cls, email):
-        if not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
-            raise InvalidEmailException()
-        return email
-
-
-class RegisterResponse(BaseModel):
-    access_token: str
-
-
 class TwoFASetupResponse(BaseModel):
     otp_uri: str
     temp_token: str

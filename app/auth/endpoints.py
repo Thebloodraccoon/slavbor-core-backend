@@ -52,28 +52,3 @@ async def refresh_tokens(http_request: Request, auth_service: AuthServiceDep):
     refresh_token = http_request.cookies.get("refresh_token", "")
     return await auth_service.refresh_tokens(refresh_token)
 
-
-@router.post("/register", response_model=RegisterResponse, status_code=status.HTTP_201_CREATED)
-def register(
-    request: RegisterRequest,
-    response: Response,
-    db: Session = Depends(get_db)
-):
-    service = UserService(db)
-
-    # Создать нового юзера с полной бизнес-логикой
-    user = service.create_user(request)
-
-    # Сгенерировать токен
-    access_token = create_access_token({"sub": str(user.id)})
-
-    # Поставить httpOnly cookie
-    response.set_cookie(
-        key="access_token",
-        value=access_token,
-        httponly=True,
-        samesite="Lax",
-        secure=True
-    )
-
-    return RegisterResponse(access_token=access_token)
