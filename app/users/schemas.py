@@ -1,19 +1,18 @@
-import re
 from datetime import datetime
-from typing import Literal, Optional
+import re
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, field_validator, model_validator
 
-from app.exceptions.user_exceptions import (InvalidEmailException,
-                                            InvalidPasswordException)
+from app.exceptions.user_exceptions import InvalidEmailException, InvalidPasswordException
 
 
 class UserBase(BaseModel):
     username: str
     role: Literal["found_father", "keeper", "player"] = None  # type: ignore
     email: str
-    phone: Optional[str] = None
-    bio: Optional[str] = None
+    phone: str | None = None
+    bio: str | None = None
 
     @field_validator("email")
     def validate_email(cls, email):
@@ -26,9 +25,7 @@ class UserBase(BaseModel):
         if len(username) < 3 or len(username) > 32:
             raise ValueError("Username must be between 3 and 32 characters long")
         if not re.match(r"^[a-zA-Z0-9_-]+$", username):
-            raise ValueError(
-                "Username can only contain letters, numbers, underscores, and hyphens"
-            )
+            raise ValueError("Username can only contain letters, numbers, underscores, and hyphens")
         return username
 
     @field_validator("phone")
@@ -58,24 +55,20 @@ class UserCreate(UserBase):
     @field_validator("password")
     def validate_password(cls, password):
         if len(password) < 8:
-            raise InvalidPasswordException(
-                "Password must be at least 8 characters long"
-            )
+            raise InvalidPasswordException("Password must be at least 8 characters long")
         return password
 
 
 class UserUpdate(BaseModel):
-    username: Optional[str] = None
-    email: Optional[str] = None
-    phone: Optional[str] = None
-    bio: Optional[str] = None
-    role: Optional[Literal["found_father", "keeper", "player"]] = None
+    username: str | None = None
+    email: str | None = None
+    phone: str | None = None
+    bio: str | None = None
+    role: Literal["found_father", "keeper", "player"] | None = None
 
     @field_validator("email")
     def validate_email(cls, email):
-        if email is not None and not re.match(
-            r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email
-        ):
+        if email is not None and not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
             raise InvalidEmailException()
         return email
 
@@ -85,9 +78,7 @@ class UserUpdate(BaseModel):
             if len(username) < 3 or len(username) > 32:
                 raise ValueError("Username must be between 3 and 32 characters long")
             if not re.match(r"^[a-zA-Z0-9_-]+$", username):
-                raise ValueError(
-                    "Username can only contain letters, numbers, underscores, and hyphens"
-                )
+                raise ValueError("Username can only contain letters, numbers, underscores, and hyphens")
         return username
 
     @field_validator("phone")
@@ -120,7 +111,7 @@ class UserUpdate(BaseModel):
 class UserResponse(UserBase):
     id: int
     created_at: datetime
-    updated_at: Optional[datetime] = None
-    last_login: Optional[datetime] = None
+    updated_at: datetime | None = None
+    last_login: datetime | None = None
 
     model_config = ConfigDict(from_attributes=True)

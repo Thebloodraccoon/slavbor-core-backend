@@ -1,7 +1,5 @@
 from datetime import datetime
-from typing import Optional
 
-from sqlalchemy import Column
 from sqlalchemy.orm import Session
 
 from app.core.repository import BaseRepository
@@ -14,17 +12,17 @@ class UserRepository(BaseRepository[User]):
     def __init__(self, db: Session):
         super().__init__(User, db)
 
-    def get_by_email(self, email: str) -> Optional[User]:
+    def get_by_email(self, email: str) -> User | None:
         """Obtaining a user by email."""
         return self.db.query(User).filter(User.email == email).first()
 
-    def get_by_username(self, username: str) -> Optional[User]:
+    def get_by_username(self, username: str) -> User | None:
         """Obtaining a user by username."""
         return self.db.query(User).filter(User.username == username).first()
 
     def update_otp_secret(self, user: User, otp_secret: str) -> User:
         """Update user's OTP secret."""
-        user.otp_secret = Column(otp_secret)
+        user.otp_secret = otp_secret  # type: ignore
         self.db.commit()
         self.db.refresh(user)
         return user
@@ -45,7 +43,7 @@ class UserRepository(BaseRepository[User]):
 
     def setup_2fa(self, user: User, otp_secret: str) -> User:
         """Setup 2FA for user (set secret but don't enable yet)."""
-        user.otp_secret = Column(otp_secret)
+        user.otp_secret = otp_secret  # type: ignore
         self.db.commit()
         self.db.refresh(user)
         return user

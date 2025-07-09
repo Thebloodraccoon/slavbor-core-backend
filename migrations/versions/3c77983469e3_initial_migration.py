@@ -29,9 +29,7 @@ def upgrade() -> None:
         sa.Column("description", sa.Text(), nullable=True),
         sa.Column("size", sa.String(length=20), nullable=True),
         sa.Column("racial_abilities", sa.ARRAY(sa.Text()), nullable=True),
-        sa.Column(
-            "stat_bonuses", postgresql.JSONB(astext_type=sa.Text()), nullable=True
-        ),
+        sa.Column("stat_bonuses", postgresql.JSONB(astext_type=sa.Text()), nullable=True),
         sa.Column("languages", sa.ARRAY(sa.String()), nullable=True),
         sa.Column("special_traits", sa.Text(), nullable=True),
         sa.Column("average_height", sa.String(length=50), nullable=True),
@@ -74,9 +72,7 @@ def upgrade() -> None:
         postgresql_using="gin",
         postgresql_ops={"name": "gin_trgm_ops"},
     )
-    op.create_index(
-        "idx_race_playable_size", "races", ["is_playable", "size"], unique=False
-    )
+    op.create_index("idx_race_playable_size", "races", ["is_playable", "size"], unique=False)
     op.create_index(
         "idx_race_regions",
         "races",
@@ -91,9 +87,7 @@ def upgrade() -> None:
         unique=False,
         postgresql_using="gin",
     )
-    op.create_index(
-        op.f("ix_races_is_playable"), "races", ["is_playable"], unique=False
-    )
+    op.create_index(op.f("ix_races_is_playable"), "races", ["is_playable"], unique=False)
     op.create_index(op.f("ix_races_name"), "races", ["name"], unique=True)
     op.create_index(op.f("ix_races_rarity"), "races", ["rarity"], unique=False)
     op.create_index(op.f("ix_races_size"), "races", ["size"], unique=False)
@@ -107,9 +101,7 @@ def upgrade() -> None:
         sa.Column("created_at", sa.DateTime(), nullable=True),
         sa.Column("updated_at", sa.DateTime(), nullable=True),
         sa.Column("last_login", sa.DateTime(), nullable=True),
-        sa.CheckConstraint(
-            "role IN ('found_father', 'keeper', 'player')", name="check_user_role"
-        ),
+        sa.CheckConstraint("role IN ('found_father', 'keeper', 'player')", name="check_user_role"),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("username"),
     )
@@ -148,9 +140,7 @@ def upgrade() -> None:
         sa.Column("father_name", sa.String(length=200), nullable=True),
         sa.Column("mother_name", sa.String(length=200), nullable=True),
         sa.Column("secondary_factions", sa.ARRAY(sa.Integer()), nullable=True),
-        sa.Column(
-            "faction_roles", postgresql.JSONB(astext_type=sa.Text()), nullable=True
-        ),
+        sa.Column("faction_roles", postgresql.JSONB(astext_type=sa.Text()), nullable=True),
         sa.Column("faction_status", sa.String(length=20), nullable=True),
         sa.Column("campaign_id", sa.Integer(), nullable=True),
         sa.Column("player_id", sa.Integer(), nullable=True),
@@ -172,9 +162,7 @@ def upgrade() -> None:
             "wealth_level IS NULL OR wealth_level IN (\n                'нищий', 'бедный', 'средний', 'богатый', 'очень_богатый'\n            )",
             name="check_wealth_level",
         ),
-        sa.CheckConstraint(
-            "birth_year IS NULL OR birth_year > 0", name="check_birth_year"
-        ),
+        sa.CheckConstraint("birth_year IS NULL OR birth_year > 0", name="check_birth_year"),
         sa.CheckConstraint(
             "charisma IS NULL OR (charisma >= 1 AND charisma <= 30)",
             name="check_charisma_range",
@@ -187,9 +175,7 @@ def upgrade() -> None:
             "death_year IS NULL OR birth_year IS NULL OR death_year >= birth_year",
             name="check_death_after_birth",
         ),
-        sa.CheckConstraint(
-            "death_year IS NULL OR death_year > 0", name="check_death_year"
-        ),
+        sa.CheckConstraint("death_year IS NULL OR death_year > 0", name="check_death_year"),
         sa.CheckConstraint(
             "dexterity IS NULL OR (dexterity >= 1 AND dexterity <= 30)",
             name="check_dexterity_range",
@@ -198,9 +184,7 @@ def upgrade() -> None:
             "intelligence IS NULL OR (intelligence >= 1 AND intelligence <= 30)",
             name="check_intelligence_range",
         ),
-        sa.CheckConstraint(
-            "level IS NULL OR (level >= 1 AND level <= 30)", name="check_level_range"
-        ),
+        sa.CheckConstraint("level IS NULL OR (level >= 1 AND level <= 30)", name="check_level_range"),
         sa.CheckConstraint(
             "strength IS NULL OR (strength >= 1 AND strength <= 30)",
             name="check_strength_range",
@@ -257,21 +241,15 @@ def upgrade() -> None:
         unique=False,
         postgresql_using="gin",
     )
-    op.create_index(
-        "idx_character_type_status", "characters", ["type", "status"], unique=False
-    )
+    op.create_index("idx_character_type_status", "characters", ["type", "status"], unique=False)
     op.create_index(
         op.f("ix_characters_birth_location_name"),
         "characters",
         ["birth_location_name"],
         unique=False,
     )
-    op.create_index(
-        op.f("ix_characters_birth_year"), "characters", ["birth_year"], unique=False
-    )
-    op.create_index(
-        op.f("ix_characters_campaign_id"), "characters", ["campaign_id"], unique=False
-    )
+    op.create_index(op.f("ix_characters_birth_year"), "characters", ["birth_year"], unique=False)
+    op.create_index(op.f("ix_characters_campaign_id"), "characters", ["campaign_id"], unique=False)
     op.create_index(
         op.f("ix_characters_created_by_user_id"),
         "characters",
@@ -284,22 +262,12 @@ def upgrade() -> None:
         ["current_location_name"],
         unique=False,
     )
-    op.create_index(
-        op.f("ix_characters_death_year"), "characters", ["death_year"], unique=False
-    )
-    op.create_index(
-        op.f("ix_characters_father_name"), "characters", ["father_name"], unique=False
-    )
-    op.create_index(
-        op.f("ix_characters_full_name"), "characters", ["full_name"], unique=False
-    )
-    op.create_index(
-        op.f("ix_characters_mother_name"), "characters", ["mother_name"], unique=False
-    )
+    op.create_index(op.f("ix_characters_death_year"), "characters", ["death_year"], unique=False)
+    op.create_index(op.f("ix_characters_father_name"), "characters", ["father_name"], unique=False)
+    op.create_index(op.f("ix_characters_full_name"), "characters", ["full_name"], unique=False)
+    op.create_index(op.f("ix_characters_mother_name"), "characters", ["mother_name"], unique=False)
     op.create_index(op.f("ix_characters_name"), "characters", ["name"], unique=False)
-    op.create_index(
-        op.f("ix_characters_player_id"), "characters", ["player_id"], unique=False
-    )
+    op.create_index(op.f("ix_characters_player_id"), "characters", ["player_id"], unique=False)
     op.create_index(
         op.f("ix_characters_player_user_id"),
         "characters",
@@ -312,19 +280,11 @@ def upgrade() -> None:
         ["primary_faction_name"],
         unique=False,
     )
-    op.create_index(
-        op.f("ix_characters_race_id"), "characters", ["race_id"], unique=False
-    )
-    op.create_index(
-        op.f("ix_characters_social_rank"), "characters", ["social_rank"], unique=False
-    )
-    op.create_index(
-        op.f("ix_characters_status"), "characters", ["status"], unique=False
-    )
+    op.create_index(op.f("ix_characters_race_id"), "characters", ["race_id"], unique=False)
+    op.create_index(op.f("ix_characters_social_rank"), "characters", ["social_rank"], unique=False)
+    op.create_index(op.f("ix_characters_status"), "characters", ["status"], unique=False)
     op.create_index(op.f("ix_characters_type"), "characters", ["type"], unique=False)
-    op.create_index(
-        op.f("ix_characters_wealth_level"), "characters", ["wealth_level"], unique=False
-    )
+    op.create_index(op.f("ix_characters_wealth_level"), "characters", ["wealth_level"], unique=False)
     op.create_table(
         "factions",
         sa.Column("id", sa.Integer(), nullable=False),
@@ -353,9 +313,7 @@ def upgrade() -> None:
         sa.Column("traditional_enemies", sa.ARRAY(sa.String()), nullable=True),
         sa.Column("current_allies", sa.ARRAY(sa.Integer()), nullable=True),
         sa.Column("current_enemies", sa.ARRAY(sa.Integer()), nullable=True),
-        sa.Column(
-            "diplomatic_status", postgresql.JSONB(astext_type=sa.Text()), nullable=True
-        ),
+        sa.Column("diplomatic_status", postgresql.JSONB(astext_type=sa.Text()), nullable=True),
         sa.Column("military_strength", sa.String(length=20), nullable=True),
         sa.Column("economic_power", sa.String(length=20), nullable=True),
         sa.Column("political_influence", sa.String(length=20), nullable=True),
@@ -363,12 +321,8 @@ def upgrade() -> None:
         sa.Column("wealth_level", sa.String(length=30), nullable=True),
         sa.Column("primary_income_sources", sa.ARRAY(sa.String()), nullable=True),
         sa.Column("trade_specialization", sa.ARRAY(sa.String()), nullable=True),
-        sa.Column(
-            "economic_assets", postgresql.JSONB(astext_type=sa.Text()), nullable=True
-        ),
-        sa.Column(
-            "military_assets", postgresql.JSONB(astext_type=sa.Text()), nullable=True
-        ),
+        sa.Column("economic_assets", postgresql.JSONB(astext_type=sa.Text()), nullable=True),
+        sa.Column("military_assets", postgresql.JSONB(astext_type=sa.Text()), nullable=True),
         sa.Column("military_specialization", sa.ARRAY(sa.String()), nullable=True),
         sa.Column("famous_military_units", sa.ARRAY(sa.String()), nullable=True),
         sa.Column("dominant_culture", sa.String(length=50), nullable=True),
@@ -379,9 +333,7 @@ def upgrade() -> None:
         sa.Column("major_achievements", sa.ARRAY(sa.String()), nullable=True),
         sa.Column("major_conflicts", sa.ARRAY(sa.String()), nullable=True),
         sa.Column("historical_events", sa.ARRAY(sa.String()), nullable=True),
-        sa.Column(
-            "internal_structure", postgresql.JSONB(astext_type=sa.Text()), nullable=True
-        ),
+        sa.Column("internal_structure", postgresql.JSONB(astext_type=sa.Text()), nullable=True),
         sa.Column("key_positions", sa.ARRAY(sa.String()), nullable=True),
         sa.Column("membership_requirements", sa.Text(), nullable=True),
         sa.Column("internal_politics", sa.Text(), nullable=True),
@@ -435,9 +387,7 @@ def upgrade() -> None:
             "decline_started_year IS NULL OR founded_year IS NULL OR decline_started_year >= founded_year",
             name="check_decline_after_founding",
         ),
-        sa.CheckConstraint(
-            "fallen_year IS NULL OR fallen_year > 0", name="check_fallen_year_positive"
-        ),
+        sa.CheckConstraint("fallen_year IS NULL OR fallen_year > 0", name="check_fallen_year_positive"),
         sa.CheckConstraint(
             "fallen_year IS NULL OR founded_year IS NULL OR fallen_year >= founded_year",
             name="check_fall_after_founding",
@@ -526,9 +476,7 @@ def upgrade() -> None:
         unique=False,
         postgresql_using="gin",
     )
-    op.create_index(
-        "idx_faction_hierarchy", "factions", ["parent_faction_id", "type"], unique=False
-    )
+    op.create_index("idx_faction_hierarchy", "factions", ["parent_faction_id", "type"], unique=False)
     op.create_index(
         "idx_faction_historical",
         "factions",
@@ -597,9 +545,7 @@ def upgrade() -> None:
         unique=False,
         postgresql_using="gin",
     )
-    op.create_index(
-        "idx_faction_type_status", "factions", ["type", "status"], unique=False
-    )
+    op.create_index("idx_faction_type_status", "factions", ["type", "status"], unique=False)
     op.create_index(
         op.f("ix_factions_created_by_user_id"),
         "factions",
@@ -612,15 +558,9 @@ def upgrade() -> None:
         ["current_leader_name"],
         unique=False,
     )
-    op.create_index(
-        op.f("ix_factions_economic_power"), "factions", ["economic_power"], unique=False
-    )
-    op.create_index(
-        op.f("ix_factions_founded_year"), "factions", ["founded_year"], unique=False
-    )
-    op.create_index(
-        op.f("ix_factions_full_name"), "factions", ["full_name"], unique=False
-    )
+    op.create_index(op.f("ix_factions_economic_power"), "factions", ["economic_power"], unique=False)
+    op.create_index(op.f("ix_factions_founded_year"), "factions", ["founded_year"], unique=False)
+    op.create_index(op.f("ix_factions_full_name"), "factions", ["full_name"], unique=False)
     op.create_index(
         op.f("ix_factions_historical_importance"),
         "factions",
@@ -660,9 +600,7 @@ def upgrade() -> None:
     )
     op.create_index(op.f("ix_factions_status"), "factions", ["status"], unique=False)
     op.create_index(op.f("ix_factions_type"), "factions", ["type"], unique=False)
-    op.create_index(
-        op.f("ix_factions_wealth_level"), "factions", ["wealth_level"], unique=False
-    )
+    op.create_index(op.f("ix_factions_wealth_level"), "factions", ["wealth_level"], unique=False)
     op.create_table(
         "locations",
         sa.Column("id", sa.Integer(), nullable=False),
@@ -747,9 +685,7 @@ def upgrade() -> None:
             "garrison_size IS NULL OR garrison_size >= 0",
             name="check_garrison_positive",
         ),
-        sa.CheckConstraint(
-            "population IS NULL OR population >= 0", name="check_population_positive"
-        ),
+        sa.CheckConstraint("population IS NULL OR population >= 0", name="check_population_positive"),
         sa.ForeignKeyConstraint(
             ["created_by_user_id"],
             ["users.id"],
@@ -760,9 +696,7 @@ def upgrade() -> None:
         ),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index(
-        "idx_location_coordinates", "locations", ["map_x", "map_y"], unique=False
-    )
+    op.create_index("idx_location_coordinates", "locations", ["map_x", "map_y"], unique=False)
     op.create_index(
         "idx_location_description_fts",
         "locations",
@@ -826,18 +760,14 @@ def upgrade() -> None:
         unique=False,
         postgresql_using="gin",
     )
-    op.create_index(
-        "idx_location_type_region", "locations", ["type", "region"], unique=False
-    )
+    op.create_index("idx_location_type_region", "locations", ["type", "region"], unique=False)
     op.create_index(
         "idx_location_wealth_population",
         "locations",
         ["wealth_level", "population"],
         unique=False,
     )
-    op.create_index(
-        op.f("ix_locations_climate"), "locations", ["climate"], unique=False
-    )
+    op.create_index(op.f("ix_locations_climate"), "locations", ["climate"], unique=False)
     op.create_index(
         op.f("ix_locations_controlling_faction_name"),
         "locations",
@@ -862,18 +792,14 @@ def upgrade() -> None:
         ["current_status"],
         unique=False,
     )
-    op.create_index(
-        op.f("ix_locations_danger_level"), "locations", ["danger_level"], unique=False
-    )
+    op.create_index(op.f("ix_locations_danger_level"), "locations", ["danger_level"], unique=False)
     op.create_index(
         op.f("ix_locations_fortification_level"),
         "locations",
         ["fortification_level"],
         unique=False,
     )
-    op.create_index(
-        op.f("ix_locations_founded_year"), "locations", ["founded_year"], unique=False
-    )
+    op.create_index(op.f("ix_locations_founded_year"), "locations", ["founded_year"], unique=False)
     op.create_index(
         op.f("ix_locations_government_type"),
         "locations",
@@ -889,9 +815,7 @@ def upgrade() -> None:
         ["parent_location_id"],
         unique=False,
     )
-    op.create_index(
-        op.f("ix_locations_population"), "locations", ["population"], unique=False
-    )
+    op.create_index(op.f("ix_locations_population"), "locations", ["population"], unique=False)
     op.create_index(op.f("ix_locations_region"), "locations", ["region"], unique=False)
     op.create_index(
         op.f("ix_locations_strategic_importance"),
@@ -900,9 +824,7 @@ def upgrade() -> None:
         unique=False,
     )
     op.create_index(op.f("ix_locations_type"), "locations", ["type"], unique=False)
-    op.create_index(
-        op.f("ix_locations_wealth_level"), "locations", ["wealth_level"], unique=False
-    )
+    op.create_index(op.f("ix_locations_wealth_level"), "locations", ["wealth_level"], unique=False)
     op.create_table(
         "articles",
         sa.Column("id", sa.Integer(), nullable=False),
@@ -999,9 +921,7 @@ def upgrade() -> None:
             "time_period_start IS NULL OR time_period_start > 0",
             name="check_start_period_positive",
         ),
-        sa.CheckConstraint(
-            "word_count IS NULL OR word_count >= 0", name="check_word_count_positive"
-        ),
+        sa.CheckConstraint("word_count IS NULL OR word_count >= 0", name="check_word_count_positive"),
         sa.ForeignKeyConstraint(
             ["created_by_user_id"],
             ["users.id"],
@@ -1128,9 +1048,7 @@ def upgrade() -> None:
         unique=False,
         postgresql_using="gin",
     )
-    op.create_index(
-        "idx_article_tags", "articles", ["tags"], unique=False, postgresql_using="gin"
-    )
+    op.create_index("idx_article_tags", "articles", ["tags"], unique=False, postgresql_using="gin")
     op.create_index(
         "idx_article_title_trgm",
         "articles",
@@ -1139,27 +1057,21 @@ def upgrade() -> None:
         postgresql_using="gin",
         postgresql_ops={"title": "gin_trgm_ops"},
     )
-    op.create_index(
-        "idx_article_type_status", "articles", ["article_type", "status"], unique=False
-    )
+    op.create_index("idx_article_type_status", "articles", ["article_type", "status"], unique=False)
     op.create_index(
         "idx_article_visibility",
         "articles",
         ["visibility_level", "is_public"],
         unique=False,
     )
-    op.create_index(
-        op.f("ix_articles_article_type"), "articles", ["article_type"], unique=False
-    )
+    op.create_index(op.f("ix_articles_article_type"), "articles", ["article_type"], unique=False)
     op.create_index(
         op.f("ix_articles_canonical_status"),
         "articles",
         ["canonical_status"],
         unique=False,
     )
-    op.create_index(
-        op.f("ix_articles_category"), "articles", ["category"], unique=False
-    )
+    op.create_index(op.f("ix_articles_category"), "articles", ["category"], unique=False)
     op.create_index(
         op.f("ix_articles_created_by_user_id"),
         "articles",
@@ -1178,12 +1090,8 @@ def upgrade() -> None:
         ["historical_period"],
         unique=False,
     )
-    op.create_index(
-        op.f("ix_articles_is_public"), "articles", ["is_public"], unique=False
-    )
-    op.create_index(
-        op.f("ix_articles_is_published"), "articles", ["is_published"], unique=False
-    )
+    op.create_index(op.f("ix_articles_is_public"), "articles", ["is_public"], unique=False)
+    op.create_index(op.f("ix_articles_is_published"), "articles", ["is_published"], unique=False)
     op.create_index(
         op.f("ix_articles_last_modified_by_user_id"),
         "articles",
@@ -1214,9 +1122,7 @@ def upgrade() -> None:
         ["primary_race_id"],
         unique=False,
     )
-    op.create_index(
-        op.f("ix_articles_source_type"), "articles", ["source_type"], unique=False
-    )
+    op.create_index(op.f("ix_articles_source_type"), "articles", ["source_type"], unique=False)
     op.create_index(op.f("ix_articles_status"), "articles", ["status"], unique=False)
     op.create_index(op.f("ix_articles_title"), "articles", ["title"], unique=False)
     op.create_index(
@@ -1257,38 +1163,20 @@ def downgrade() -> None:
         postgresql_ops={"title": "gin_trgm_ops"},
     )
     op.drop_index("idx_article_tags", table_name="articles", postgresql_using="gin")
-    op.drop_index(
-        "idx_article_summary_fts", table_name="articles", postgresql_using="gin"
-    )
+    op.drop_index("idx_article_summary_fts", table_name="articles", postgresql_using="gin")
     op.drop_index("idx_article_sources", table_name="articles", postgresql_using="gin")
-    op.drop_index(
-        "idx_article_religious_context", table_name="articles", postgresql_using="gin"
-    )
-    op.drop_index(
-        "idx_article_related_races", table_name="articles", postgresql_using="gin"
-    )
-    op.drop_index(
-        "idx_article_related_locs", table_name="articles", postgresql_using="gin"
-    )
-    op.drop_index(
-        "idx_article_related_factions", table_name="articles", postgresql_using="gin"
-    )
-    op.drop_index(
-        "idx_article_related_chars", table_name="articles", postgresql_using="gin"
-    )
+    op.drop_index("idx_article_religious_context", table_name="articles", postgresql_using="gin")
+    op.drop_index("idx_article_related_races", table_name="articles", postgresql_using="gin")
+    op.drop_index("idx_article_related_locs", table_name="articles", postgresql_using="gin")
+    op.drop_index("idx_article_related_factions", table_name="articles", postgresql_using="gin")
+    op.drop_index("idx_article_related_chars", table_name="articles", postgresql_using="gin")
     op.drop_index("idx_article_publication", table_name="articles")
     op.drop_index("idx_article_period", table_name="articles")
     op.drop_index("idx_article_last_modified_by", table_name="articles")
-    op.drop_index(
-        "idx_article_languages", table_name="articles", postgresql_using="gin"
-    )
-    op.drop_index(
-        "idx_article_cultural_context", table_name="articles", postgresql_using="gin"
-    )
+    op.drop_index("idx_article_languages", table_name="articles", postgresql_using="gin")
+    op.drop_index("idx_article_cultural_context", table_name="articles", postgresql_using="gin")
     op.drop_index("idx_article_created_by", table_name="articles")
-    op.drop_index(
-        "idx_article_content_fts", table_name="articles", postgresql_using="gin"
-    )
+    op.drop_index("idx_article_content_fts", table_name="articles", postgresql_using="gin")
     op.drop_index("idx_article_category_published", table_name="articles")
     op.drop_table("articles")
     op.drop_index(op.f("ix_locations_wealth_level"), table_name="locations")
@@ -1311,30 +1199,20 @@ def downgrade() -> None:
     op.drop_index(op.f("ix_locations_climate"), table_name="locations")
     op.drop_index("idx_location_wealth_population", table_name="locations")
     op.drop_index("idx_location_type_region", table_name="locations")
-    op.drop_index(
-        "idx_location_trade_goods", table_name="locations", postgresql_using="gin"
-    )
+    op.drop_index("idx_location_trade_goods", table_name="locations", postgresql_using="gin")
     op.drop_index("idx_location_strategic_military", table_name="locations")
     op.drop_index("idx_location_routes", table_name="locations", postgresql_using="gin")
-    op.drop_index(
-        "idx_location_resources", table_name="locations", postgresql_using="gin"
-    )
+    op.drop_index("idx_location_resources", table_name="locations", postgresql_using="gin")
     op.drop_index(
         "idx_location_name_trgm",
         table_name="locations",
         postgresql_using="gin",
         postgresql_ops={"name": "gin_trgm_ops"},
     )
-    op.drop_index(
-        "idx_location_languages", table_name="locations", postgresql_using="gin"
-    )
-    op.drop_index(
-        "idx_location_landmarks", table_name="locations", postgresql_using="gin"
-    )
+    op.drop_index("idx_location_languages", table_name="locations", postgresql_using="gin")
+    op.drop_index("idx_location_landmarks", table_name="locations", postgresql_using="gin")
     op.drop_index("idx_location_events", table_name="locations", postgresql_using="gin")
-    op.drop_index(
-        "idx_location_description_fts", table_name="locations", postgresql_using="gin"
-    )
+    op.drop_index("idx_location_description_fts", table_name="locations", postgresql_using="gin")
     op.drop_index("idx_location_coordinates", table_name="locations")
     op.drop_table("locations")
     op.drop_index(op.f("ix_factions_wealth_level"), table_name="factions")
@@ -1353,16 +1231,10 @@ def downgrade() -> None:
     op.drop_index(op.f("ix_factions_current_leader_name"), table_name="factions")
     op.drop_index(op.f("ix_factions_created_by_user_id"), table_name="factions")
     op.drop_index("idx_faction_type_status", table_name="factions")
-    op.drop_index(
-        "idx_faction_trade_spec", table_name="factions", postgresql_using="gin"
-    )
-    op.drop_index(
-        "idx_faction_trade_routes", table_name="factions", postgresql_using="gin"
-    )
+    op.drop_index("idx_faction_trade_spec", table_name="factions", postgresql_using="gin")
+    op.drop_index("idx_faction_trade_routes", table_name="factions", postgresql_using="gin")
     op.drop_index("idx_faction_territorial", table_name="factions")
-    op.drop_index(
-        "idx_faction_structure", table_name="factions", postgresql_using="gin"
-    )
+    op.drop_index("idx_faction_structure", table_name="factions", postgresql_using="gin")
     op.drop_index("idx_faction_regions", table_name="factions", postgresql_using="gin")
     op.drop_index("idx_faction_power_analysis", table_name="factions")
     op.drop_index(
@@ -1371,38 +1243,20 @@ def downgrade() -> None:
         postgresql_using="gin",
         postgresql_ops={"name": "gin_trgm_ops"},
     )
-    op.drop_index(
-        "idx_faction_military_assets", table_name="factions", postgresql_using="gin"
-    )
-    op.drop_index(
-        "idx_faction_income_sources", table_name="factions", postgresql_using="gin"
-    )
+    op.drop_index("idx_faction_military_assets", table_name="factions", postgresql_using="gin")
+    op.drop_index("idx_faction_income_sources", table_name="factions", postgresql_using="gin")
     op.drop_index("idx_faction_historical", table_name="factions")
     op.drop_index("idx_faction_hierarchy", table_name="factions")
     op.drop_index("idx_faction_enemies", table_name="factions", postgresql_using="gin")
-    op.drop_index(
-        "idx_faction_economic_assets", table_name="factions", postgresql_using="gin"
-    )
-    op.drop_index(
-        "idx_faction_diplomacy", table_name="factions", postgresql_using="gin"
-    )
-    op.drop_index(
-        "idx_faction_description_fts", table_name="factions", postgresql_using="gin"
-    )
-    op.drop_index(
-        "idx_faction_current_enemies", table_name="factions", postgresql_using="gin"
-    )
-    op.drop_index(
-        "idx_faction_current_allies", table_name="factions", postgresql_using="gin"
-    )
-    op.drop_index(
-        "idx_faction_conflicts", table_name="factions", postgresql_using="gin"
-    )
+    op.drop_index("idx_faction_economic_assets", table_name="factions", postgresql_using="gin")
+    op.drop_index("idx_faction_diplomacy", table_name="factions", postgresql_using="gin")
+    op.drop_index("idx_faction_description_fts", table_name="factions", postgresql_using="gin")
+    op.drop_index("idx_faction_current_enemies", table_name="factions", postgresql_using="gin")
+    op.drop_index("idx_faction_current_allies", table_name="factions", postgresql_using="gin")
+    op.drop_index("idx_faction_conflicts", table_name="factions", postgresql_using="gin")
     op.drop_index("idx_faction_cities", table_name="factions", postgresql_using="gin")
     op.drop_index("idx_faction_allies", table_name="factions", postgresql_using="gin")
-    op.drop_index(
-        "idx_faction_achievements", table_name="factions", postgresql_using="gin"
-    )
+    op.drop_index("idx_faction_achievements", table_name="factions", postgresql_using="gin")
     op.drop_table("factions")
     op.drop_index(op.f("ix_characters_wealth_level"), table_name="characters")
     op.drop_index(op.f("ix_characters_type"), table_name="characters")
@@ -1435,9 +1289,7 @@ def downgrade() -> None:
         postgresql_using="gin",
         postgresql_ops={"name": "gin_trgm_ops"},
     )
-    op.drop_index(
-        "idx_character_faction_roles", table_name="characters", postgresql_using="gin"
-    )
+    op.drop_index("idx_character_faction_roles", table_name="characters", postgresql_using="gin")
     op.drop_index("idx_character_created_by", table_name="characters")
     op.drop_table("characters")
     op.drop_index(op.f("ix_users_id"), table_name="users")

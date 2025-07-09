@@ -1,6 +1,6 @@
-import logging
 from datetime import datetime
-from typing import Any, Dict, Optional
+import logging
+from typing import Any
 
 from fastapi import HTTPException, Request, status
 from fastapi.responses import JSONResponse
@@ -25,7 +25,7 @@ class ErrorResponse:
         message: str,
         status_code: int,
         details: Any = None,
-        request_id: Optional[str] = None,
+        request_id: str | None = None,
     ):
         self.error_type = error_type
         self.message = message
@@ -33,7 +33,7 @@ class ErrorResponse:
         self.details = details
         self.request_id = request_id
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert error response to dictionary format."""
         response = {
             "error": {
@@ -62,8 +62,7 @@ def setup_error_handlers(app):
         request_id = getattr(request.state, "request_id", None)
 
         logger.warning(
-            f"HTTP Exception: {exc.status_code} - {exc.detail} - "
-            f"Path: {request.url.path} - Request ID: {request_id}"
+            f"HTTP Exception: {exc.status_code} - {exc.detail} - Path: {request.url.path} - Request ID: {request_id}"
         )
 
         error_response = ErrorResponse(
@@ -80,9 +79,7 @@ def setup_error_handlers(app):
         )
 
     @app.exception_handler(StarletteHTTPException)
-    async def starlette_exception_handler(
-        request: Request, exc: StarletteHTTPException
-    ):
+    async def starlette_exception_handler(request: Request, exc: StarletteHTTPException):
         """Handle Starlette HTTP exceptions."""
         request_id = getattr(request.state, "request_id", None)
 
@@ -93,19 +90,14 @@ def setup_error_handlers(app):
             request_id=request_id,
         )
 
-        return JSONResponse(
-            status_code=exc.status_code, content=error_response.to_dict()
-        )
+        return JSONResponse(status_code=exc.status_code, content=error_response.to_dict())
 
     @app.exception_handler(ValidationError)
     async def validation_exception_handler(request: Request, exc: ValidationError):
         """Handle Pydantic validation errors."""
         request_id = getattr(request.state, "request_id", None)
 
-        logger.warning(
-            f"Validation Error: {exc.errors()} - "
-            f"Path: {request.url.path} - Request ID: {request_id}"
-        )
+        logger.warning(f"Validation Error: {exc.errors()} - Path: {request.url.path} - Request ID: {request_id}")
 
         validation_errors = [
             {
@@ -135,10 +127,7 @@ def setup_error_handlers(app):
         """Handle SQLAlchemy database errors."""
         request_id = getattr(request.state, "request_id", None)
 
-        logger.error(
-            f"Database Error: {str(exc)} - "
-            f"Path: {request.url.path} - Request ID: {request_id}"
-        )
+        logger.error(f"Database Error: {str(exc)} - Path: {request.url.path} - Request ID: {request_id}")
 
         if isinstance(exc, IntegrityError):
             error_detail = "Database integrity constraint violation"

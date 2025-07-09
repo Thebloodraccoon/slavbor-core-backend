@@ -1,8 +1,6 @@
 from datetime import datetime
-from typing import List, Optional
 
-from pydantic import (BaseModel, ConfigDict, Field, field_validator,
-                      model_validator)
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.constants import RACE_SIZES
 
@@ -17,9 +15,7 @@ class RaceBase(BaseModel):
         description="Race name",
         examples=["Люди", "Гориусы", "Кобы"],
     )
-    description: Optional[str] = Field(
-        None, max_length=2000, description="Race description"
-    )
+    description: str | None = Field(None, max_length=2000, description="Race description")
     size: str = Field(default="Средний", description="Size of race representatives")
     is_playable: bool = Field(..., description="Is the race available for players")
 
@@ -34,11 +30,11 @@ class RaceBase(BaseModel):
     def validate_size(cls, v: str) -> str:
         """Validate race size"""
         if v not in RACE_SIZES:
-            raise ValueError(f'Size should be one of: {", ".join(RACE_SIZES)}')
+            raise ValueError(f"Size should be one of: {', '.join(RACE_SIZES)}")
         return v
 
     @field_validator("description")
-    def validate_description(cls, v: Optional[str]) -> Optional[str]:
+    def validate_description(cls, v: str | None) -> str | None:
         """Validate and clean description"""
         if v is None:
             return v
@@ -52,20 +48,16 @@ class RaceBase(BaseModel):
 class RaceCreate(RaceBase):
     """Schema for creating a new race"""
 
-    pass
-
 
 class RaceUpdate(RaceBase):
     """Schema for updating a race"""
 
-    name: Optional[str] = Field(  # type: ignore
+    name: str | None = Field(  # type: ignore
         None, min_length=2, max_length=100, description="New race name"
     )
-    description: Optional[str] = Field(
-        None, max_length=2000, description="New race description"
-    )
-    size: Optional[str] = Field(None, description="New race size")  # type: ignore
-    is_playable: Optional[bool] = Field(None, description="Change playable status")  # type: ignore
+    description: str | None = Field(None, max_length=2000, description="New race description")
+    size: str | None = Field(None, description="New race size")  # type: ignore
+    is_playable: bool | None = Field(None, description="Change playable status")  # type: ignore
 
     @model_validator(mode="after")
     def validate_at_least_one_field(self):
@@ -94,7 +86,7 @@ class RaceResponse(RaceBase):
 class RaceListResponse(BaseModel):
     """Schema for race list with pagination metadata"""
 
-    races: List[RaceResponse] = Field(..., description="List of races")
+    races: list[RaceResponse] = Field(..., description="List of races")
     total: int = Field(..., description="Total number of races")
     page: int = Field(..., description="Page number")
     size: int = Field(..., description="Page size")

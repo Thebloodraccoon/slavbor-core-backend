@@ -171,7 +171,6 @@ cython_debug/
 *~
 
 # Emacs
-*~
 \#*\#
 /.emacs.desktop
 /.emacs.desktop.lock
@@ -190,8 +189,6 @@ Thumbs.db
 ehthumbs.db
 Desktop.ini
 
-# Linux
-*~
 
 # Database
 *.db
@@ -199,7 +196,6 @@ Desktop.ini
 *.sqlite3
 
 # Logs
-*.log
 logs/
 
 # Temporary files
@@ -215,14 +211,8 @@ dump.rdb
 # Uncomment below if you want to ignore all migration files
 # alembic/versions/*.py
 
-# FastAPI specific
-.pytest_cache/
-.coverage
-htmlcov/
-
 # Local development
 .local/
-local_settings.py
 
 # Backup files
 *.bak
@@ -237,7 +227,3 @@ yarn-error.log*
 # Uploads/Media files (uncomment if needed)
 # uploads/
 # media/
-# static/media/
-
-# Covarage
-.coverage

@@ -85,9 +85,7 @@ def upgrade() -> None:
             "resource_cost IS NULL OR resource_cost >= 0",
             name="check_resource_cost_positive",
         ),
-        sa.CheckConstraint(
-            "save_dc IS NULL OR save_dc > 0", name="check_save_dc_positive"
-        ),
+        sa.CheckConstraint("save_dc IS NULL OR save_dc > 0", name="check_save_dc_positive"),
         sa.CheckConstraint(
             "strength_modifier IS NULL OR (strength_modifier >= -10 AND strength_modifier <= 10)",
             name="check_strength_modifier_range",
@@ -133,13 +131,9 @@ def upgrade() -> None:
         unique=False,
     )
     op.create_index("idx_ability_usage_type", "abilities", ["usage_type"], unique=False)
-    op.create_index(
-        op.f("ix_abilities_category"), "abilities", ["category"], unique=False
-    )
+    op.create_index(op.f("ix_abilities_category"), "abilities", ["category"], unique=False)
     op.create_index(op.f("ix_abilities_name"), "abilities", ["name"], unique=False)
-    op.create_index(
-        op.f("ix_abilities_usage_type"), "abilities", ["usage_type"], unique=False
-    )
+    op.create_index(op.f("ix_abilities_usage_type"), "abilities", ["usage_type"], unique=False)
     op.create_table(
         "classes",
         sa.Column("id", sa.Integer(), nullable=False),
@@ -166,9 +160,7 @@ def upgrade() -> None:
         postgresql_using="gin",
         postgresql_ops={"name": "gin_trgm_ops"},
     )
-    op.create_index(
-        op.f("ix_classes_is_playable"), "classes", ["is_playable"], unique=False
-    )
+    op.create_index(op.f("ix_classes_is_playable"), "classes", ["is_playable"], unique=False)
     op.create_index(op.f("ix_classes_name"), "classes", ["name"], unique=True)
     op.create_index(op.f("ix_classes_type"), "classes", ["type"], unique=False)
     op.create_table(
@@ -184,22 +176,16 @@ def upgrade() -> None:
             name="check_entity_type",
         ),
         sa.PrimaryKeyConstraint("id"),
-        sa.UniqueConstraint(
-            "entity_type", "entity_id", "ability_id", name="uq_entity_ability"
-        ),
+        sa.UniqueConstraint("entity_type", "entity_id", "ability_id", name="uq_entity_ability"),
     )
-    op.create_index(
-        "idx_entity_ability_ability", "entity_abilities", ["ability_id"], unique=False
-    )
+    op.create_index("idx_entity_ability_ability", "entity_abilities", ["ability_id"], unique=False)
     op.create_index(
         "idx_entity_ability_entity",
         "entity_abilities",
         ["entity_type", "entity_id"],
         unique=False,
     )
-    op.create_index(
-        "idx_entity_ability_type", "entity_abilities", ["entity_type"], unique=False
-    )
+    op.create_index("idx_entity_ability_type", "entity_abilities", ["entity_type"], unique=False)
     op.create_index(
         op.f("ix_entity_abilities_ability_id"),
         "entity_abilities",
@@ -227,16 +213,10 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("article_id", "tag", name="uq_article_tag"),
     )
-    op.create_index(
-        "idx_article_tags_article", "article_tags", ["article_id"], unique=False
-    )
+    op.create_index("idx_article_tags_article", "article_tags", ["article_id"], unique=False)
     op.create_index("idx_article_tags_tag", "article_tags", ["tag"], unique=False)
-    op.add_column(
-        "character_game_stats", sa.Column("class_id", sa.Integer(), nullable=True)
-    )
-    op.add_column(
-        "character_game_stats", sa.Column("subclass_id", sa.Integer(), nullable=True)
-    )
+    op.add_column("character_game_stats", sa.Column("class_id", sa.Integer(), nullable=True))
+    op.add_column("character_game_stats", sa.Column("subclass_id", sa.Integer(), nullable=True))
     op.create_foreign_key(
         None,
         "character_game_stats",
@@ -266,9 +246,7 @@ def downgrade() -> None:
     op.drop_index("idx_article_tags_tag", table_name="article_tags")
     op.drop_index("idx_article_tags_article", table_name="article_tags")
     op.drop_table("article_tags")
-    op.drop_index(
-        op.f("ix_entity_abilities_entity_type"), table_name="entity_abilities"
-    )
+    op.drop_index(op.f("ix_entity_abilities_entity_type"), table_name="entity_abilities")
     op.drop_index(op.f("ix_entity_abilities_entity_id"), table_name="entity_abilities")
     op.drop_index(op.f("ix_entity_abilities_ability_id"), table_name="entity_abilities")
     op.drop_index("idx_entity_ability_type", table_name="entity_abilities")
@@ -297,9 +275,7 @@ def downgrade() -> None:
         postgresql_ops={"name": "gin_trgm_ops"},
     )
     op.drop_index("idx_ability_level_requirement", table_name="abilities")
-    op.drop_index(
-        "idx_ability_description_fts", table_name="abilities", postgresql_using="gin"
-    )
+    op.drop_index("idx_ability_description_fts", table_name="abilities", postgresql_using="gin")
     op.drop_index("idx_ability_class_requirement", table_name="abilities")
     op.drop_index("idx_ability_category", table_name="abilities")
     op.drop_table("abilities")
