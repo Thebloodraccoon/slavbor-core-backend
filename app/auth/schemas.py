@@ -1,6 +1,6 @@
 import re
 
-from pydantic import BaseModel, field_validator, constr
+from pydantic import BaseModel, field_validator
 
 from app.exceptions.user_exceptions import InvalidEmailException
 

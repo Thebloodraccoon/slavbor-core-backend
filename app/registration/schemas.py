@@ -5,6 +5,5 @@ class RegistrationRequest(UserCreate):
     pass
 
 
-class RegistrationResponse():
+class RegistrationResponse:
     access_token: str
-

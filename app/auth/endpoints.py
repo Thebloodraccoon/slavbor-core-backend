@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Response, HTTPException, Depends
+from fastapi import APIRouter, Request, Response
 
 from app.auth.schemas import (
     LoginRequest,
@@ -9,13 +9,6 @@ from app.auth.schemas import (
     TwoFAVerifyRequest,
 )
 from app.core.dependencies import AuthServiceDep, CurrentUserDep
-
-from fastapi import APIRouter, Depends, Response, status
-from sqlalchemy.orm import Session
-from app.auth.schemas import RegisterRequest, RegisterResponse
-from app.users.services import UserService
-from app.settings.local import get_db
-from app.auth.utils.token_utils import create_access_token
 
 router = APIRouter()
 
@@ -50,4 +43,3 @@ async def logout(
 async def refresh_tokens(http_request: Request, auth_service: AuthServiceDep):
     refresh_token = http_request.cookies.get("refresh_token", "")
     return await auth_service.refresh_tokens(refresh_token)
-
