@@ -9,11 +9,19 @@ from app.auth.services import AuthService
 from app.auth.utils.token_utils import verify_token
 from app.exceptions.auth_exceptions import AdminAccessException, SuperAdminAccessException
 from app.races.services import RaceService
+from app.registration.repository import RegistrationRepository
 from app.settings import settings
 from app.users.schemas import UserResponse
 from app.users.services import UserService
 
+from app.settings.local import get_redis
+from redis.asyncio import Redis
+
 DatabaseDep = Annotated[Session, Depends(settings.get_db)]
+RedisDep = Annotated[Redis, Depends(get_redis)]
+
+def get_registration_repository(redis: RedisDep) -> RegistrationRepository:
+    return RegistrationRepository(redis)
 
 
 def get_user_service(db: DatabaseDep) -> UserService:
@@ -30,6 +38,7 @@ def get_auth_service(db: DatabaseDep) -> AuthService:
     """Get Race service instance."""
     return AuthService(db)
 
+RegistrationRepoDep = Annotated[RegistrationRepository, Depends(get_registration_repository)]
 
 UserServiceDep = Annotated[UserService, Depends(get_user_service)]
 RaceServiceDep = Annotated[RaceService, Depends(get_race_service)]

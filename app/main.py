@@ -23,6 +23,9 @@ from app.races.endpoints import router as race_router
 from app.settings import settings
 from app.users.endpoints import router as user_router
 
+from app.registration.endpoints import router as registration_router
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -79,6 +82,7 @@ def setup_routers(app: FastAPI) -> None:
     app.include_router(auth_router, prefix=f"{api_prefix}/auth", tags=["Auth"])
     app.include_router(race_router, prefix=f"{api_prefix}/races", tags=["Races"])
     app.include_router(user_router, prefix=f"{api_prefix}/users", tags=["Users"])
+    app.include_router(registration_router, prefix=f"{api_prefix}/registrations", tags=["Registrations"])
 
 
 app = FastAPI(
