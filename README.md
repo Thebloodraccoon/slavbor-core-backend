@@ -103,10 +103,10 @@ docker-compose up -d
 docker exec -it slavbor_fastapi_app bash
 
 # Then 
-tox
+nox
 
 # Or for only testing
-tox -e test
+nox -s test
 ```
 
 ## 🗄️ Database Management
@@ -137,7 +137,7 @@ alembic downgrade -1
 - **MyPy** - Static type checking
 - **Bandit** - Security linting
 - **Pytest** - Testing framework
-- **Tox** - Testing automation
+- **Nox** - Testing automation
 - **Alembic** - Database migrations
 - **Docker** - Containerization
 
