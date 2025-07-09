@@ -1,5 +1,4 @@
 import re
-from typing import Union
 
 from pydantic import BaseModel, field_validator, constr
 
@@ -43,4 +42,4 @@ class RefreshResponse(BaseModel):
     access_token: str
 
 
-LoginResponseUnion = Union[LoginResponse, TwoFASetupResponse, TwoFARequiredResponse]
+LoginResponseUnion = LoginResponse | TwoFASetupResponse | TwoFARequiredResponse

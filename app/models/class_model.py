@@ -1,7 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import (Boolean, CheckConstraint, Column, DateTime, Index,
-                        Integer, String, Text)
+from sqlalchemy import Boolean, CheckConstraint, Column, DateTime, Index, Integer, String, Text
 
 from app.constants import CLASS_TYPES, create_enum_constraint
 from app.settings import settings
@@ -22,9 +21,7 @@ class Class(settings.Base):  # type: ignore
     is_playable = Column(Boolean, default=True, index=True)
 
     created_at = Column(DateTime, default=datetime.now, nullable=False)
-    updated_at = Column(
-        DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
-    )
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now, nullable=False)
 
     __table_args__ = (
         CheckConstraint(

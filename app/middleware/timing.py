@@ -1,6 +1,6 @@
+from collections.abc import Callable
 import logging
 import time
-from typing import Callable
 
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -11,9 +11,7 @@ logger = logging.getLogger(__name__)
 class TimingMiddleware(BaseHTTPMiddleware):
     """Middleware for measuring request processing time."""
 
-    def __init__(
-        self, app, log_slow_requests: bool = True, slow_threshold: float = 1.0
-    ):
+    def __init__(self, app, log_slow_requests: bool = True, slow_threshold: float = 1.0):
         super().__init__(app)
         self.log_slow_requests = log_slow_requests
         self.slow_threshold = slow_threshold

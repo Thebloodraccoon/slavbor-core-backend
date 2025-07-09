@@ -1,12 +1,8 @@
-from typing import List
-
 from sqlalchemy.orm import Session
 
-from app.exceptions.race_exceptions import (RaceAlreadyExistsException,
-                                            RaceNotFoundException)
+from app.exceptions.race_exceptions import RaceAlreadyExistsException, RaceNotFoundException
 from app.races.repository import RaceRepository
-from app.races.schemas import (RaceCreate, RaceListResponse, RaceResponse,
-                               RaceUpdate)
+from app.races.schemas import RaceCreate, RaceListResponse, RaceResponse, RaceUpdate
 
 
 class RaceService:
@@ -31,14 +27,12 @@ class RaceService:
 
         return RaceResponse.model_validate(race)
 
-    def get_all_races(self, skip: int = 0, limit: int = 100) -> List[RaceResponse]:
+    def get_all_races(self, skip: int = 0, limit: int = 100) -> list[RaceResponse]:
         """Obtaining all races with pagination."""
         races = self.repository.get_all(skip=skip, limit=limit)
         return [RaceResponse.model_validate(race) for race in races]
 
-    def get_races_with_pagination(
-        self, page: int = 1, size: int = 10
-    ) -> RaceListResponse:
+    def get_races_with_pagination(self, page: int = 1, size: int = 10) -> RaceListResponse:
         """Obtaining races with pagination and metadata."""
         skip = (page - 1) * size
         races = self.repository.get_all(skip=skip, limit=size)
@@ -81,7 +75,7 @@ class RaceService:
 
         return self.repository.delete(race)
 
-    def get_playable_races(self) -> List[RaceResponse]:
+    def get_playable_races(self) -> list[RaceResponse]:
         """Obtaining only playable races."""
         races = self.repository.get_playable_races()
         return [RaceResponse.model_validate(race) for race in races]

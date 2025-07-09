@@ -1,5 +1,3 @@
-from typing import Optional
-
 from sqlalchemy.orm import Session
 
 from app.core.repository import BaseRepository
@@ -12,11 +10,11 @@ class RaceRepository(BaseRepository[Race]):
     def __init__(self, db: Session):
         super().__init__(Race, db)
 
-    def get_by_name(self, name: str) -> Optional[Race]:
+    def get_by_name(self, name: str) -> Race | None:
         """Obtaining a race by name."""
         return self.db.query(Race).filter(Race.name == name).first()
 
-    def exists_by_name(self, name: str, exclude_id: Optional[int] = None) -> bool:
+    def exists_by_name(self, name: str, exclude_id: int | None = None) -> bool:
         """Checking the existence of a race by name."""
         query = self.db.query(Race).filter(Race.name == name)
         if exclude_id:

@@ -1,12 +1,13 @@
 from datetime import datetime
-from typing import Optional
 
 from sqlalchemy.orm import Session
 
 from app.auth.utils.pwd_utils import get_password_hash
-from app.exceptions.user_exceptions import (UserEmailAlreadyExistsException,
-                                            UserNameAlreadyExistsException,
-                                            UserNotFoundException)
+from app.exceptions.user_exceptions import (
+    UserEmailAlreadyExistsException,
+    UserNameAlreadyExistsException,
+    UserNotFoundException,
+)
 from app.users.repository import UserRepository
 from app.users.schemas import UserCreate, UserResponse, UserUpdate
 
@@ -17,13 +18,13 @@ class UserService:
     def __init__(self, db: Session):
         self.repository = UserRepository(db)
 
-    def _check_email_exists(self, email: str, user_id: Optional[int] = None) -> None:  # type: ignore
+    def _check_email_exists(self, email: str, user_id: int | None = None) -> None:  # type: ignore
         """Check if email already exists, excluding specific user ID."""
         existing_user = self.repository.get_by_email(email)
         if existing_user and (user_id is None or existing_user.id != user_id):
             raise UserEmailAlreadyExistsException(email)
 
-    def _check_username_exists(self, username: str, user_id: Optional[int] = None) -> None:  # type: ignore
+    def _check_username_exists(self, username: str, user_id: int | None = None) -> None:  # type: ignore
         """Check if username already exists, excluding specific user ID."""
         existing_user = self.repository.get_by_username(username)
         if existing_user and (user_id is None or existing_user.id != user_id):

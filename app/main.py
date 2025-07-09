@@ -1,17 +1,22 @@
-import logging
 from contextlib import asynccontextmanager
+import logging
 
-import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
+import uvicorn
 
 from app.auth.endpoints import router as auth_router
-from app.middleware import (AutoTokenRefreshMiddleware, LoggingMiddleware,
-                            MiddlewareConfig, RateLimitMiddleware,
-                            RequestIDMiddleware, SecurityHeadersMiddleware,
-                            TimingMiddleware)
+from app.middleware import (
+    AutoTokenRefreshMiddleware,
+    LoggingMiddleware,
+    MiddlewareConfig,
+    RateLimitMiddleware,
+    RequestIDMiddleware,
+    SecurityHeadersMiddleware,
+    TimingMiddleware,
+)
 from app.middleware.error_handler import setup_error_handlers
 from app.ping.endpoints import router as ping_router
 from app.races.endpoints import router as race_router

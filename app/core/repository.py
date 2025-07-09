@@ -1,4 +1,4 @@
-from typing import Any, Dict, Generic, List, Optional, Protocol, Type, TypeVar
+from typing import Any, Generic, Protocol, TypeVar
 
 from sqlalchemy import Column
 from sqlalchemy.orm import Session
@@ -16,15 +16,15 @@ ModelType = TypeVar("ModelType", bound=ModelProtocol)
 class BaseRepository(Generic[ModelType]):
     """Base repository providing common CRUD operations for SQLAlchemy models."""
 
-    def __init__(self, model: Type[ModelType], db: Session):
+    def __init__(self, model: type[ModelType], db: Session):
         self.model = model
         self.db = db
 
-    def get_by_id(self, model_id: int) -> Optional[ModelType]:
+    def get_by_id(self, model_id: int) -> ModelType | None:
         """Retrieve a single record by its primary key ID."""
         return self.db.query(self.model).filter(self.model.id == model_id).first()
 
-    def get_all(self, *, skip: int = 0, limit: int = 100) -> List[ModelType]:
+    def get_all(self, *, skip: int = 0, limit: int = 100) -> list[ModelType]:
         """Retrieve multiple records with pagination support."""
         return self.db.query(self.model).offset(skip).limit(limit).all()
 
@@ -32,7 +32,7 @@ class BaseRepository(Generic[ModelType]):
         """Count the total number of records in the table."""
         return self.db.query(self.model).count()
 
-    def create(self, obj_data: Dict[str, Any]) -> ModelType:
+    def create(self, obj_data: dict[str, Any]) -> ModelType:
         """Create a new record in the database."""
 
         db_obj = self.model(**obj_data)
@@ -41,7 +41,7 @@ class BaseRepository(Generic[ModelType]):
         self.db.refresh(db_obj)
         return db_obj
 
-    def update(self, db_obj: ModelType, update_data: Dict[str, Any]) -> ModelType:
+    def update(self, db_obj: ModelType, update_data: dict[str, Any]) -> ModelType:
         """Update an existing record with new values."""
 
         for field, value in update_data.items():
@@ -60,12 +60,9 @@ class BaseRepository(Generic[ModelType]):
 
     def exists_by_id(self, model_id: int) -> bool:
         """Check if a record exists by its primary key ID."""
-        return (
-            self.db.query(self.model).filter(self.model.id == model_id).first()
-            is not None
-        )
+        return self.db.query(self.model).filter(self.model.id == model_id).first() is not None
 
-    def filter_by_fields(self, **filters) -> List[ModelType]:
+    def filter_by_fields(self, **filters) -> list[ModelType]:
         """Filter records by multiple field values using exact matching."""
 
         query = self.db.query(self.model)

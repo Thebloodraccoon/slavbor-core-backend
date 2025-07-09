@@ -40,14 +40,10 @@ class CharacterGameStats(settings.Base):  # type: ignore
     subclass_id = Column(Integer, ForeignKey("classes.id", ondelete="SET NULL"))
 
     created_at = Column(DateTime, default=datetime.now, nullable=False)
-    updated_at = Column(
-        DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
-    )
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now, nullable=False)
 
     __table_args__ = (
-        CheckConstraint(
-            create_range_constraint("level", 1, 20), name="check_level_range"
-        ),
+        CheckConstraint(create_range_constraint("level", 1, 20), name="check_level_range"),
         CheckConstraint(
             "experience_points IS NULL OR experience_points >= 0",
             name="check_exp_positive",
@@ -76,12 +72,8 @@ class CharacterGameStats(settings.Base):  # type: ignore
             create_range_constraint("charisma", 1, 30),
             name="check_charisma_range",
         ),
-        CheckConstraint(
-            "armor_class IS NULL OR armor_class > 0", name="check_ac_positive"
-        ),
-        CheckConstraint(
-            "hit_points_max IS NULL OR hit_points_max > 0", name="check_hp_max_positive"
-        ),
+        CheckConstraint("armor_class IS NULL OR armor_class > 0", name="check_ac_positive"),
+        CheckConstraint("hit_points_max IS NULL OR hit_points_max > 0", name="check_hp_max_positive"),
         CheckConstraint(
             "hit_points_current IS NULL OR hit_points_current >= 0",
             name="check_hp_current_nonnegative",

@@ -16,7 +16,7 @@ def test_ping_endpoint(client: TestClient):
     assert "timestamp" in data
     assert "status" in data
     assert data["status"] == "healthy"
-    assert isinstance(data["timestamp"], (int, float))
+    assert isinstance(data["timestamp"], int | float)
 
 
 def test_nonexistent_endpoint(client: TestClient):
