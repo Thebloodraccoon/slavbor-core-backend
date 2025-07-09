@@ -92,4 +92,4 @@ jobs:
         echo "PostgreSQL is ready!"
 
     - name: Run all checks (Ruff + MyPy + Bandit + Tests)
-      run: poetry run tox -e all
+      run: nox -s all
